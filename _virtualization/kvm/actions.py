@@ -35,7 +35,7 @@ class Actions(ActionsBase):
                 conn = node._getSSHClient(node)
                 cl = j.ssh.ubuntu.get(conn)
                 script = """from JumpScale import j
-    j.system.net.setBasicNetConfigurationBridgePub()
+    j.sal.nettools.setBasicNetConfigurationBridgePub()
     """
             cl.executeRemoteTmuxJumpscript(script)
         j.actions.start(retry=2, name="createBridgePub",description='create public brigde on remote node', cmds=createBridgePub, action=None, actionRecover=None, actionArgs={}, errorMessage='', die=True, stdOutput=True, serviceObj=serviceObj) 

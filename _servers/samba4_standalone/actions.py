@@ -38,5 +38,5 @@ class Actions(ActionsBase):
             'workgroup': domain.upper(),
         }
 
-        hrd = j.core.hrd.getHRDFromDict(data)
+        hrd = j.data.hrd.getHRDFromDict(data)
         hrd.applyOnFile('/etc/samba/smb.conf')

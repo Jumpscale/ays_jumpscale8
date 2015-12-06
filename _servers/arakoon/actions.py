@@ -24,21 +24,21 @@ class Actions(ActionsBase):
         def askNodeInfo():
             print("describe a node:")
             nodeinfo = {}
-            nodeinfo['name'] = j.console.askString("Enter node name", "node1")
-            nodeinfo['ip'] = j.console.askString("Enter node IP")
-            nodeinfo['client_port'] = j.console.askInteger("Enter node client port", 7080)
-            nodeinfo['messaging_port'] = j.console.askInteger("Enter messaging port", 10000)
-            nodeinfo['home'] = j.console.askString("Enter node home dir", "/opt/arakoon/data/")
+            nodeinfo['name'] = j.tools.console.askString("Enter node name", "node1")
+            nodeinfo['ip'] = j.tools.console.askString("Enter node IP")
+            nodeinfo['client_port'] = j.tools.console.askInteger("Enter node client port", 7080)
+            nodeinfo['messaging_port'] = j.tools.console.askInteger("Enter messaging port", 10000)
+            nodeinfo['home'] = j.tools.console.askString("Enter node home dir", "/opt/arakoon/data/")
             return nodeinfo
 
         if not nodes:
             if 'clusterid' not in args:
-                args['clusterid'] = j.console.askString('Enter cluster id', 'grid')
+                args['clusterid'] = j.tools.console.askString('Enter cluster id', 'grid')
             while True:
                 node = askNodeInfo()
                 args['nodes.%s' % node['name']] = node
                 nodes.append(node)
-                if not j.console.askYesNo("Add another node"):
+                if not j.tools.console.askYesNo("Add another node"):
                     break
 
             args['nodes'] = ','.join([node['name'] for node in nodes])

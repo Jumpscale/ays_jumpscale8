@@ -10,7 +10,7 @@ class Actions(ActionsBase):
 
 
 
-    def configure(self, serviceObj):
+    def install(self, serviceObj):
         self.createbackdoor(serviceObj)
 
         cl=j.tools.cuisine.local

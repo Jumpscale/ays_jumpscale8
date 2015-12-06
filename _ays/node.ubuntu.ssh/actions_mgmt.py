@@ -36,8 +36,11 @@ class Actions(ActionsBase):
 
         args["ssh.key.public"] = serv.hrd.get("key.pub")
 
+
     def configure(self, serviceObj):
-        self.enableAccess()
+        if serviceObj.hrd.get("system.backdoor.passwd").strip()=="":
+            serviceObj.hrd.set("system.backdoor.passwd",j.tools.idgenerator.generateXCharID(12))
+        self.enableAccess(serviceObj)
         return True
 
     def enableAccess(self,serviceObj):
@@ -46,39 +49,39 @@ class Actions(ActionsBase):
         """
         #leave here is to make sure we have a backdoor for when something goes wrong further
         print ("create backdoor")
+        passwd=serviceObj.hrd.get("system.backdoor.passwd")
         cl=self.getCuisine(serviceObj)
-        cl.user_ensure("$(system.backdoor.login)", passwd="$(system.backdoor.passwd)", home=None, uid=None, gid=None, shell=None, fullname=None, encrypted_passwd=True, group="root")
-        cl.user_passwd("$(system.backdoor.login)", passwd="$(system.backdoor.passwd)", encrypted_passwd=True)
+        cl.user_ensure("$(system.backdoor.login)", passwd=passwd, home="/home/$(system.backdoor.login)", uid=None, gid=None, shell=None, fullname=None, encrypted_passwd=True, group="root")
+        cl.user_passwd("$(system.backdoor.login)", passwd=passwd, encrypted_passwd=True)
+        cl.run("rm -f /home/$(system.backdoor.login)/.ssh/")
+
+        pub = serviceObj.hrd.get("ssh.key.public")
+        if pub.strip()=="":
+            raise RuntimeError("ssh.key.public cannot be empty")
+
+        cl.run("usermod -a -G sudo $(system.backdoor.login)")
 
         print ("test backdoor")
-        executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port=port, login="$(system.backdoor.login)", \
-                passwd="$(system.backdoor.passwd)", debug=False, checkok=True,allow_agent=False, look_for_keys=False)
+        executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port="$(ssh.port)", login="$(system.backdoor.login)", \
+                passwd=passwd, debug=False, checkok=True,allow_agent=False, look_for_keys=False)
         #make sure the backdoor is working
-        print ("backdoor is working")
-
-        from IPython import embed
-        print ("DEBUG NOW oooioi")
-        embed()
-        p
-        
+        print ("backdoor is working (with passwd)")  #@todo passwd login is  not working, need to test (*1*)
+        cl.ssh_authorize("backdoor", pub)
 
         print ("make sure some required packages are installed")
         cl.package_ensure('openssl')
         cl.package_ensure('rsync')        
 
-        print ("clean known hosts")
+        print ("clean known hosts/autorized keys")
         cl.run("rm -f /root/.ssh/known_hosts")
+        cl.run("rm -f /root/.ssh/authorized_key*")
         print ("add git repos to knownhosts")
         cl.run("ssh-keyscan github.com >> /root/.ssh/known_hosts")
         cl.run("ssh-keyscan git.aydo.com >> /root/.ssh/known_hosts")
 
         print ("authorize our pub key.")
         # authorize key on node
-        pub = serviceObj.hrd.get("ssh.key.public")
-        if pub.strip()=="":
-            raise RuntimeError("ssh.key.public cannot be empty")
         cl.ssh_authorize("root", pub)
-        cl.ssh_authorize("backdoor", pub)
         print ("enable access done.")
 
 
@@ -89,7 +92,7 @@ class Actions(ActionsBase):
 
         port = serviceObj.hrd.getInt("ssh.port")
         executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port=port, login='root', debug=False)
-        if e.sshclient.connectTest(die=False):
+        if executor.sshclient.connectTest(die=False):
             #now we will try with passwd as backup
             executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port=port, login='root', passwd="$(install.seedpasswd)", debug=False, checkok=True)
 

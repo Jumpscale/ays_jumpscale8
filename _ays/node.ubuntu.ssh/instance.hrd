@@ -1,9 +1,9 @@
 
 jumpscale.branch               = 'master'
 
-jumpscale.install              = @ASK default:1 type:bool
+jumpscale.install              = @ASK default:1 type:bool descr:'do you want to install jumpscale'
 
-node.tcp.addr                  = @ASK 
+node.tcp.addr                  = @ASK descr:'ipaddress of ssh node'
 
 ssh.port                       = 22
 ssh.shell                      = '/bin/bash -l -c'

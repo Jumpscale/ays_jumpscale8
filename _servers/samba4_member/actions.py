@@ -40,7 +40,7 @@ class Actions(ActionsBase):
         passwd = serviceObj.hrd.get('param.ad.adminpwd')
         myaddr = serviceObj.hrd.get('param.ad.ipaddr')
         remote = serviceObj.hrd.get('param.ad.remote')
-        host   = j.system.net.getHostname()
+        host   = j.sal.nettools.getHostname()
 
         print('Joining Active Directory', realm, '/', myaddr)
 
@@ -66,7 +66,7 @@ class Actions(ActionsBase):
             'realm': realm
         }
 
-        hrd = j.core.hrd.getHRDFromDict(data)
+        hrd = j.data.hrd.getHRDFromDict(data)
         hrd.applyOnFile('/etc/samba/smb.conf')
 
         # Joining domain

@@ -21,7 +21,7 @@ class Actions(ActionsBase):
 
     def prepare(self, serviceObj):
         hpath = j.sal.fs.joinPaths(j.dirs.hrd, 'grid.hrd')
-        hrd = j.core.hrd.get(hpath)
+        hrd = j.data.hrd.get(hpath)
         hrd.set('id', serviceObj.hrd.get('grid.id'))
         hrd.set('node.id', '0')
         hrd.set('node.machineguid', j.application.getUniqueMachineId())

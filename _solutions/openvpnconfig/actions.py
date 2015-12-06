@@ -28,7 +28,7 @@ class Actions(ActionsBase):
         ca_key = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM,cakey_filecontent)
 
         j.sal.sslSigning.createSignedCert(path, "$(param.keyname)")
-        hostname = j.system.net.getHostname()
+        hostname = j.sal.nettools.getHostname()
         prikey,req=j.sal.sslSigning.createCertificateSigningRequest(hostname)
         clientcert=j.sal.sslSigning.signRequest(req, ca_cert, ca_key)
 

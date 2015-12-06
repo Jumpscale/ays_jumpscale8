@@ -23,7 +23,7 @@ class Actions(ActionsBase):
         SOURCE_TARBALL_URL = 'https://github.com/odoo/odoo/archive/8.0.0.tar.gz'
         log('Downloading source tarball')
         local_file = os.path.join(BUILD_BASE, 'odoo.tar.gz')
-        j.system.net.downloadIfNonExistent(SOURCE_TARBALL_URL, local_file, md5_checksum='a92253ea9e07b9bca7f1a4de2bb7d371')
+        j.sal.nettools.downloadIfNonExistent(SOURCE_TARBALL_URL, local_file, md5_checksum='a92253ea9e07b9bca7f1a4de2bb7d371')
 
         log('Extracting downloaded files')
         uncompressed_path = os.path.join(BUILD_BASE, 'uncompressed')

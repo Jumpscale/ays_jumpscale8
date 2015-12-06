@@ -61,7 +61,7 @@ class Actions(ActionsBase):
     #     j.sal.screen.executeInScreen(sessionname="servers", screenname="mariadb", cmd=cmd, wait=0, cwd=None, env=None, user='root', tmuxuser=None)
 
     #     #now wait till we can access the port
-    #     res=j.system.net.waitConnectionTest("localhost",3306,2)
+    #     res=j.sal.nettools.waitConnectionTest("localhost",3306,2)
     #     if res==False:
     #         j.events.inputerror_critical("mariadb did not become active, check in byobu","ays.install.mariadb.startup")
 

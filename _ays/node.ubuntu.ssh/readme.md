@@ -1,6 +1,8 @@
 
 ## define an ssh key
 
+@todo fix content (*3*)
+
 see
 - (ays key ssh info)[https://github.com/Jumpscale/ays_jumpscale8/blob/master/_ays/node.ssh/readme.md]
 - make sure you have loaded your sshkeys with ssh-add to remotely access the specified IP addr

@@ -56,7 +56,7 @@ class Actions(ActionsBase):
                               jumpscale=installJS, sharecode=serviceObj.hrd.getBool('jumpscale.sharecode'),jumpscalebranch="$(jumpscale.branch)")
 
         serviceObj.hrd.set("ssh.port", port)
-        _, ip = j.system.net.getDefaultIPConfig()
+        _, ip = j.sal.nettools.getDefaultIPConfig()
         serviceObj.hrd.set("node.tcp.addr", ip)
 
         j.do.loadSSHKeys()
