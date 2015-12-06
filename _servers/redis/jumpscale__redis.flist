@@ -1,0 +1,10 @@
+/opt/jumpscale8/apps/redis/mkreleasehdr.sh|6422b6cf1f5d941786729b6f1004e41a|566
+/opt/jumpscale8/apps/redis/redis-benchmark|80bad8bb96a7fe0a9029a2bddb6cfe87|2170128
+/opt/jumpscale8/apps/redis/redis-check-aof|6fab13ccf4b0a3770bb197aceff8027f|29259
+/opt/jumpscale8/apps/redis/redis-check-dump|8d50050d196ffd2e6ddfbe3722d04bef|62067
+/opt/jumpscale8/apps/redis/redis-cli|657996beb87a373c66422de5de03ee42|2323824
+/opt/jumpscale8/apps/redis/redis-sentinel|27ca315ae752e081a0cc80434d141466|4485454
+/opt/jumpscale8/apps/redis/redis-server|27ca315ae752e081a0cc80434d141466|4485454
+/opt/jumpscale8/apps/redis/redis-trib.rb|ea93c77f7103f4ee71407ed578134257|48141
+/opt/jumpscale8/apps/redis/redis.conf|f5adf3ca81645a2ad7cc1fe7130c3cd6|30491
+/opt/jumpscale8/apps/redis/sentinel.conf|c8759f213c9fe7c633538e4055c8df0f|5660

@@ -1,0 +1,13 @@
+
+tcp.addr=@ASK descr:'ip address of service' default:'localhost'
+
+#descr:'http admin port'
+tcp.port.admin=8083  
+
+#descr:'service tcp port'
+tcp.port.service=8086
+
+admin.login=
+admin.passwd=
+
+db.main='main'

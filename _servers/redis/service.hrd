@@ -1,0 +1,26 @@
+
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+git.export.1                   =
+    dest:'$(system.paths.base)/apps/redis',
+    link:'True',
+    platform:'ubuntu64',
+    source:'redis',
+    url:'http://git.aydo.com/binary/redis',
+
+platform.supported             =
+    'linux64',
+    'darwin',
+
+process.1                      =
+    args:'"$(system.paths.var)/redis/$(instance)/redis.conf"',
+    cmd:'$(system.paths.base)/apps/redis/redis-server',
+    cwd:'$(system.paths.base)/apps/redis',
+    env:,
+    filterstr:'redis-server $(param.ip):$(param.port)',
+    ports:'$(param.port)',
+    prio:'1',
+    startupmanager:'tmux',
+    timeout_start:'20',
+    timeout_stop:'10',
+

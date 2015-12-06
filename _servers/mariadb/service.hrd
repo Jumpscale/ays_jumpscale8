@@ -1,0 +1,49 @@
+process.1=
+    cmd:'./mysqld --user=mysql --basedir=/opt/mariadb --datadir=/var/jumpscale/mysql/data --plugin-dir=/opt/mariadb/lib/plugin/  --console --verbose',
+    args:,
+    prio:10,
+    cwd:'/opt/mariadb/bin',
+    timeout_start:10,
+    timeout_stop:10,
+    ports:3306,,
+    startupmanager:tmux,
+    filterstr:'mysqld'
+
+env.process.1=
+    MYSQL_HOME:/opt/mariadb,
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='http://git.aydo.com/binary/mariadb'
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    url:$(git.url),
+    source:'mariadb/bin',
+    dest:'/opt/mariadb/bin,	
+    link:True,
+
+git.export.2=
+    url:$(git.url),
+    source:'mariadb/cfg',
+    dest:'/opt/mariadb/cfg',
+    link:False,
+
+git.export.3=
+    url:$(git.url),
+    source:'mariadb/scripts',
+    dest:'/opt/mariadb/scripts',
+    link:True,
+
+git.export.4=
+    url:$(git.url),
+    source:'mariadb/share',
+    dest:'/opt/mariadb/share',
+    link:True,
+
+platform.supported=linux64,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=1
+
+#a way to describe where to backup to
+#backup.location=
+

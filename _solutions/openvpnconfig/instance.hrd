@@ -1,0 +1,9 @@
+param.remote.ip=@ASK descr:'OPENVPNCONFIG: remote IP'
+param.port=@ASK default:'1194' descr:'OPENVPNCONFIG: port'
+param.keyname=@ASK default:'client' descr:'OPENVPNCONFIG: keyname'
+param.ca.dir=@ASK default:'/etc/openvpn' descr:'OPENVPNCONFIG:directory where ca.key and ca.crt are located they will be use to create client key and cert otherwise  self-signed cert and keypair is generated'
+
+openvpn.client.config =
+openvpn.client.crt =
+openvpn.client.ca =
+openvpn.ca.crt =

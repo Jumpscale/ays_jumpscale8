@@ -1,0 +1,2 @@
+cache=False
+http.url=@ASK type:int descr:'url of the http file server of the store'

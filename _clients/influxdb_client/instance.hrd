@@ -1,0 +1,5 @@
+param.influxdb.client.address=@ASK default:localhost descr:'INFLUXDB-CLIENT: address'
+param.influxdb.client.port=@ASK default:8086 type:int descr:'INFLUXDB-CLIENT: port'
+param.influxdb.client.login=@ASK default:root descr:'INFLUXDB-CLIENT: username'
+param.influxdb.client.passwd=@ASK default:root descr:'INFLUXDB-CLIENT: password'
+param.influxdb.client.dbname=@ASK default:main descr:'INFLUXDB-CLIENT: database name'

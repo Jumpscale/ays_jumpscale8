@@ -1,0 +1,10 @@
+
+
+root = /mnt/stor
+
+read.login=read
+#read.passwd=@ASK
+
+write.login=write
+#write.passwd=@ASK
+

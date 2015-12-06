@@ -1,0 +1,5 @@
+git.client.host=@ASK descr:'git CLIENT host: host of the git provider ex: github.com, git.ayo.com'
+git.client.login=@ASK descr:'git CLIENT: username'
+git.client.passwd=@ASK descr:'git CLIENT: password'
+
+

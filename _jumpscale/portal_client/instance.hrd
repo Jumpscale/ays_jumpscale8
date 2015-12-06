@@ -1,0 +1,4 @@
+param.addr=@ASK default:localhost  descr:'PORTAL_CLIENT: Address'
+param.port=@ASK default:82 type:int descr:'PORTAL_CLIENT: port'
+param.secret=@ASK type:str descr:'PORTAL_CLIENT: secret'
+

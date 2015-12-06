@@ -1,0 +1,7 @@
+description='build docker image and start container of this image. used for AYS build'
+
+dependencies.node              = docker
+
+ns.enable = True
+
+hrd.return = True

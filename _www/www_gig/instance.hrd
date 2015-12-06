@@ -1,0 +1,2 @@
+portal.instance=@ASK default:main descr:'WWW_GIG: portal instance name'
+portal.ports=@ASK default:82 descr:'WWW_GIG: portal port'

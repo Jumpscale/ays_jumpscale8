@@ -1,0 +1,9 @@
+port=@ASK default:21 descr:'PYFTP SERVER: port'
+rw.name=@ASK default:root descr:'PYFTP SERVER:ROOT user name'
+rw.passwd=@ASK default:js1234 descr:'PYFTP SERVER:ROOT user password'
+rw.root=@ASK descr:'PYFTP SERVER:ROOT directory for root user'
+ro.name=@ASK default:guest descr:'PYFTP SERVER:NORMAL (Read only) USER name'
+ro.passwd=@ASK default:js1234 descr:'PYFTP SERVER:NORMAL (Read only) USER password '
+ro.root=@ASK descr:'PYFTP SERVER:NORMAL (Read only) USER root directory '
+
+

@@ -1,0 +1,11 @@
+
+git.url='http://git.aydo.com/binary/python-cloudlibs'
+git.export.1=
+    url:$(git.url),
+    source:'root/*',
+    dest:'/opt/jumpscale8/libext/',
+    depth:1,
+    link:False,
+
+platform.supported=linux64,
+

@@ -1,0 +1,4 @@
+docker.build.repo=@ASK descr:'url of the repository where the dockerfile is'
+docker.image=@ASK descr:'name of the image to build'
+docker.build=@ASK descr:'build image from scratch?' type:bool
+docker.upload=@ASK descr:'upload image to docker hub after rebuild ?' type:bool

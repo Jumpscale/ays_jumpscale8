@@ -1,0 +1,10 @@
+git.build.1                    =
+    url:'https://github.com/Jumpscale/jumpscale_core8.git',
+
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+git.export.1                   =
+    dest:'$(system.paths.app)/agentcontroller2/jumpscripts/',
+    link:'False',
+    source:'domains',
+    url:'https://git.aydo.com/binary/legacy_js_core/',
+

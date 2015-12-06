@@ -1,0 +1,7 @@
+
+platform.supported             =
+    'linux64',
+
+build   =
+    image: 'jumpscale/ubuntu1510_python',
+    repo: 'https://github.com/Jumpscale/docker_ubuntu1510_python.git',

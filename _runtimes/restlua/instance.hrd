@@ -1,0 +1,3 @@
+param.baseurl = @ASK default:http://localhost:8080 descr:'RESTLUA: Service URL'
+param.port =
+param.spec = @ASK descr:'RESTLUA: the swagger spec that define the service' type:multiline

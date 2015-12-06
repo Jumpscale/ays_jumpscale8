@@ -1,0 +1,4 @@
+
+description                    = 'client for ays stor or ays stor cache'
+
+ns.enable = True

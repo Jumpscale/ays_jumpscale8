@@ -1,0 +1,4 @@
+home = '/opt/arakoon/'
+cfg = '$(home)/cfg/settings.cfg'
+nodename=@ASK descr:'name of the local node in the cluster'
+clusterid=@ASK descr:'ID of the cluster'

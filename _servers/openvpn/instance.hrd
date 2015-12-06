@@ -1,0 +1,11 @@
+server.address=@ASK descr:'address of the server'
+port=@ASK default:'11943' descr:'listen port of the server'
+protocol=@ASK descr:'transport protocol' type:dropdown dropdownvals:tcp,udp
+network=@ASK descr:'network to use for the vpn with the form 192.168.1.0' default:'192.168.1.0'
+netmask=@ASK descr:'netmask of of the network' default:'255.255.255.0'
+cert.country=@ASK descr:'easy-rsa country key' default:'AE'
+cert.province=@ASK descr:'easy-rsa province key' default:'Dubai'
+cert.city=@ASK descr:'easy-rsa city key' default:'Dubai'
+cert.organisation=@ASK descr:'easy-rsa organisation key' default:'GreenITGlobe'
+cert.email=@ASK descr:'easy-rsa email key' default:'info@greenitglobe.com'
+cert.organisation.unit=@ASK descr:'easy-rsa organisation unit key' default:'development'

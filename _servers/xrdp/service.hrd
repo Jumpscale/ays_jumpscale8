@@ -1,0 +1,11 @@
+
+
+git.build.1=
+    url:'https://github.com/scarygliders/X11RDP-o-Matic',
+
+git.export.1=
+    url:'http://git.aydo.com/binary/xrdp',
+    source:'xrdp/',
+    dest:'/tmp/',
+    link:True,
+

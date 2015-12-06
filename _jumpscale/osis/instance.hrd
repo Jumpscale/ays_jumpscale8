@@ -1,0 +1,3 @@
+param.osis.key=
+param.osis.superadmin.passwd=@ASK default:'rooter' descr:'OSIS: superadmin password'
+tcp.addr=

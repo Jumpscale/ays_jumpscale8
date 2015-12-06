@@ -1,0 +1,223 @@
+dependencies.1                 =
+    name:'pylabs5_base',
+
+
+env.process.1                  = 
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr                = 1
+
+
+#name of packages which need to be installed locally
+platform.supported             =
+    'linux64',
+
+
+git.url = 'https://git.aydo.com/racktivity/ext-pylabs-core'
+
+git.export.1                   =
+    dest:'/opt/qbase5/',
+    link:'False',
+    nodirs:'False',
+    source:'qbase5/*',
+    merge:'True',
+    url: $(git.url),
+
+git.export.2                   =
+    dest:'/opt/qbase5/apps/applicationserver/',
+    link:'False',
+    nodirs:'False',
+    source:'apps/applicationserver/*',
+    url: $(git.url),
+
+git.export.3                   =
+    dest:'/opt/qbase5/lib/pylabs/core/pylabs/',
+    link:'False',
+    nodirs:'False',
+    source:'core/*',
+    url: $(git.url),
+
+
+git.export.4                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/',
+    link:'False',
+    nodirs:'False',
+    source:'extensions',
+    url: $(git.url),
+
+git.export.5                   =
+    dest:'/opt/qbase5/lib/python/site-packages/',
+    link:'False',
+    nodirs:'False',
+    source:'lib/*',
+    url: $(git.url),
+
+git.export.6                  =
+    dest:'/opt/qbase5/utils/',
+    link:'False',
+    nodirs:'False',
+    source:'utils/*',
+    url: $(git.url),
+
+git.export.7                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/agent',
+    link:'False',
+    nodirs:'False',
+    branch:'pylabs5',
+    source:'agent/',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs_agent',
+
+git.export.8                   =
+    dest:'/opt/qbase5/apps/applicationserver/services/agent_service',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'agent_service/',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs_agent',
+
+git.export.9                   =
+    dest:'/opt/qbase5/www/jswizards',
+    link:'False',
+    nodirs:'False',
+    branch:'coffee',
+    source:'',
+    url: 'https://git.aydo.com/racktivity/ext-jswizards',
+
+git.export.10                   =
+    dest:'/opt/qbase5/www/jswizards/js/',
+    link:'False',
+    nodirs:'False',
+    branch:'master',
+    source:'js/jswizards.js',
+    url: 'https://git.aydo.com/binary/jswizards',
+
+
+
+git.export.15                   =
+    dest:'/opt/qbase5/lib/python/site-packages/osis',
+    branch:'0.5',
+    link:'False',
+    nodirs:'False',
+    source:'code/osis',
+    url: 'https://git.aydo.com/racktivity/ext-OSIS',
+
+git.export.16                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/api_generator/defaults',
+    link:'False',
+    nodirs:'False',
+    source:'pyapp',
+    url: 'https://git.aydo.com/racktivity/ext-OSIS',
+
+git.export.17                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/osis_connection',
+    link:'False',
+    branch:'0.5',
+    nodirs:'False',
+    source:'osis_connection_config',
+    url: 'https://git.aydo.com/racktivity/ext-OSIS',
+
+git.export.18                   =
+    dest:'/opt/qbase5/www/lfw',
+    link:'False',
+    nodirs:'False',
+    source:'htdocs',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.19                   =
+    dest:'/opt/qbase5/lib/python/site-packages/alkira',
+    link:'False',
+    nodirs:'False',
+    source:'services/lfw',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.20                   =
+    dest:'/opt/qbase5/lib/python/site-packages/alkira/tasklets/pylabsmacro',
+    link:'False',
+    nodirs:'False',
+    source:'pylabsmacro',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.21                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/clients/alkira',
+    link:'False',
+    nodirs:'False',
+    source:'client',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.22                   =
+    dest:'/opt/qbase5/lib/python/site-packages/oauth2',
+    link:'False',
+    nodirs:'False',
+    source:'services/oauth_service/lib/oauth2',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.23                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/api_generator/defaults/',
+    link:'False',
+    nodirs:'False',
+    source:'pyapp/*',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+git.export.24                   =
+    dest:'/opt/qbase5/lib/python/site-packages/httplib2',
+    link:'False',
+    nodirs:'False',
+    source:'services/oauth_service/lib/httplib2',
+    branch:'js7',
+    url: 'https://git.aydo.com/racktivity/ext-lfw',
+
+
+git.export.25                   =
+    dest:'/opt/qbase5/apps/cloud_api_generator/',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'apps/cloud_api_generator/*',
+    url: $(git.url),
+
+git.export.26                   =
+    dest:'/opt/qbase5/lib/python/site-packages/workflowengine',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'workflowengine/lib',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs-workflowengine',
+
+git.export.27                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/workflowengine/manage',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'workflowengine/manage',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs-workflowengine',
+
+git.export.28                   =
+    dest:'/opt/qbase5/apps/workflowengine/bin',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'workflowengine/bin',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs-workflowengine',
+
+git.export.29                  =
+    dest:'/opt/qbase5/apps/applicationserver/services/wfe_debug',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'workflowengine/debug_service',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs-workflowengine',
+
+git.export.30                  =
+    dest:'/opt/qbase5/lib/pylabs/extensions/api_generator/defaults',
+    link:'False',
+    branch:'pylabs5',
+    nodirs:'False',
+    source:'workflowengine/pyapp',
+    url: 'https://git.aydo.com/racktivity/ext-pylabs-workflowengine',
+

@@ -1,0 +1,18 @@
+
+platform.supported             =
+    'linux64',
+    'darwin',
+
+process.1                      =
+    args:,
+    cmd:'aria2c --enable-rpc --rpc-listen-all',
+    cwd:'',
+    filterstr:'aria2c',
+    name:'$(service.name)__$(service.instance)',
+    platform:'ubuntu,darwin',
+    ports:'6800',
+    prio:'10',
+    startupmanager:'tmux',
+    timeout_start:'10',
+    timeout_stop:'10',
+

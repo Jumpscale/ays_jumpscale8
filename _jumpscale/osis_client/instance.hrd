@@ -1,0 +1,4 @@
+param.osis.client.addr=@ASK default:localhost  descr:'OSIS CLIENT: OSIS SERVER address'
+param.osis.client.port=5544
+param.osis.client.login=@ASK default:root descr:'OSIS CLIENT: OSIS SERVER username'
+param.osis.client.passwd=@ASK default: descr:'OSIS CLIENT: OSIS SERVER password'

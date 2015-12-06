@@ -1,0 +1,35 @@
+#source $(system.paths.base)/env.sh;/$(system.paths.base)/bin/
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='https://github.com/Jumpscale/jumpscale_core8/'
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    url:$(git.url),
+    source:'apps/jsagent/*',
+    dest:'$(system.paths.base)/apps/jsagent/',
+    link:True,
+
+process.1=
+    cmd:'jspython',
+    args: 'jsagent.py -i $(instance)',
+    prio:100,
+    env:,
+    cwd:'$(system.paths.base)/apps/jsagent/',
+    timeout_start:20,
+    timeout_stop:20,
+    ports:4446,
+    startupmanager:tmux,
+    filterstr:'jsagent.py',
+
+platform.supported=linux64,
+
+dependencies.node                 =
+    agentcontroller_client,
+    osis_client,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=10
+
+#a way to describe where to backup to
+#backup.location=
+

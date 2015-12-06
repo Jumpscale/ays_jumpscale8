@@ -1,0 +1,50 @@
+dependencies.1                 =
+    name:'samba4',
+
+git.export.1                   =
+    dest:'$(system.paths.base)/apps/samba4',
+    link:'False',
+    platform:'linux64',
+    source:,
+    url:'http://git.aydo.com/binary/samba4',
+
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr                = 1
+
+process.1                      =
+    args:'-F',
+    cmd:'smbd',
+    cwd:'/',
+    env:,
+    filterstr:'smbd',
+    ports:,
+    prio:'20',
+    startupmanager:'tmux',
+    timeout_start:'8',
+    timeout_stop:'20',
+
+process.2                      =
+    args:'-F',
+    cmd:'nmbd',
+    cwd:'/',
+    env:,
+    filterstr:'nmbd',
+    ports:,
+    prio:'20',
+    startupmanager:'tmux',
+    timeout_start:'8',
+    timeout_stop:'20',
+
+process.3                      =
+    args:'-F',
+    cmd:'winbindd',
+    cwd:'/',
+    env:,
+    filterstr:'winbindd',
+    ports:,
+    prio:'20',
+    startupmanager:'tmux',
+    timeout_start:'8',
+    timeout_stop:'20',
+

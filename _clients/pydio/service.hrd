@@ -1,0 +1,56 @@
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='https://github.com/pydio/pydio-core'
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    url:$(git.url),
+    source:'core/src',
+    dest:'/opt/lemp/main/www/pydio',
+    link:False,
+
+dependencies.1=
+    name:'postgresql',
+    domain:'jumpscale',
+    args:'postgresql.args'
+
+postgresql.args=
+    rootpasswd:'$(param.rootpasswd)'
+
+dependencies.2=
+    name:'postgresql_client',
+    domain:'jumpscale',
+    args:'postgresql.client.args'
+
+postgresql.client.args=
+    addr:'localhost',
+    port:5432,
+    login:postgres,
+    passwd:'$(param.rootpasswd)',
+
+
+platform.supported=linux64,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=1
+
+#a way to describe where to backup to
+#backup.location=
+
+docker.base= 'despiegk/mc'
+docker.enable=True
+docker.ports.tcp = 80:80,443:443
+docker.vols = 
+docker.mem =
+docker.cpu =
+docker.ssh=
+docker.ns=
+
+
+ubuntu.apt.source.1 ='http;//dl.ajaxplorer.info/repos/apt stable main'
+ubuntu.apt.key.pub.1 = 'http;//dl.ajaxplorer.info/repos/charles@ajaxplorer.info.gpg.key'
+ubuntu.apt.update = True
+ubuntu.apt.upgrade = True
+ubuntu.packages=mc,pydio
+
+

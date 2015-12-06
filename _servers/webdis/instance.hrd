@@ -1,0 +1,3 @@
+agentcontroller.client.addr=@ASK default:localhost  descr:'WEBDIS: Agent controller client address'
+agentcontroller.client.port=@ASK default:7779 descr:'WEBDIS: Agent controller client port'
+agentcontroller.client.login=@ASK default:node descr:'WEBDIS: Agent controller client username'

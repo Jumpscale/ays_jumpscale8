@@ -1,0 +1,1 @@
+tcp.port.service = @ASK default:5000 type:int descr:'OSIS_EVE: Port'

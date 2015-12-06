@@ -1,0 +1,17 @@
+
+tcp.addr=@ASK descr:'ip address of service' default:'0.0.0.0'
+
+#descr:'http admin port'
+#tcp.port.admin=
+
+#descr:'service tcp port'
+tcp.port.service=@ASK type:int default:27017 descr:'MONGODB: port'
+
+admin.login=
+admin.passwd=
+
+db.main='main'
+
+param.replicaset=@ASK default:'' descr:'MONGODB: replicaset (leave empty if none)'
+
+

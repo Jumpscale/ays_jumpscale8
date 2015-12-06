@@ -1,0 +1,5 @@
+osis.connection=jsagent
+agentcontroller.connection=@ASK default:main descr:'JSAGENT: Agent controller connection instance name'
+grid.id=@ASK default:1 type:int descr:'JSAGENT: Grid ID'
+grid.node.roles=@ASK descr:'JSAGENT: comma-separated roles this node subscribes to' default:node type:str
+

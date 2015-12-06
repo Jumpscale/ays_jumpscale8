@@ -1,0 +1,7 @@
+url = @ASK default:'localhost:82' type:string
+username = @ASK default:admin
+password = @ASK default:rooter
+
+map = @ASK type:dict
+portal.instance=@ASK descr:'Oneclickshare: Instance name' default:'main'
+

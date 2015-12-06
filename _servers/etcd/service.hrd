@@ -1,0 +1,32 @@
+git.url = 'https://git.aydo.com/binary/etcd.git'
+
+git.export.1                   =
+    dest:'$(system.paths.base)/apps/etcd/etcd',
+    link:'True',
+    platform:'ubuntu64',
+    source:'etcd',
+    url:'$(git.url)',
+
+git.export.2                   =
+    dest:'/usr/local/bin/etcdctl',
+    link:'True',
+    platform:'ubuntu64',
+    source:'etcdctl',
+    url:'$(git.url)',
+
+platform.supported             =
+    'linux64',
+
+process.1                      =
+    args:'',
+    cmd:'./etcd',
+    cwd:'$(system.paths.base)/apps/etcd',
+    filterstr:'./etcd -name $(service.instance)',
+    name:'$(service.name)__$(service.instance)',
+    platform:'ubuntu',
+    ports:'',
+    prio:'2',
+    startupmanager:'tmux',
+    timeout_start:'10',
+    timeout_stop:'10',
+

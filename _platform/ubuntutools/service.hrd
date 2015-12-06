@@ -1,0 +1,13 @@
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='http://git.aydo.com/binary/ubuntutools'
+git.export.1=
+    url:$(git.url),
+    source:'etc',
+    dest:'/etc',
+    link:False,
+
+dependencies.1                 =
+    name:'mail_client',
+
+platform.supported=ubuntu,

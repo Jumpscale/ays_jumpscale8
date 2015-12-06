@@ -1,0 +1,10 @@
+
+tcp.addr='localhost'
+tcp.port.admin=8083
+tcp.port.service=8086
+admin.login="admin"
+admin.passwd=@ASK
+db.main='main'
+
+
+

@@ -1,0 +1,13 @@
+git.url                        = 'https://git.aydo.com/binary/arakoon.git'
+
+platform.supported             =
+    'linux64',
+
+process.1                      =
+    cmd:'arakoon --node $(nodename) -config $(cfg)',
+    filterstr:'arakoon --node $(nodename)',
+    name:'$(name)__$(instance)',
+    prio:'50',
+    startupmanager:'tmux',
+    timeout_start:'10',
+    timeout_stop:'10',

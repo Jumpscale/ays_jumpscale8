@@ -1,0 +1,15 @@
+git.url='https://github.com/Jumpscale/jumpscale_portal/'
+
+git.export.1=
+    url:$(git.url),
+    source:'lib/portal',
+    dest:'$(system.paths.python.lib.js)/portal',
+    link:True,
+
+platform.supported=linux64,
+
+instances.maxnr=1
+
+dependencies.1 = 
+    name:'portal_lib',
+    domain:'jumpscale',

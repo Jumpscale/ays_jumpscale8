@@ -1,0 +1,1 @@
+statsd.master.host=@ASK type:str default:'localhost' descr:'STATSD-COLLECTOR: host'

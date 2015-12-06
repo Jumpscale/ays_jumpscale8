@@ -1,0 +1,35 @@
+
+process.1=
+    cmd:,
+    args:,
+    prio:10,
+    cwd:,
+    timeout_start:10,
+    timeout_stop:10,
+    ports:,
+    startupmanager:upstart,
+    filterstr:'mysqld'
+
+env.process.1=
+
+#if set to link then when getting files from git they will be linked not copied, can be overruled on export rule per export rule
+files.link=false
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='http://git.aydo.com/binary/mariadb_extra_linux64'
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    git:$(git.url),
+    source:root,
+    dest:'/',
+    link:$(files.link),
+
+platform.supported=linux64,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=1
+
+#a way to describe where to backup to
+#backup.location=
+

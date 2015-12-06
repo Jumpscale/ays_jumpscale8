@@ -1,0 +1,11 @@
+--- deps.originial/share/lua/5.1/luarocks/tools/tar.lua	2015-02-03 13:25:12.027446442 +0000
++++ /opt/csagent/deps/share/lua/5.1/luarocks/tools/tar.lua	2015-02-03 13:26:51.341084046 +0000
+@@ -131,7 +131,7 @@ function tar.untar(filename, destdir)
+          local file_handle = io.open(pathname, "wb")
+          file_handle:write(file_data)
+          file_handle:close()
+-         fs.set_time(pathname, header.mtime)
++         -- fs.set_time(pathname, header.mtime)
+          if fs.chmod then
+             fs.chmod(pathname, header.mode)
+          end

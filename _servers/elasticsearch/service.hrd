@@ -1,0 +1,31 @@
+process.1=
+    cmd:'sh /opt/elasticsearch/start.sh',
+    args:,
+    prio:10,
+    cwd:'/opt/elasticsearch',
+    timeout_start:60,
+    timeout_stop:10,
+    ports:[9200],
+    startupmanager:tmux,
+    filterstr:'elasticsearch.yml org.elasticsearch.bootstrap.ElasticSearch'
+
+env.process.1=
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='http://git.aydo.com/binary/elasticsearch'
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    url:$(git.url),
+    source:'elasticsearch',
+    dest:'/opt/elasticsearch',
+    link:True,
+
+platform.supported=linux64,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=1
+
+dependencies.1                 =
+    name:'java',
+

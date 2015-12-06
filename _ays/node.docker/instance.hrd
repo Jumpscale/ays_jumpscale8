@@ -1,0 +1,17 @@
+
+docker.image                   = @ASK descr:'docker image to use' default:'jumpscale/ubuntu15.04'
+docker.portsforwards           = @ASK descr:'port forwards: format as follows  "22:8022 80:8080"  the first arg e.g. 22 is the port in the container'
+docker.volumes                 = @ASK descr:'volumes: /var/insidemachine:/var/inhost # /var/1:/var/1 # ...'
+
+jumpscale.branch               = ays_unstable
+jumpscale.install              = @ASK default:'False'
+jumpscale.reset                = False 
+jumpscale.update               = False
+jumpscale.sharecode            = False
+
+node.tcp.addr = @ASK descr:'is ip address or dns name of this node, used to allow consumers to find this service, if empty then ip will be used' default:''
+
+ssh.port                       = 
+ssh.shell                      = '/bin/bash -l -c'
+
+ssh.key.public                 =

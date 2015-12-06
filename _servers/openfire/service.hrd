@@ -1,0 +1,30 @@
+git.url='http://git.aydo.com/binary/openfire'
+git.export.1=
+    url:$(git.url),
+    source:'openfire',
+    dest:'$(system.paths.base)/apps/openfire/',
+    link:False,
+
+process.1=
+    name:'openfire',
+    cmd:'export JAVA_HOME=/opt/openjdk/jre && export INSTALL4J_JAVA_HOME=/opt/openjdk7/jre/ && ./openfire',
+    args:'start',
+    prio:10,
+    cwd:'$(system.paths.base)/apps/openfire/bin,
+    timeout_start:30,
+    timeout_stop:30,
+    ports:9090,
+    startupmanager:,
+    filterstr:'openfire',
+
+
+
+dependencies.1=
+    name:'java',
+    domain:,
+    instance:,
+
+dependencies.2=
+    name:'mariadb',
+    domain:,
+    instance:,

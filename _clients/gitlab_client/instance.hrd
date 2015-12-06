@@ -1,0 +1,4 @@
+gitlab.client.url=@ASK default:'https://git.aydo.com' descr:'GITLAB CLIENT: URL i.e https://git.aydo.com'
+gitlab.client.login=@ASK descr:'GITLAB CLIENT: username'
+gitlab.client.passwd=@ASK descr:'GITLAB CLIENT: password'
+

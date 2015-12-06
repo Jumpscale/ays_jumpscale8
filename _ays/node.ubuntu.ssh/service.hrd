@@ -1,0 +1,4 @@
+
+description                    = 'is a node running linux os'
+
+ns.enable = True

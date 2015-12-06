@@ -1,0 +1,4 @@
+
+description                    = 'is a node running on mothership1'
+
+ns.enable = True

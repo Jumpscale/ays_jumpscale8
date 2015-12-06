@@ -1,0 +1,3 @@
+
+ns.domain = @ASK descr:'give domain name for nameserver, is everything behind the name of the services' default:'local'
+

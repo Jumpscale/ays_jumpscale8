@@ -1,0 +1,5 @@
+smtp.login='',
+smtp.passwd='',
+smtp.port='25',
+smtp.sender='info@jumpscale.com',
+smtp.server='localhost',

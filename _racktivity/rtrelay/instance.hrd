@@ -1,0 +1,2 @@
+port = @ASK default:8080 decr:'RTRELAY: listening port' type:int
+databasedsn = @ASK default:'postgres://localhost:5432/store2?sslmode=disable' decr:'RTRELAY: Database dsn'

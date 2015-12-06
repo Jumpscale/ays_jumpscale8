@@ -1,0 +1,8 @@
+param.singlesignon.baseuri =@ASK default:https://dcpm1.demo.greenitglobe.com/dcpm
+param.singlesignon.url=@ASK default:https://demo1.demo.greenitglobe.com/login/oauth/authorize
+param.singlesignon.token_url=@ASK default:http://192.168.103.251:8010/login/oauth/access_token
+param.singlesignon.logout_url =@ASK default:https://demo1.demo.greenitglobe.com/logout
+param.singlesignon.client_id = @ASK default:dcpm
+param.singlesignon.client_secret = @ASK default:quUirtCNZxcjf-HKZ07Odm1L6Vd_49_9FPXVx9F3Pbs=
+param.singlesignon.scope = @ASK default:dcpm_admin
+param.singlesignon.response_type = @ASK default:code

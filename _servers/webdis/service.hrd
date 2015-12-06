@@ -1,0 +1,36 @@
+#source $(system.paths.base)/env.sh;/$(system.paths.base)/bin/
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url='http://git.aydo.com/binary/webdis'
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib  
+git.export.1=
+    url:$(git.url),
+    source:'webdis/*',
+    dest:'$(system.paths.base)/apps/webdis/',
+    link:True,
+
+git.export.2=
+    url:$(git.url),
+    source:'cfg/*',
+    dest:'$(system.paths.cfg)/',
+    link:True,
+
+process.1=
+    name:"webdis",
+    cmd:"$(system.paths.base)/apps/webdis/webdis",
+    args:"$(system.paths.cfg)/webdis/webdis.json",
+    env:,
+    numprocesses:1,
+    prio:6,
+    startupmanager:tmux,
+    cwd:'',
+    ports:7779,
+    processfilterstr:./webdis
+
+platform.supported=linux64,
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr=1
+
+#a way to describe where to backup to
+#backup.location=

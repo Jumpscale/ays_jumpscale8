@@ -1,0 +1,7 @@
+remote.bind= @ASK descr:'Remote bind address' default:'127.0.0.1'
+remote.address= @ASK descr:'Remote address'
+remote.connection.port= @ASK descr:'Remote connection port' default:22
+remote.login= @ASK descr:'Remote login' default:root
+remote.port= @ASK descr:'Remote listening port'
+local.address= @ASK descr:'Local address to forward'
+local.port= @ASK descr:'Local port to forward'

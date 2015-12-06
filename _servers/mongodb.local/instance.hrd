@@ -1,0 +1,14 @@
+
+tcp.addr='0.0.0.0'
+
+#descr:'service tcp port'
+tcp.port.service=27017
+
+admin.login=root
+admin.passwd=@ASK
+
+db.main='main'
+
+param.replicaset=
+
+

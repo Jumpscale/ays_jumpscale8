@@ -1,0 +1,33 @@
+
+
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+base = '/opt/jumpscale8/'
+git.url = 'https://git.aydo.com/binary/ruby.git'
+
+git.export.1 = 
+    url:'$(git.url)',
+    source:'bin/*',
+    dest:'$(system.paths.base)/bin/',
+    link:'False',
+
+git.export.2 = 
+    url:'$(git.url)',
+    source:'include/*',
+    dest:'$(system.paths.base)/include/',
+    link:False,
+
+git.export.3 = 
+    url:'$(git.url)',
+    source:'lib/*',
+    dest:'$(system.paths.base)/lib/',
+    link:False,
+
+git.export.4 = 
+    url:'$(git.url)',
+    source:'share/*',
+    dest:'$(system.paths.base)/share/',
+    link:'False',
+
+platform.supported = 'linux64',
+instances.maxnr = 1

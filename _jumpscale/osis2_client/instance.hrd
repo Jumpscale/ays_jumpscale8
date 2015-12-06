@@ -1,0 +1,4 @@
+param.osis2.client.addr=@ASK default:localhost  descr:'OSIS2 CLIENT: OSIS2 SERVER address'
+param.osis2.client.port=5545
+param.osis2.client.login=@ASK default:root descr:'OSIS2 CLIENT: OSIS2 SERVER username'
+param.osis2.client.passwd=@ASK default: descr:'OSIS2 CLIENT: OSIS2 SERVER password'

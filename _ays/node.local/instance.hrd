@@ -1,0 +1,9 @@
+
+node.tcp.addr ='127.0.0.1'
+
+jumpscale.branch               = ays_unstable
+
+jumpscale.install              = @ASK default:0 type:bool
+jumpscale.reset                = False
+jumpscale.update               = False
+

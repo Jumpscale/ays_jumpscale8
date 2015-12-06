@@ -1,0 +1,4 @@
+param.rootpasswd=@ASK type:str default:'rooter' descr:'MARIADB: root password'
+
+
+

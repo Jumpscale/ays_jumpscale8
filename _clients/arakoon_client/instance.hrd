@@ -1,0 +1,2 @@
+clusterid=@ASK default:'arakoon_cluster' type:str descr:'ARAKOON client: cluster ID'
+cluster=@ASK descr:'ARAKOON client: list of node name' default:'node1,node2'

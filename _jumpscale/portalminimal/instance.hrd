@@ -1,0 +1,8 @@
+param.cfg.ipaddr = @ASK default:'0.0.0.0' descr:'PORTAL: IP'
+param.cfg.port=@ASK default:83 descr:'PORTAL: port'
+param.cfg.appdir = $base/apps/portals/portalminimal
+param.cfg.filesroot = $vardir/portal/files
+param.cfg.defaultspace = @ASK default:home type:str descr:'PORTAL: Default space for this portal to land on'
+param.cfg.authentication.method=
+
+param.cfg.contentdirs = @ASK default:'' type:str descr:'PORTAL comma-seperated additional content directories'

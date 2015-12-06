@@ -1,0 +1,29 @@
+
+#dict where key is source in repo, 
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+git.export.1                   =
+    dest:'$(system.paths.base)/apps/simpletestwebserver',
+    link:'True',
+    source:'',
+    url:'http://git.aydo.com/binary/simpletestwebserver'
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url                        = 'http://git.aydo.com/binary/simpletestwebserver'
+
+platform.supported             =
+    'linux64',
+'linux64',     ,
+
+process.1                      =
+    args:'"$(param.port)"',
+    cmd:'python $(system.paths.base)/apps/simpletestwebserver/simplewebserver.py',
+    cwd:'$(system.paths.base)/apps/simpletestwebserver',
+    env:,
+    filterstr:'python simplewebserver.py "$(param.port)"',
+    ports:'$(param.port)',
+    prio:1,
+    startupmanager:'tmux',
+    timeout_start:20,
+    timeout_stop:10
+
+env.process.1                  = 

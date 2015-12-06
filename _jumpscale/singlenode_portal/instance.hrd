@@ -1,0 +1,1 @@
+param.rootpasswd = @ASK descr:'root password'

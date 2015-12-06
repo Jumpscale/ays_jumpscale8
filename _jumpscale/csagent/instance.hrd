@@ -1,0 +1,2 @@
+
+param.gid=@ASK type:int default:1 descr:'CSAGENT: Grid ID'

@@ -1,0 +1,49 @@
+dependencies.1                 =
+    name:'go',
+    type:'build',
+
+git.build.1                    =
+    url:'https://git.aydo.com/binary/syncthing.git',
+
+git.export.1                   =
+    dest:'$(system.paths.base)/apps/agent2/agent2',
+    link:'True',
+    source:'agent2',
+    url:'https://git.aydo.com/binary/agent2',
+
+git.export.2                   =
+    dest:'$(system.paths.base)/apps/agent2/agent2.toml',
+    link:'False',
+    source:'agent2.toml',
+    url:'https://git.aydo.com/binary/agent2',
+
+git.export.3                   =
+    dest:'$(system.paths.base)/apps/agent2/extensions',
+    link:'False',
+    source:'extensions',
+    url:'https://git.aydo.com/binary/agent2',
+
+git.export.4                   =
+    dest:'$(system.paths.base)/apps/agent2/conf',
+    link:'False',
+    source:'conf',
+    url:'https://git.aydo.com/binary/agent2',
+
+instances.maxnr                = 1
+
+platform.supported             =
+    'linux64',
+
+process.1                      =
+    args:,
+    cmd:'./agent2 -c $(system.paths.base)/apps/agent2/agent2.toml',
+    cwd:'$(system.paths.base)/apps/agent2/',
+    env:,
+    filterstr:'agent2 -c',
+    ports:,
+    prio:'5',
+    startupmanager:'tmux',
+    timeout_start:'60',
+    timeout_stop:'10',
+    monitor: True
+

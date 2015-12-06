@@ -1,0 +1,44 @@
+
+git.url='https://github.com/seomoz/qless-py'
+git.export.1=
+    url:$(git.url),
+    source:'qless/*',
+    dest:'$(system.paths.base)/lib/qless/',
+    link:True,
+
+git.export.2=
+    url:$(git.url),
+    source:'bin/qless-py-worker',
+    dest:'$(system.paths.base)/apps/qless-py/',
+    link:False,
+
+git.export.3=
+    url:'https://github.com/seomoz/qless-core',
+    source:'/',
+    dest:'$(system.paths.base)/apps/qless-core/',
+    link:False,
+
+
+process.1=
+    cmd:'jspython qless-py-worker',
+    args:'--host=redis://$(param.redis.host):$(param.redis.port) --workers 2',
+    prio:20,
+    cwd:'$(system.paths.base)/apps/qless-py',
+    timeout_start:10,
+    timeout_stop:10,
+    startupmanager:tmux,
+    filterstr:'qless-py-worker --host=redis://$(param.redis.host):$(param.redis.port)',
+
+## redis should be installed already
+# dependencies.1                 =
+#     args:'dep.args.redis',
+#     instance:'system',
+#     name:'redis',
+
+# dep.args.redis                 =
+#     param.disk:1,
+#     param.mem:100,
+#     param.passwd:,
+#     param.port:9999,
+#     param.unixsocket:0,
+

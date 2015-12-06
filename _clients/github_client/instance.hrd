@@ -1,0 +1,6 @@
+
+github.client.login=@ASK descr:'GITHUB CLIENT: username'
+github.client.passwd=@ASK descr:'GITHUB CLIENT: password'
+github.client.email=@ASK descr:'GITHUB CLIENT: email'
+
+

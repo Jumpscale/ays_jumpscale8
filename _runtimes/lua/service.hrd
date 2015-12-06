@@ -1,0 +1,14 @@
+
+
+git.url='http://git.aydo.com/binary/lua'
+git.export.1=
+    url:$(git.url),
+    source:'lua',
+    dest:'/opt/lua',
+    link:False,
+
+git.build.1=
+    url:'https://github.com/LuaDist/lua.git',
+
+
+platform.supported=linux64,

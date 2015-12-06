@@ -1,0 +1,5 @@
+param.openvcloud.connection=@ASK descr:'openvcloud client instance' default:'main' type:'string'
+param.protocol=@ASK descr:'protocol: tcp/udp' default:'tcp' type:'string'
+param.space.port=@ASK descr:'port number on cloud space' type:'int'
+param.vm.name=@ASK descr:'name of the vm to forward to' type:'string'
+param.vm.port=@ASK descr:'port on the vm' type:'int'

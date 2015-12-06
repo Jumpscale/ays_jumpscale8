@@ -1,0 +1,6 @@
+param.disk                     = @ASK default:0	descr:'REDIS: backup redis to disk as append only default 0 (disabled), 1 (enable)'
+param.mem                      = @ASK default:100 descr:'REDIS: Max MEMORY in (MBS)'
+param.passwd                   = @ASK type:str descr:'REDIS: password'
+param.port                     = @ASK default:9999 descr:'REDIS: port'
+param.ip                       = @ASK default:'127.0.0.1'
+param.unixsocket               = @ASK default:0 descr:'REDIS: Enable unixsocket, default 0 (disabled), 1 (enable)'

@@ -1,0 +1,3 @@
+param.username=@ASK default:admin type:str descr:'GRAFANA-CLIENT: username'
+param.password=@ASK default:admin type:str descr:'GRAFANA-CLIENT: password'
+param.url=@ASK default:'http://127.0.0.1:3000' type:str descr:'GRAFANA-CLIENT: url'

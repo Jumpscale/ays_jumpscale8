@@ -1,0 +1,25 @@
+dependencies.1                 =
+    name:'dcpm',
+
+env.process.1                  = 
+
+git.export.1                   =
+    dest:'/opt/qbase5/pyapps/dcpm/portal/static/themes/dcpm/images/logo.png',
+    link:'False',
+    overwrite:'True',
+    source:'logo.png',
+    url:'https://git.aydo.com/binary/dcpm_branding',
+
+git.export.2                   =
+    dest:'/opt/qbase5/pyapps/dcpm/portal/static/themes/dcpm/style-branding.css',
+    link:'False',
+    source:'style.css',
+    url:'https://git.aydo.com/binary/dcpm_branding',
+
+git.export.3                   =
+    dest:'/opt/qbase5/pyapps/dcpm/portal/static/index.html',
+    link:'False',
+    overwrite:'True',
+    source:'index.html',
+    url:'https://git.aydo.com/binary/dcpm_branding',
+

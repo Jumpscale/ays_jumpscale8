@@ -1,0 +1,9 @@
+smtp.server=@ASK default:'smtp.mandrillapp.com'  descr:'MAILCLIENT: SMTP Server'
+smtp.port=@ASK default:587 descr:'MAILCLIENT: SMTP Server port'
+smtp.login=@ASK  descr:'MAILCLIENT: SMTP Server username'
+smtp.passwd=@ASK descr:'MAILCLIENT: SMTP Server password'
+
+smtp.sender=@ASK default:'' descr:'MAILCLIENT: SMTP Server sender(can be empty.)'
+
+
+

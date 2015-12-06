@@ -1,0 +1,8 @@
+oauth.client.url=@ASK default:https://github.com/login/oauth/authorize descr:'PORTAL: OAUTH SERVER URL'
+oauth.client.url2=@ASK default:https://github.com/login/oauth/access_token descr:'PORTAL: OAUTH SERVER ACCESS TOKEN URL '
+oauth.client.redirect_url=@ASK default:http://172.17.0.2:82/restmachine/system/oauth/authorize descr:'PORTAL: OAUTH RETURN URL'
+oauth.client.scope=@ASK default:user:email descr:'PORTAL: OAUTH SCOPE'
+oauth.client.id=@ASK default:fd2e709c9ea1d8e207bc descr:'PORTAL: OAUTH: CLIENT ID'
+oauth.client.secret=@ASK default:652994f8234c2969ac8d11bebf38ee7792447770 descr:'PORTAL: OAUTH: client secret'
+oauth.client.user_info_url=@ASK default:'https://api.github.com/user' descr:'PORTAL: OAUTH: User info API URL'
+oauth.client.logout_url=@ASK descr:'PORTAL: OAUTH: Logout URL - leave empty if non existing'

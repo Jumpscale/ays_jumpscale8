@@ -1,0 +1,4 @@
+param.webservice.host = @ASK default:':8966' type:str descr:'acc: webservice listen address:port'
+param.redis.host =
+param.redis.password =
+param.syncthing.port='18384'

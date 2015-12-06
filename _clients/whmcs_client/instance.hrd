@@ -1,0 +1,7 @@
+whmcs.client.username=@ASK default:'admin' descr:'WHMCS USERNAME'
+whmcs.client.md5_password=@ASK default:'6bde6ce08268a6d58ba96f27402bd7d4' descr:'WHMCS MD5SUM PASSWORD'
+whmcs.client.accesskey=@ASK default:'pzepC1tWAA2mfQSt3Nvvy0VGmyqsbW1oMJVfbEbI' descr:'WHMCS ACCESS KEY'
+whmcs.client.url=@ASK default:'https://service.codescalers.com/whmcs/includes/api.php' descr:'WHMCS ENDPOINT URL'
+whmcs.client.cloudspace_product_id=@ASK default:'34' descr:'WHMCS CLOUDSPACE PRODUCT ID'
+whmcs.client.operations_user_id=@ASK default:'1318' descr:'WHMCS OPERATIONS USER ID'
+whmcs.client.operations_department_id=@ASK default:'1' descr:'WHMCS OPERATIONS DEPARTMENT ID'

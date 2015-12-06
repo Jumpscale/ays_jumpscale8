@@ -1,0 +1,5 @@
+param.rootpasswd=@ASK type:str default:'rooter' descr:'POSTGRESQL SERVER: root password'
+param.port=@ASK type:int default:5432 descr:'POSTGRESQL SERVER: port'
+
+
+

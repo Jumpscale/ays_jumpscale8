@@ -1,0 +1,94 @@
+dependencies.1                 =
+    name:'pylabs5',
+
+dependencies.2                 =
+    name:'postgresql',
+    args:'dep.args.postgresql',
+
+dependencies.3                 =
+    name:'nginx',
+    args:'dep.args.nginx',
+
+dep.args.postgresql            =
+    param.port:'5432',
+    param.rootpasswd:'rooter',
+
+dep.args.nginx                 =
+    param.basedir:'/etc/nginx',
+    param.vardir:'/opt/qbase5/var/',
+
+
+env.process.1                  =
+
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+
+url = 'https://git.aydo.com/racktivity/dcpm'
+
+git.export.1                   =
+    dest:'/opt/qbase5/pyapps/dcpm/',
+    link:'False',
+    branch:'js7',
+    nodirs:'False',
+    source:'pyapps/dcpm/*',
+    url: $(url),
+
+git.export.2                   =
+    dest:'/opt/qbase5/pyapps/dcpm/interface/action/',
+    link:'False',
+    branch:'js7',
+    nodirs:'False',
+    source:'pyapps/upgrademanager/interface/action/*',
+    url: $(url),
+
+git.export.3                   =
+    dest:'/opt/qbase5/pyapps/dcpm/interface/model/',
+    link:'False',
+    branch:'js7',
+    nodirs:'False',
+    source:'pyapps/upgrademanager/interface/model/*',
+    url: $(url),
+
+git.export.4                   =
+    dest:'/opt/qbase5/lib/pylabs/extensions/',
+    link:'False',
+    branch:'js7',
+    source:'lib/pylabs/extensions/*',
+    url: $(url),
+
+git.export.5                   =
+    dest:'/opt/qbase5/bin/',
+    link:'False',
+    branch:'js7',
+    nodirs:'False',
+    source:'bin/*',
+    url: $(url),
+
+git.export.6                   =
+    dest:'/opt/qbase5/lib/python/site-packages/',
+    link:'False',
+    branch:'js7',
+    nodirs:'False',
+    overwrite:'True',
+    source:'lib/python/site-packages/*',
+    url: $(url),
+
+
+#how many instances can be installed of this package, if 1 the instance name is always 'main'
+instances.maxnr                = 1
+
+
+#name of packages which need to be installed locally
+platform.supported             =
+    'linux64',
+
+#source $(system.paths.base)/env.sh;/$(system.paths.base)/bin/
+process.1=
+    cmd:'export PYTHONPATH=/opt/postgres/lib:/opt/qbase5/lib/python/site-packages:/opt/qbase5/:/opt/qbase5/lib/pylabs/core;/opt/qbase5/qshell -c "p.application.start(\"dcpm\")"',
+    args:'',
+    prio:10,
+    cwd:'/opt/qbase5',
+    timeout_start:10,
+    timeout_stop:10,
+    ports:,
+    startupmanager:tmux,
+    filterstr:'dcpm'

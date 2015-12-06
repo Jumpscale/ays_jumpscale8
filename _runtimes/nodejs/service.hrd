@@ -1,0 +1,10 @@
+
+#known var's are: $root,$base,$cfg,$jslib,$pylib,$lib
+git.export.1                   =
+    dest:'/opt/nodejs/',
+    link:'False',
+    source:,
+    url:'https://git.aydo.com/binary/nodejs.git',
+
+#base of repo where code or files are e.g. http://git.aydo.com/binary/base
+git.url                        = 'https://git.aydo.com/binary/nodejs.git'
