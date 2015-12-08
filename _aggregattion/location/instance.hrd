@@ -1,6 +1,1 @@
-description=
-
-test = shouldnotbethere
-
-
-
+name=@ASK type:string descr:'name of the location'

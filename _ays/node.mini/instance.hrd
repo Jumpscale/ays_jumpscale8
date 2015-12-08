@@ -1,0 +1,4 @@
+disks.nbr=@ASK type:int descr:'number of disk on the machine'
+disks.fs=@ASK type:string descr:'filesystem to install on the disks'
+
+energyswtich.port=

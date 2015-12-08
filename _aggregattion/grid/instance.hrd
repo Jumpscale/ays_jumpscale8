@@ -1,0 +1,2 @@
+ip.range.start=@ASK type:string descr:'first ip of the ip range'
+ip.range.end=@ASK type:string descr:'last ip of the ip range'

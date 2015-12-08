@@ -7,11 +7,10 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 class Actions(ActionsBase):
 
     def generateKey(self,serviceObj):
-
         keyfile=j.do.joinPaths(serviceObj.path,"key_$(key.name)")
         j.do.delete(keyfile)
         j.do.delete(keyfile+".pub")
-        cmd="ssh-keygen -t rsa -f $(key.name) -P '$(key.passphrase)' -f '%s'"%keyfile 
+        cmd="ssh-keygen -t rsa -f $(key.name) -P '$(key.passphrase)' -f '%s'"%keyfile
         j.sal.process.executeWithoutPipe(cmd)
 
         if not j.sal.fs.exists(path=keyfile):
@@ -22,7 +21,7 @@ class Actions(ActionsBase):
 
         serviceObj.hrd.set("key.priv",privkey)
         serviceObj.hrd.set("key.pub",pubkey)
-    
+
     def init(self,serviceObj,args):
         ActionsBase.init(self,serviceObj,args)
         return True
@@ -46,6 +45,13 @@ class Actions(ActionsBase):
 
         j.do.chmod(keyloc, 0o600)
 
+        keyfile=j.do.joinPaths(serviceObj.path,"key_$(key.name)")
+        if not j.sal.fs.exists(path=keyfile):
+            raise RuntimeError("could not find sshkey:%s"%keyfile)
+
+        if j.do.getSSHKeyFromAgent("$(key.name)", die=False) is None:
+            cmd = 'ssh-add %s' % keyfile
+            j.do.executeInteractive(cmd)
 
     def install_pre(self,serviceObj):
         keyfile=j.do.joinPaths(serviceObj.path,"key_$(key.name)")
