@@ -9,7 +9,7 @@ class Actions(ActionsBase):
         """
         download required docker images
         """
-        j.docker.images.pull("jumpscale/pxeboot")
+        j.sal.docker.images.pull("jumpscale/pxeboot")
 
     def configure(self, serviceObj):
         executor = j.tools.executor.getLocal()
@@ -17,4 +17,4 @@ class Actions(ActionsBase):
         conn.execute("wget http://stor.jumpscale.org:8000/images/pxe.tgz -O /root/pxe.tgz")
         executor.execute("cd /root; tar -xvf /root/pxe.tgz")
 
-        container = j.create.docker.create("pxeboot", vols='/root/tftpboot:/data/tftpboot#/root/conf:/data/conf', base='jumpscale/pxeboot')
+        container = j.sal.docker.create("pxeboot", vols='/root/tftpboot:/data/tftpboot#/root/conf:/data/conf', base='jumpscale/pxeboot')
