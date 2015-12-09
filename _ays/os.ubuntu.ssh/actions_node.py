@@ -6,8 +6,6 @@ ActionsBase = j.atyourservice.getActionsBaseClassNode()
 class Actions(ActionsBase):
 
     def install(self, serviceObj):
-        self.createbackdoor(serviceObj)
-
         cl=j.tools.cuisine.local
 
 
@@ -52,12 +50,5 @@ class Actions(ActionsBase):
         #     cl.run("cd /opt/code/github/jumpscale/jumpscale_core8;git pull origin %s"%jsbranch)
 
 
-    def createbackdoor(self,serviceObj):
-        #leave here is to make sure we have a backdoor for when something goes wrong further
-        j.tools.cuisine.local.user_ensure("$(system.backdoor.login)", passwd="$(system.backdoor.passwd)", home=None, uid=None, gid=None, shell=None, fullname=None, encrypted_passwd=True, group="root")
-        j.tools.cuisine.local.user_passwd("$(system.backdoor.login)", passwd="$(system.backdoor.passwd)", encrypted_passwd=True)
 
 
-    def reset(self, serviceObj):
-        #create the backdoor user, make sure is always done, we don't want to be locked out
-        self.createbackdoor(serviceObj)

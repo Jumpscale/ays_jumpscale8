@@ -6,7 +6,7 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 
 class Actions(ActionsBase):
 
-    def generateKey(self,serviceObj):
+    def _generateKey(self,serviceObj):
         keyfile=j.do.joinPaths(serviceObj.path,"key_$(key.name)")
         j.do.delete(keyfile)
         j.do.delete(keyfile+".pub")
@@ -19,21 +19,19 @@ class Actions(ActionsBase):
         privkey=j.do.readFile(keyfile)
         pubkey=j.do.readFile(keyfile+".pub")
 
-        serviceObj.hrd.set("key.priv",privkey)
-        serviceObj.hrd.set("key.pub",pubkey)
+        return privkey,pubkey
 
-    def init(self,serviceObj,args):
-        ActionsBase.init(self,serviceObj,args)
-        return True
-
-    def configure(self, serviceObj):
+    def hrd(self, serviceObj):
         """
         create key
         """
 
         if '$(key.passphrase)'=="":
             print ("generate key")
-            self.generateKey(serviceObj)
+            privkey,pubkey=self._generateKey(serviceObj)
+
+            serviceObj.hrd.set("key.priv",privkey)
+            serviceObj.hrd.set("key.pub",pubkey)
 
         try:
             keyloc=j.do.getSSHKeyFromAgent("$(key.name)",die=False)
@@ -53,37 +51,43 @@ class Actions(ActionsBase):
             cmd = 'ssh-add %s' % keyfile
             j.do.executeInteractive(cmd)
 
-    def install_pre(self,serviceObj):
+
+    def install_post(self,serviceObj):
+        self.start(serviceObj)
+        return True
+
+    def _getKeyPath(self,serviceObj):
         keyfile=j.do.joinPaths(serviceObj.path,"key_$(key.name)")
         if not j.sal.fs.exists(path=keyfile):
             raise RuntimeError("could not find sshkey:%s"%keyfile)
+        return keyfile
 
-        if j.do.getSSHKeyFromAgent("$(key.name)", die=False) is None:
-            cmd = 'ssh-add %s' % keyfile
-            j.do.executeInteractive(cmd)
-
-        return True
 
     def start(self, serviceObj):
         """
         Add key to SSH Agent if not already loaded
         """
-        if j.do.getSSHKeyFromAgent('$(key.name)', die=False) is None:
-            keyloc = "/root/.ssh/%s" % '$(key.name)'
-            cmd = 'ssh-add %s' % keyloc
+        keyfile=self._getKeyPath(serviceObj)
+        if j.do.getSSHKeyFromAgent("$(key.name)", die=False) is None:
+            cmd = 'ssh-add %s' % keyfile
             j.do.executeInteractive(cmd)
 
     def stop(self, serviceObj):
         """
         Remove key from SSH Agent
         """
+        keyfile=self._getKeyPath(serviceObj)
         if j.do.getSSHKeyFromAgent('$(key.name)', die=False) is not None:
             keyloc = "/root/.ssh/%s" % '$(key.name)'
-            cmd = 'ssh-add -d %s' % keyloc
+            cmd = 'ssh-add -d %s' % keyfile
             j.do.executeInteractive(cmd)
 
     def removedata(self, serviceObj):
         """
         remove key data
         """
-        pass
+        keyfile=self._getKeyPath(serviceObj)
+        j.delete(keyfile)
+        j.delete(keyfile+".pub")
+
+        
