@@ -1,3 +1,4 @@
+import time
 from JumpScale import j
 
 ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
@@ -5,22 +6,20 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 
 class Actions(ActionsBase):
 
-    def hrd(self, serviceObj, producer):
-        depkey =
+    def hrd(self, serviceObj):
         energyswitch = self._searchDep(serviceObj, "sshkey",die=False)
-        if energyswitch!=None:
+        if energyswitch is not None:
             serviceObj.consume(energyswitch)
+
+        if serviceObj.hrd.get("system.backdoor.passwd").strip()=="":
+            serviceObj.hrd.set("system.backdoor.passwd",j.tools.idgenerator.generateXCharID(12))
+        self.enableAccess(serviceObj)
+        return True
 
     def consume(self, serviceObj, producer):
         if producer.role == 'sshkey':
             # serviceObj.consume(serv)
             serviceObj.hrd.set("ssh.key.public", producer.hrd.get("key.pub"))
-
-    def hrd(self, serviceObj):
-        if serviceObj.hrd.get("system.backdoor.passwd").strip()=="":
-            serviceObj.hrd.set("system.backdoor.passwd",j.tools.idgenerator.generateXCharID(12))
-        self.enableAccess(serviceObj)
-        return True
 
     def enableAccess(self,serviceObj):
         """
@@ -62,11 +61,26 @@ class Actions(ActionsBase):
         cl.ssh_authorize("root", pub)
         print("enable access done.")
 
+    def install_pre(self, serviceObj):
+        cl = self._getCuisine(serviceObj)
+        if serviceObj.hrd.getBool('jumpscale.install', default=False):
+            cl.file_unlink('/usr/local/bin/aysfs')
+            cl.file_unlink('/usr/local/bin/js8')
+            cl.run("umount -fl /opt;echo")
+            cl.run('wget http://stor.jumpscale.org/ays/bin/js8 -O /usr/local/bin/js8')
+            cl.file_attribs('/usr/local/bin/js8', mode=774)
+            cl.run('/usr/local/bin/js8')
+            max = 10
+            count = 0
+            while not cl.cuisine.file_exists("/opt/jumpscale8/env.sh") and count < max:
+                time.sleep(1)
+                count += 1
+
     def _getCuisine(self,serviceObj):
         """
         @rvalue ssh client object connected to the node
         """
-        port = serviceObj.hrd.getInt("ssh.port")
+        port = serviceObj.hrd.get("ssh.port")
         executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port=port, login='root', debug=False)
         if not executor.sshclient.connectTest(die=False):
             #now we will try with passwd as backup
