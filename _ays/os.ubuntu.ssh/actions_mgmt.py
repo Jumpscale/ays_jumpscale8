@@ -6,12 +6,12 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 class Actions(ActionsBase):
 
     def hrd(self, serviceObj, producer):
-        depkey = 
+        depkey =
         energyswitch = self._searchDep(serviceObj, "sshkey",die=False)
         if energyswitch!=None:
             serviceObj.consume(energyswitch)
 
-    def consume(self, serviceObj, producer):        
+    def consume(self, serviceObj, producer):
         if producer.role == 'sshkey':
             # serviceObj.consume(serv)
             serviceObj.hrd.set("ssh.key.public", producer.hrd.get("key.pub"))

@@ -13,9 +13,14 @@ class Actions(ActionsBase):
 
         cl.dir_ensure("/etc/ays/local")
 
-        # Install of js8 is done with AYSfs
 
-        # if serviceObj.hrd.getBool('jumpscale.install',default=False):
+        # Install of js8 is done with AYSfs
+        if serviceObj.hrd.getBool('jumpscale.install', default=False):
+            cl.file_unlink('/usr/local/bin/aysfs')
+            cl.file_unlink('/usr/local/bin/js8')
+            cl.run('wget http://stor.jumpscale.org/ays/bin/js8 -O /usr/local/bin/js8')
+            cl.file_attribs('/usr/local/bin/js8', mode=774)
+            cl.run('/usr/local/bin/js8')
         #     print("apt-get update & upgrade, can take a while")
         #     cl.run("apt-get update")
         #     cl.run("apt-get upgrade -fy")
@@ -48,7 +53,3 @@ class Actions(ActionsBase):
         # elif serviceObj.hrd.getBool('jumpscale.update',default=False):
         #     print("update jumpscale (git)")
         #     cl.run("cd /opt/code/github/jumpscale/jumpscale_core8;git pull origin %s"%jsbranch)
-
-
-
-
