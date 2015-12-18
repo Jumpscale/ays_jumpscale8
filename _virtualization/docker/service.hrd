@@ -1,1 +1,1 @@
-ubuntu.packages='apt-transport-https','apparmor'
+dependency.node = os.ubuntu.ssh

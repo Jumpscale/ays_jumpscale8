@@ -5,18 +5,18 @@ ActionsBase = j.atyourservice.getActionsBaseClassNode()
 
 class Actions(ActionsBase):
 
-    def configure(self, serviceObj):
-        version = j.sal.ubuntu.version()
-        major, minor = version.split('.')
-        if int(major) >= 15:
-            j.sal.process.executeWithoutPipe("sudo systemctl unmask docker.service")
-            j.sal.process.executeWithoutPipe("sudo systemctl unmask docker.socket")
-            j.sal.process.executeWithoutPipe("sudo service docker restart")
+    def install(self, serviceObj):
+        super(Actions, self).install(serviceObj)
+        self.installDocker(serviceObj)
 
-        return True
-
-    def start(self, serviceObj):
-        j.do.execute('service docker start', dieOnNonZeroExitCode=False)
-
-    def stop(self, serviceObj):
-        j.do.execute('service docker stop', dieOnNonZeroExitCode=False)
+    def installDocker(self, serviceObj):
+        cuisine = j.tools.cuisine.local
+        cuisine.run('apt-get install apt-transport-https')
+        # install docker
+        cuisine.run('apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D')
+        codename = cuisine.run('lsb_release -sc')
+        cuisine.dir_ensure("/etc/apt/sources.list.d")
+        source = 'deb https://apt.dockerproject.org/repo ubuntu-%s main' % codename
+        cuisine.file_write("/etc/apt/sources.list.d/docker.list", source)
+        cuisine.run('apt-get update;apt-cache policy docker-engine; apt-get install -y docker-engine')
+        cuisine.run('service docker start')
