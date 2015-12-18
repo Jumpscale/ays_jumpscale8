@@ -7,9 +7,9 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 class Actions(ActionsBase):
 
     def hrd(self, serviceObj):
-        energyswitch = self._searchDep(serviceObj, "sshkey",die=False)
-        if energyswitch is not None:
-            serviceObj.consume(energyswitch)
+        sshkey = self._searchDep(serviceObj, "sshkey",die=False)
+        if sshkey is not None:
+            serviceObj.consume(sshkey)
 
         if serviceObj.hrd.get("system.backdoor.passwd").strip()=="":
             serviceObj.hrd.set("system.backdoor.passwd",j.tools.idgenerator.generateXCharID(12))
@@ -50,6 +50,7 @@ class Actions(ActionsBase):
         # cl.package_ensure_apt('rsync')
 
         print("clean known hosts/autorized keys")
+        cl.dir_ensure("/root/.ssh")
         cl.dir_remove("/root/.ssh/known_hosts")
         cl.dir_remove("/root/.ssh/authorized_keys")
         print("add git repos to known hosts")
@@ -72,7 +73,7 @@ class Actions(ActionsBase):
             cl.run('/usr/local/bin/js8')
             max = 10
             count = 0
-            while not cl.cuisine.file_exists("/opt/jumpscale8/env.sh") and count < max:
+            while not cl.file_exists("/opt/jumpscale8/env.sh") and count < max:
                 time.sleep(1)
                 count += 1
 
