@@ -12,6 +12,7 @@ class Actions(ActionsBase):
             'login': '$(git.client.login)',
             'passwd': '$(git.client.passwd)'
         }
+        #@todo (*1*) wrong location can be e.g. /optrw/...
         hrd = j.data.hrd.get('/opt/jumpscale8/hrd/system/whoami.hrd')
         hrd.set(prefix, data)
         hrd.save()

@@ -58,7 +58,7 @@ dpkg-reconfigure locales
 	STORELIB_PATH = '/opt/qbase5/cfg/qconfig/storelib2.cfg'
 
 	j.sal.fs.copyFile(os.path.join(DCPM_NOAUTH_CONFIG_PATH, 'osisdb.cfg'), OSIS_DB_PATH)
-	osis_db_ini = j.tools.inifile.open(OSIS_DB_PATH)
+	osis_db_ini = j.data.inifile.open(OSIS_DB_PATH)
 	osis_db_ini.setParam('dcpm', 'type', serviceObj.hrd.get('instance.param.dcpm.db.main.type').lower())
 	osis_db_ini.setParam('dcpm', 'ip', serviceObj.hrd.get('instance.param.dcpm.db.main.host'))
 	osis_db_ini.setParam('dcpm', 'port', serviceObj.hrd.get('instance.param.dcpm.db.main.port'))
@@ -69,7 +69,7 @@ dpkg-reconfigure locales
 
 	j.sal.fs.copyFile(os.path.join(DCPM_NOAUTH_CONFIG_PATH, 'storelib2.cfg'), STORELIB_PATH)
 	db_type = serviceObj.hrd.get('instance.param.dcpm.db.monitor.type').lower()
-	storelib_ini = j.tools.inifile.open(STORELIB_PATH)
+	storelib_ini = j.data.inifile.open(STORELIB_PATH)
 	storelib_ini.setParam('main', 'store', db_type)
 	storelib_ini.addSection(db_type)
 	storelib_ini.setParam(db_type, 'dbtype', db_type)

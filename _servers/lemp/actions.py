@@ -29,7 +29,7 @@ class Actions(ActionsBase):
         j.sal.fs.createDir("/var/nginx/cache/fcgi")
         j.sal.fs.createDir("/var/log/nginx")
 
-        j.sal.ubuntu.createUser("www-data", passwd=j.tools.idgenerator.generateGUID(), home="/home/www-data", creategroup=True)
+        j.sal.ubuntu.createUser("www-data", passwd=j.data.idgenerator.generateGUID(), home="/home/www-data", creategroup=True)
     
 
         return True

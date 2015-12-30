@@ -7,8 +7,8 @@ class Actions(ActionsBase):
 
     def init(self, serviceObj, args):
         for k, v in args.items():
-            if j.core.types.string.checkString(v):
-                _, content = j.tools.text.ask(v)
+            if j.data.types.string.checkString(v):
+                _, content = j.data.text.ask(v)
                 args[k] = content
 
         deps = []

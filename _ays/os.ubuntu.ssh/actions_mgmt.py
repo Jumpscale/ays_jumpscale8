@@ -12,7 +12,7 @@ class Actions(ActionsBase):
             serviceObj.consume(sshkey)
 
         if serviceObj.hrd.get("system.backdoor.passwd").strip()=="":
-            serviceObj.hrd.set("system.backdoor.passwd",j.tools.idgenerator.generateXCharID(12))
+            serviceObj.hrd.set("system.backdoor.passwd",j.data.idgenerator.generateXCharID(12))
         self.enableAccess(serviceObj)
         return True
 

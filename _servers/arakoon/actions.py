@@ -12,8 +12,8 @@ class Actions(ActionsBase):
         super(Actions, self).init(serviceObj, args)
 
         for key, arg in args.items():
-            if j.core.types.string.check(arg) and arg.startswith('@ASK'):
-                _, args[key] = j.tools.text.ask(arg)
+            if j.data.types.string.check(arg) and arg.startswith('@ASK'):
+                _, args[key] = j.data.text.ask(arg)
 
         nodes = args['nodes'] if 'nodes' in args else []
         settings = args['cfg']
@@ -60,7 +60,7 @@ class Actions(ActionsBase):
                 j.sal.fs.createDir(data['home'])
 
         j.sal.fs.remove(settings)
-        config = j.tools.inifile.open(settings)
+        config = j.data.inifile.open(settings)
         config.addSection('global')
         config.addParam('global', 'cluster_id', clusterid)
         config.addParam('global', 'cluster', ', '. join(node['name'] for node in nodes))

@@ -24,7 +24,7 @@ class Actions(ActionsBase):
         """
         this gets executed before the files are downloaded & installed on appropriate spots
         """
-        j.sal.ubuntu.createUser("mysql", passwd=j.tools.idgenerator.generateGUID(), home="/home/mysql", creategroup=True)
+        j.sal.ubuntu.createUser("mysql", passwd=j.data.idgenerator.generateGUID(), home="/home/mysql", creategroup=True)
         j.sal.fs.createDir("/opt/mariadb")
         j.sal.fs.chown(path="/opt/mariadb/", user="mysql")
         j.sal.fs.createDir("/var/log/mysql")

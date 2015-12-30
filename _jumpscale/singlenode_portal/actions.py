@@ -7,7 +7,7 @@ class Actions(ActionsBase):
 
     def init(self, serviceObj, args):
         for k, v in args.items():
-            _, content = j.tools.text.ask(v)
+            _, content = j.data.text.ask(v)
             args[k] = content
 
         data = {

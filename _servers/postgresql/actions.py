@@ -26,7 +26,7 @@ class Actions(ActionsBase):
         this gets executed before the files are downloaded & installed on appropriate spots
         """
         try:
-            j.sal.ubuntu.createUser("postgres", passwd=j.tools.idgenerator.generateGUID(),
+            j.sal.ubuntu.createUser("postgres", passwd=j.data.idgenerator.generateGUID(),
                                             home="/home/postgresql", creategroup=True)
         except Exception:
             pass
