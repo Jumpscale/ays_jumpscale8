@@ -42,7 +42,7 @@ class Actions(ActionsBase):
         executor=j.tools.executor.getSSHBased(addr="$(node.tcp.addr)", port="$(ssh.port)", login="$(system.backdoor.login)", \
                 passwd=passwd, debug=False, checkok=True,allow_agent=False, look_for_keys=False)
         #make sure the backdoor is working
-        print("backdoor is working (with passwd)")  #@todo passwd login is  not working, need to test (*1*)
+        print("backdoor is working (with passwd)")  #@todo passwd login is  not working, need to test (*2*)
         cl.ssh_authorize("backdoor", pub)
 
         print("make sure some required packages are installed")

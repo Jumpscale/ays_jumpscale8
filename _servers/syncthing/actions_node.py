@@ -1,6 +1,6 @@
 import requests
 import os
-import json
+
 import time
 import logging
 
@@ -102,7 +102,7 @@ class Actions(ActionsBase):
             return
 
         config_url = self.get_url(serviceObj, self.ENDPOINT_CONFIG)
-        response = sessions.post(config_url, data=json.dumps(config), headers=headers)
+        response = sessions.post(config_url, data=j.data.serializer.json.dumps(config), headers=headers)
         if not response.ok:
             raise Exception('Failed to set syncthing configuration', response.reason)
 
