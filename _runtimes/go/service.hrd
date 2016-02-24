@@ -1,9 +1,0 @@
-base                           = '/opt/go'
-
-git.export.1                   =
-    dest:'$(base)/',
-    link:'True',
-    source:'go/',
-    url:'$(git.url)',
-
-git.url                        = 'http://git.aydo.com/binary/go'

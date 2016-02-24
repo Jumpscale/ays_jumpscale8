@@ -1,4 +1,0 @@
-
-dependencies.global = mongodb,influxdb,osis
-
-dependencies.node = redis.system,web,mongodb_client,influxdb_client,osis_client,mailclient.local,portal.local

@@ -1,5 +1,0 @@
-gossip.key=
-
-datacenter.id=@ASK default:dc1
-domain.name=@ASK default:dc1.me
-

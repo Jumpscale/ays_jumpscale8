@@ -1,7 +1,0 @@
-description='docker container running linux os'
-
-dependencies.node              = docker
-
-ns.enable = True
-
-hrd.return = True

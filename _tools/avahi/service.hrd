@@ -1,4 +1,0 @@
-platform.supported             =
-    'linux64',
-
-ubuntu.packages                = 'avahi-utils'

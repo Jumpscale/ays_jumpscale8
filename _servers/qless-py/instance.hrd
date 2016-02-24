@@ -1,3 +1,0 @@
-param.redis.instance = @ASK default:system descr:'QLESSPY: Redis Server instance name'
-param.redis.host = localhost
-param.redis.port = 

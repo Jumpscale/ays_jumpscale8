@@ -1,0 +1,2 @@
+key.name = type:str default:'' descr:'Specify name for key (default is name of instance)' 
+key.passphrase= type:str default:'' descr:'Specify passphrase (default is empty)' @ASK

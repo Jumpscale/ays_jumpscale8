@@ -1,4 +1,0 @@
-agentcontroller.client.addr=@ASK default:localhost  descr:'AgentCONTROLLER_CLIENT: Address'
-agentcontroller.client.port=@ASK default:4444 descr:'AgentCONTROLLER_CLIENT: PORT'
-agentcontroller.client.login=@ASK default:node descr:'AgentCONTROLLER_CLIENT: User name'
-agentcontroller.client.passwd=@ASK descr:'AgentCONTROLLER_CLIENT: password(leave empty for node)' default:''

@@ -1,2 +1,0 @@
-param.rootpasswd=@ASK descr:'root password' type:str
-param.gid=@ASK descr:'grid ID' default:1 type:int

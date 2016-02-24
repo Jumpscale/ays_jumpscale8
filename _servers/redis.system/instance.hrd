@@ -1,8 +1,0 @@
-param.disk                     = 1
-param.mem                      = 100
-param.passwd                   = 
-param.port                     = 9999
-param.ip                       = '127.0.0.1'
-param.unixsocket               = 0
-
-

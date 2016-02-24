@@ -1,9 +1,0 @@
-git.export.1                   =
-    dest:'/opt/jumpscale8/apps/agentcontroller2/jumpscripts/agent2_tests',
-    link:'False',
-    merge:'True',
-    source:'jumpscripts/*',
-    url:'http://git.aydo.com/binary/agentcontroller2_tests/',
-
-platform.supported             =
-    'generic',

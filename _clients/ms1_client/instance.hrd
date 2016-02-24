@@ -1,6 +1,0 @@
-param.location=@ASK type:dropdown descr:'MS1 CLIENT: location eu1=uk and eu2=be'  dropdownvals:ca1,us1,eu1,eu2
-param.cloudspace=@ASK default:default descr:'MS1 CLIENT: cloudspace name'
-param.login=@ASK descr:'MS1 CLIENT: username'
-param.passwd=@ASK descr:'MS1 CLIENT: password'
-param.apiurl=www.mothership1.com
-param.secret=

@@ -1,5 +1,0 @@
-country=@ASK description:'2 letters country code'
-state=@ASK 
-locality=@ASK
-organisation=@ASK
-commonname=@ASK description:'common name'

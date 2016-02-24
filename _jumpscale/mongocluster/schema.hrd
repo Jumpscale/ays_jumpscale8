@@ -1,0 +1,4 @@
+
+nodes = type:list descr:'mongo cluster nodes' consume:docker:1
+clusterconfig = type:dict dict
+ 

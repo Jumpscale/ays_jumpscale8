@@ -1,4 +1,0 @@
-tcp.addr=@ASK type:string
-tcp.port=@ASK type:int
-username=@ASK type:string
-password=@ASK type:string

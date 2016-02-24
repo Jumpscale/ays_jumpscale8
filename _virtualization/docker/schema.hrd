@@ -1,0 +1,9 @@
+
+
+sshkey = descr:'authorized sshkey' consume:sshkey:1:1
+
+dockerhost = type:str parent:'dockerhost'
+
+portforwards = type:string list default:''
+
+

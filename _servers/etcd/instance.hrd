@@ -1,4 +1,0 @@
-listen.client.urls=@ASK description:'list of URLs to listen on for client traffic.' default:'http://localhost:2379,http://localhost:4001'
-cluster.member.names=@ASK description:'peer name of the etcd cluster members separated by ",". should be the instance name of the etcd service'
-cluster.member.urls=@ASK description:'peer url of the etcd cluster member separated by ","'
-cluster.token=@ASK description:"unique token that represent the cluster, two cluster can\'t have the same token"

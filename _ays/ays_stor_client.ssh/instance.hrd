@@ -1,3 +1,0 @@
-cache=False
-ip=@ASK type:str
-ssh.port=@ASK type:int

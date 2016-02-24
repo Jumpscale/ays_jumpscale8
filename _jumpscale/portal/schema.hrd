@@ -1,0 +1,6 @@
+docker = type:str parent:'docker'
+user.demo.passwd = @ASK default:demo descr:'PORTAL: password for username demo'
+user.demo.email = @ASK default:demo@test.com descr:'PORTAL: email for username demo'
+user.demo.groups = @ASK default:demo descr:'PORTAL: comma separated groups with no spaces for username demo'
+user.demo.domain = @ASK default:jumpscale descr:'PORTAL: domain for username demo'
+mongocluster = type:list consume:mongocluster consumeauto

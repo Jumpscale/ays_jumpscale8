@@ -1,2 +1,0 @@
-listen.addr=@ASK default:'127.0.0.1:53' description:'IP:port on which SkyDNS should listen'
-domain=@ASK default:'skydns.local' description:'domain for which SkyDNS is authoritative'

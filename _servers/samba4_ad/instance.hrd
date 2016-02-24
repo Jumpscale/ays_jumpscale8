@@ -1,3 +1,0 @@
-param.ad.domain   = @ASK default:host type:string descr:'active directory domain name (workgroup)'
-param.ad.realm    = @ASK default:host.exemple.com type:string descr:'active directory realm fqdn address'
-param.ad.adminpwd = @ASK default:yoloXX@1337 type:string descr:'active directory administrator password (must be complexe otherwise setup will fail)'

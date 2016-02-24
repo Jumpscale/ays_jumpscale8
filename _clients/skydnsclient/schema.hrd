@@ -1,0 +1,3 @@
+url    =  type:str descr:'url of the etcd cluster' default:'https://dns1.aydo.com/etcd'
+login  =  type:str descr:'login of the etcd cluster'
+password =  type:str descr:'password of the etcd cluster'

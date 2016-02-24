@@ -1,7 +1,0 @@
-key.name = @ASK descr:'Specify name for key (default is main)' default:'main'
-key.passphrase= @ASK descr:'Specify passphrase (default is empty)' default:''
-key.pub = 
-key.priv = 
-
-
-

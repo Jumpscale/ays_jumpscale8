@@ -1,6 +1,0 @@
-param.osis2.port = @ASK default:5545 type:int descr:'OSIS2: Port'
-param.osis2.mongodb.connection = @ASK default:main type:str descr:'OSIS2: mongodb connection instance'
-param.osis2.sqlalchemy.uri = @ASK default:sqlite:////opt/jumpscale8/var/osis2/ type:str descr:'OSIS2: Connection for sqlalchemy based namespaces'
-param.osis2.use_reloader='0'
-param.osis2.use_debugger='1'
-param.osis2.superadmin.passwd=@ASK default:'rooter' descr:'OSIS2: superadmin password'

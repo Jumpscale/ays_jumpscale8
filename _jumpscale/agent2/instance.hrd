@@ -1,3 +1,0 @@
-gid=@ASK type:str default:'1'
-nid=@ASK type:str default:'1'
-roles=@ASK type:str descr:'Agent2: comma-separated roles this node subscribes to' default:''

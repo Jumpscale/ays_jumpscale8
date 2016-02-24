@@ -1,8 +1,0 @@
-
-description                    = 'ays stor'
-
-ns.enable = True
-
-recurring.sync = "5m"
-
-hrd.return = True

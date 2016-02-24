@@ -1,2 +1,0 @@
-
-gopath = @ASK descr:"GOPATH directory" default:/opt/go_workspace

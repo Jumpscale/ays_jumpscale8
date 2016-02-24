@@ -1,1 +1,0 @@
-nfs.nbrshares=@ASK type:int descr:'number of directory you want to expose'

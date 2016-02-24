@@ -1,4 +1,0 @@
-tcp.port.service=3000
-param.password=@ASK type:str descr:'GRAFANA: Admin password'
-
-
