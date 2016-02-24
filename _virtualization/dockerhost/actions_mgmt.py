@@ -71,16 +71,6 @@ class Actions(ActionsBase):
                                            memsize=int('$(os.size)'))
         return machine
 
-    def _findWeavePeer(self):
-        services = j.atyourservice.findServices(role='dockerhost')
-        for service in services:
-            if service.instance == self.service.instance or not service.hrd.exists('machine.publicip'):
-                continue
-            ip = service.hrd.getStr('machine.publicip')
-            if ip:
-                return ip
-        return None
-
     def install(self):
         machine = self.getMachine()
         executor = machine.get_ssh_connection()
@@ -120,10 +110,11 @@ class Actions(ActionsBase):
 # /usr/local/bin/js8 -rw init"""
 #         print("install jumpscale")
 #         executor.cuisine.run_script(C)
-        executor.cuisine.installer.jumpscale8()
-        # executor.cuisine.installerdevelop.jumpscale8()
-        print("install weave")
-        executor.cuisine.builder.weave(peer=self._findWeavePeer())
+
+        if self.service.hrd.getBool("aysfs"):
+            executor.cuisine.installer.jumpscale8()
+        else:
+            executor.cuisine.installerdevelop.jumpscale8()
 
     def uninstall(self):
         machine = self.getMachine()
