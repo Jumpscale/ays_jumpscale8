@@ -113,6 +113,9 @@ class Actions(ActionsBase):
         local = j.tools.cuisine.get()
         fw = "%s/%s" % (self.service.instance, j.data.idgenerator.generateXCharID(15))
         if self.service.hrd.getBool('caddyproxy'):
+            rc, _ = local.run('which caddy', die=False)
+            if rc:
+                local.builder.caddy()
             path = "/webaccess/%s" % (fw)
             backend = "localhost:4200/%s" % self.service.instance
             proxy = """proxy {path} {backend}""".format(path=path, backend=backend)
@@ -124,6 +127,9 @@ class Actions(ActionsBase):
             local.processmanager.restart('caddy')
 
         if self.service.hrd.getBool('shellinabox'):
+            rc, _ = local.run('which shellinaboxd', die=False)
+            if rc:
+                local.package.install('shellinabox')
             dockerip = self.service.parent.hrd.get('machine.publicip').strip()
             path = ('$cfgDir/shellinabox')
             config = local.file_read(path).splitlines()
