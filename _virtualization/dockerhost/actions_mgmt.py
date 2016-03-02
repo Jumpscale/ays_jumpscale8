@@ -121,6 +121,9 @@ class Actions(ActionsBase):
         else:
             executor.cuisine.installerdevelop.jumpscale8()
 
+        # get gid from cockpit config
+        executor.builder._startCore(1, machine.id)
+
     def uninstall(self):
         machine = self.getMachine()
         machine.stop()
