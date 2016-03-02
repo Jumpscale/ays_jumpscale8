@@ -120,9 +120,13 @@ class Actions(ActionsBase):
             executor.cuisine.installer.jumpscale8()
         else:
             executor.cuisine.installerdevelop.jumpscale8()
+            if self.service.hrd.getBool('agent'):
+                # get gid from cockpit config
+                executor.builder.core(1, machine.id)
 
         # get gid from cockpit config
-        executor.builder._startCore(1, machine.id)
+        if self.service.hrd.getBool('agent'):
+            executor.builder._startCore(1, machine.id)
 
     def uninstall(self):
         machine = self.getMachine()
