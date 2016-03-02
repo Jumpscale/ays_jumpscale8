@@ -1,0 +1,3 @@
+
+dockerhost = type:str parent:'dockerhost'
+backends = type:str list descr:'dockers to be shelled' consume:docker:1

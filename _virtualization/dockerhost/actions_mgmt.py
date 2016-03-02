@@ -104,6 +104,7 @@ class Actions(ActionsBase):
 
         # reconnect as root
         executor = j.tools.executor.getSSHBased(executor.addr, executor.port, 'root')
+        executor.cuisine.run('apt-get update')
 #         C = """
 # wget https://stor.jumpscale.org/storx/static/js8 -O /usr/local/bin/js8
 # chmod +x /usr/local/bin/js8
