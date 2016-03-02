@@ -90,6 +90,10 @@ class Actions(ActionsBase):
 
         self.service.hrd.set("machine.id", machine.id)
         self.service.hrd.set("machine.publicip", executor.addr)
+        nics = machine.model['nics']
+        if nics:
+            privateip = nics[0]['ipAddress']
+            self.service.hrd.set("machine.privateip", privateip)
         self.service.hrd.set("machine.sshport", executor.port)
 
         # authorize sshkey for root user
