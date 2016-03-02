@@ -134,7 +134,7 @@ class Actions(ActionsBase):
             dockerip = self.service.parent.hrd.get('machine.publicip').strip()
             path = ('$cfgDir/shellinabox')
             config = local.file_read(path).splitlines()
-            config.append('/%s:root:root:/:ssh root@%s -p %s' % (dockerip, self.hrd.get('sshport')))
+            config.append('/%s:root:root:/:ssh root@%s -p %s' % (fw, dockerip, self.hrd.get('sshport')))
             siabparams = ' '.join(config)
             local.file_write(path, '\n'.join(config))
             local.run('service shellinabox stop', die=False)
