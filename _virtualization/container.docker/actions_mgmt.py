@@ -124,7 +124,8 @@ class Actions(ActionsBase):
             cfgPath = local.args_replace("$cfgDir/caddy/caddyfile.conf")
             cmd = '$binDir/caddy -conf=%s -email=info@greenitglobe.com' % (cfgPath)
             local.processmanager.ensure('caddy', cmd)
-            local.processmanager.restart('caddy')
+            local.processmanager.stop('caddy')
+            local.processmanager.start('caddy')
 
         if self.service.hrd.getBool('shellinabox'):
             rc, _ = local.run('which shellinaboxd', die=False)
