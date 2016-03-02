@@ -108,3 +108,30 @@ class Actions(ActionsBase):
         executor = self.getExecutor()
         executor.cuisine.bash.addPath('/opt/jumpscale8/bin/')
         executor.cuisine.bash.environSet('PYTHONPATH', '/opt/jumpscale8/lib/:$PYTHONPATH')
+
+        # make sure docker is registered in caddy and shellinabox if set to do so
+        local = j.tools.cuisine.get()
+        fw = "%s/%s" % (self.service.instance, j.data.idgenerator.generateXCharID(15))
+        if self.service.hrd.getBool('caddyproxy'):
+            path = "/webaccess/%s" % (fw)
+            backend = "localhost:4200/%s" % self.service.instance
+            proxy = """proxy {path} {backend}""".format(path=path, backend=backend)
+
+            local.file_append('$cfgDir/caddy/caddyfile.conf', '\n%s' % proxy)
+            cfgPath = local.args_replace("$cfgDir/caddy/caddyfile.conf")
+            cmd = '$binDir/caddy -conf=%s -email=info@greenitglobe.com' % (cfgPath)
+            local.processmanager.ensure('caddy', cmd)
+            local.processmanager.restart('caddy')
+
+        if self.service.hrd.getBool('shellinabox'):
+            dockerip = self.service.parent.hrd.get('machine.publicip').strip()
+            path = ('$cfgDir/shellinabox')
+            config = local.file_read(path).splitlines()
+            config.append('/%s:root:root:/:ssh root@%s -p %s' % (dockerip, self.hrd.get('sshport')))
+            siabparams = ' '.join(config)
+            local.file_write(path, '\n'.join(config))
+            local.run('service shellinabox stop', die=False)
+
+            cmd = 'shellinaboxd --disable-ssl %s ' % siabparams
+            local.processmanager.ensure('shellinabox', cmd=cmd)
+            local.processmanager.restart('shellinabox')

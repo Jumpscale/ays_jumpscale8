@@ -14,7 +14,7 @@ class Actions(ActionsBase):
             docker = j.atyourservice.getService(role='docker', instance=dockername.strip())
             dockerip = docker.parent.hrd.get('machine.publicip').strip()
             if executor.addr == dockerip:
-                dockerip = '127.0.0.1'
+                dockerip = docker.parent.hrd.get('machine.privateip').strip()
             config.append("-s '/%s:root:root:/:ssh root@%s -p %s'" % (dockername, dockerip, docker.hrd.get('sshport')))
 
         siabparams = ' '.join(config)

@@ -6,4 +6,7 @@ dockerhost = type:str parent:'dockerhost'
 
 portforwards = type:string list default:''
 
+caddyproxy = type:bool default:True
+shellinabox = type:bool default:True
+
 
