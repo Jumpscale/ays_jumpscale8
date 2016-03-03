@@ -55,8 +55,9 @@ class Actions(ActionsBase):
 
     def getSpace(self):
         vdc = self.service.parent
-        account = self.getClient().account_get(vdc.hrd.get('account'))
-
+        farm = vdc.parent
+        
+        account = self.getClient().account_get(farm.hrd.get('account'))
         space = account.space_get(vdc.instance, location=vdc.hrd.get('location'))
         return space
 
