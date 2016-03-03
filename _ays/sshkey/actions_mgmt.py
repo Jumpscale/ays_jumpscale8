@@ -22,6 +22,24 @@ class Actions(ActionsBase):
 
         return privkey, pubkey
 
+    def _checkAgent(self):
+        rc, out = j.do.execute("ssh-add -l", outputStdout=False, outputStderr=False, dieOnNonZeroExitCode=False)
+        
+        # is running
+        if rc == 0:
+            return True
+        
+        # running but no keys
+        if rc == 1:
+            return True
+        
+        # another error
+        return False
+    
+    def _startAgent(self):
+        # FIXME
+        j.do.execute("ssh-agent", dieOnNonZeroExitCode=False, outputStdout=False, outputStderr=False)
+
     def hrd(self):
         """
         create key
@@ -37,7 +55,11 @@ class Actions(ActionsBase):
 
         self.service.hrd.set("key.priv", privkey)
         self.service.hrd.set("key.pub", pubkey)
-        # TODO (*2*) make sure ssh-agent is running
+        
+        if self.service.hrd.get("required") and not self._checkAgent():
+            # print("agent not started")
+            # self._startAgent()
+            raise RuntimeError("ssh-agent is not running and you need it, please run: eval $(ssh-agent -s)")
 
         try:
             keyloc = j.do.getSSHKeyFromAgent(name, die=False)
