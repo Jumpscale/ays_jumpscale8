@@ -62,7 +62,7 @@ class Actions(ActionsBase):
             raise RuntimeError("ssh-agent is not running and you need it, please run: eval $(ssh-agent -s)")
 
         try:
-            keyloc = j.do.getSSHKeyFromAgent(name, die=False)
+            keyloc = j.do.getSSHKeyPathFromAgent(name, die=False)
         except:
             keyloc = None
 
@@ -75,7 +75,7 @@ class Actions(ActionsBase):
         if not j.sal.fs.exists(path=keyfile):
             raise RuntimeError("could not find sshkey:%s" % keyfile)
 
-        if j.do.getSSHKeyFromAgent(name, die=False) is None:
+        if j.do.getSSHKeyPathFromAgent(name, die=False) is None:
             cmd = 'ssh-add %s' % keyfile
             j.do.executeInteractive(cmd)
 
@@ -94,7 +94,7 @@ class Actions(ActionsBase):
         Add key to SSH Agent if not already loaded
         """
         keyfile = self._getKeyPath()
-        if j.do.getSSHKeyFromAgent("$(key.name)", die=False) is None:
+        if j.do.getSSHKeyPathFromAgent("$(key.name)", die=False) is None:
             cmd = 'ssh-add %s' % keyfile
             j.do.executeInteractive(cmd)
 
@@ -103,7 +103,7 @@ class Actions(ActionsBase):
         Remove key from SSH Agent
         """
         keyfile = self._getKeyPath()
-        if j.do.getSSHKeyFromAgent('$(key.name)', die=False) is not None:
+        if j.do.getSSHKeyPathFromAgent('$(key.name)', die=False) is not None:
             keyloc = "/root/.ssh/%s" % '$(key.name)'
             cmd = 'ssh-add -d %s' % keyfile
             j.do.executeInteractive(cmd)
