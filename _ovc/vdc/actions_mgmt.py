@@ -17,5 +17,6 @@ class Actions(ActionsBase):
 
     def install(self):
         client = self.getClient()
-        account = client.account_get('$(account)')
+        accountname = self.service.parent.hrd.get('account')
+        account = client.account_get(accountname)
         account.space_get(self.service.instance, location='$(location)')

@@ -55,8 +55,9 @@ class Actions(ActionsBase):
 
     def getSpace(self):
         vdc = self.service.parent
-        account = self.getClient().account_get(vdc.hrd.get('account'))
-
+        farm = vdc.parent
+        
+        account = self.getClient().account_get(farm.hrd.get('account'))
         space = account.space_get(vdc.instance, location=vdc.hrd.get('location'))
         return space
 
@@ -70,16 +71,6 @@ class Actions(ActionsBase):
                                            image='$(os.image)',
                                            memsize=int('$(os.size)'))
         return machine
-
-    def _findWeavePeer(self):
-        services = j.atyourservice.findServices(role='dockerhost')
-        for service in services:
-            if service.instance == self.service.instance or not service.hrd.exists('machine.publicip'):
-                continue
-            ip = service.hrd.getStr('machine.publicip')
-            if ip:
-                return ip
-        return None
 
     def install(self):
         machine = self.getMachine()
@@ -100,6 +91,10 @@ class Actions(ActionsBase):
 
         self.service.hrd.set("machine.id", machine.id)
         self.service.hrd.set("machine.publicip", executor.addr)
+        nics = machine.model['nics']
+        if nics:
+            privateip = nics[0]['ipAddress']
+            self.service.hrd.set("machine.privateip", privateip)
         self.service.hrd.set("machine.sshport", executor.port)
 
         # authorize sshkey for root user
@@ -114,16 +109,25 @@ class Actions(ActionsBase):
 
         # reconnect as root
         executor = j.tools.executor.getSSHBased(executor.addr, executor.port, 'root')
+        executor.cuisine.run('apt-get update')
 #         C = """
 # wget https://stor.jumpscale.org/storx/static/js8 -O /usr/local/bin/js8
 # chmod +x /usr/local/bin/js8
 # /usr/local/bin/js8 -rw init"""
 #         print("install jumpscale")
 #         executor.cuisine.run_script(C)
-        executor.cuisine.installer.jumpscale8()
-        # executor.cuisine.installerdevelop.jumpscale8()
-        print("install weave")
-        executor.cuisine.builder.weave(peer=self._findWeavePeer())
+
+        if self.service.hrd.getBool("aysfs"):
+            executor.cuisine.installer.jumpscale8()
+        else:
+            executor.cuisine.installerdevelop.jumpscale8()
+            if self.service.hrd.getBool('agent'):
+                # get gid from cockpit config
+                executor.builder.core(1, machine.id)
+
+        # get gid from cockpit config
+        if self.service.hrd.getBool('agent'):
+            executor.builder._startCore(1, machine.id)
 
     def uninstall(self):
         machine = self.getMachine()

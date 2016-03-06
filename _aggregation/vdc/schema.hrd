@@ -1,9 +1,0 @@
-
-
-description = type:multiline  
-location = type:str @ask
-account = type:str @ask
-vdcname =  descr:'is space name in ms1, still old name' type:str 
-vdcfarm = type:str parent:'vdcfarm' 
-
-
