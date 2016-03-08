@@ -21,17 +21,17 @@ class Actions(ActionsBase):
         return self._cuisine
 
     def hrd(self):
-        def setDockerSize():
-            size = self.service.hrd.getInt("docker.size")
-            ok = [8]
-            for item in ok:
-                if item == size:
-                    self.service.hrd.set("docker.size", item)
-                    return
-                if size < item:
-                    self.service.hrd.set("docker.size", item)
-                    return
-            self.service.hrd.set("docker.size", item)
+        # def setDockerSize():
+        #     size = self.service.hrd.getInt("docker.size")
+        #     ok = [8]
+        #     for item in ok:
+        #         if item == size:
+        #             self.service.hrd.set("docker.size", item)
+        #             return
+        #         if size < item:
+        #             self.service.hrd.set("docker.size", item)
+        #             return
+        #     self.service.hrd.set("docker.size", item)
 
         def setDiskSize():
             size = self.service.hrd.getInt("disk.size")
@@ -45,7 +45,7 @@ class Actions(ActionsBase):
                     return
             self.service.hrd.set("disk.size", item)
 
-        setDockerSize()
+        # setDockerSize()
         setDiskSize()
 
     def getClient(self):
@@ -56,7 +56,7 @@ class Actions(ActionsBase):
     def getSpace(self):
         vdc = self.service.parent
         farm = vdc.parent
-        
+
         account = self.getClient().account_get(farm.hrd.get('account'))
         space = account.space_get(vdc.instance, location=vdc.hrd.get('location'))
         return space
@@ -77,17 +77,18 @@ class Actions(ActionsBase):
         executor = machine.get_ssh_connection()
 
         # expose weave
-        pf_existing = {'tcp': [], 'udp': []}
-        for pf in machine.portforwardings:
-            pf_existing[pf['protocol']].append(pf['publicPort'])
-        print(pf_existing)
+        if self.service.hrd.getBool('weave'):
+            pf_existing = {'tcp': [], 'udp': []}
+            for pf in machine.portforwardings:
+                pf_existing[pf['protocol']].append(pf['publicPort'])
+            print(pf_existing)
 
-        if '6783' not in pf_existing['tcp']:
-            machine.create_portforwarding('6783', '6783', 'tcp')
-        if '6783' not in pf_existing['udp']:
-            machine.create_portforwarding('6783', '6783', 'udp')
-        if '6784' not in pf_existing['udp']:
-            machine.create_portforwarding('6784', '6784', 'udp')
+            if '6783' not in pf_existing['tcp']:
+                machine.create_portforwarding('6783', '6783', 'tcp')
+            if '6783' not in pf_existing['udp']:
+                machine.create_portforwarding('6783', '6783', 'udp')
+            if '6784' not in pf_existing['udp']:
+                machine.create_portforwarding('6784', '6784', 'udp')
 
         self.service.hrd.set("machine.id", machine.id)
         self.service.hrd.set("machine.publicip", executor.addr)
@@ -109,23 +110,16 @@ class Actions(ActionsBase):
 
         # reconnect as root
         executor = j.tools.executor.getSSHBased(executor.addr, executor.port, 'root')
-        executor.cuisine.run('apt-get update')
-#         C = """
-# wget https://stor.jumpscale.org/storx/static/js8 -O /usr/local/bin/js8
-# chmod +x /usr/local/bin/js8
-# /usr/local/bin/js8 -rw init"""
-#         print("install jumpscale")
-#         executor.cuisine.run_script(C)
-
+        # executor.cuisine.run('apt-get update')
         if self.service.hrd.getBool("aysfs"):
-            executor.cuisine.installer.jumpscale8()
+            executor.cuisine.installer.jumpscale8(force=True)
         else:
-            executor.cuisine.installerdevelop.jumpscale8()
+            executor.cuisine.installerdevelop.jumpscale8(force=True)
 
         # get gid from cockpit config
-        if self.service.hrd.getBool('agent'):
-            executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
-            executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
+        # if self.service.hrd.getBool('agent'):
+        #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
+        #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
     def uninstall(self):
         machine = self.getMachine()
