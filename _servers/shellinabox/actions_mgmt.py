@@ -5,21 +5,38 @@ ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 
 class Actions(ActionsBase):
     def install(self):
-        executor = self.service.parent.action_methods_mgmt.getExecutor()
+        executor = j.tools.executor.getLocal()
         executor.cuisine.package.install('shellinabox')
-        dockernames = self.service.hrd.getList('backends')
-        config = list()
 
-        for dockername in dockernames:
-            docker = j.atyourservice.getService(role='docker', instance=dockername.strip())
-            dockerip = docker.parent.hrd.get('machine.publicip').strip()
-            if executor.addr == dockerip:
-                dockerip = docker.parent.hrd.get('machine.privateip').strip()
-            config.append("-s '/%s:root:root:/:ssh root@%s -p %s'" % (dockername, dockerip, docker.hrd.get('sshport')))
+        docker = self.service.parent
+        dockerip = docker.parent.hrd.get('machine.publicip').strip()
 
-        siabparams = ' '.join(config)
-        self.service.hrd.set('config', siabparams)
-        executor.cuisine.run('service shellinabox stop')
+        port = 4200
+        while j.sal.nettools.tcpPortConnectionTest("localhost", port):
+            port += 1
+        if j.sal.nettools.tcpPortConnectionTest("localhost", port):
+            raise RuntimeError("Can't find free port for shellinabox")
 
-        cmd = 'shellinaboxd --disable-ssl %s ' % siabparams
-        executor.cuisine.processmanager.ensure('shellinabox', cmd=cmd)
+        config = "--port %s -s '/:root:root:/:ssh root@%s -p %s'" % (port, dockerip, docker.hrd.get('sshport'))
+        self.service.hrd.set('config', config)
+        self.service.hrd.set('listen.port', port)
+        cmd = 'shellinaboxd --disable-ssl %s ' % config
+        executor.cuisine.processmanager.ensure('shellinabox_%s' % self.service.instance, cmd=cmd)
+
+        if j.sal.process.checkProcessRunning('caddy'):
+            # try to configure caddy to proxy shellinabox
+            fw = "/%s/%s" % (self.service.instance, j.data.idgenerator.generateXCharID(15))
+            proxy = """
+proxy %s 127.0.0.1:%s {
+   without %s
+}
+""" % (fw, port, fw)
+            # TODO better config rewriting.
+            cfg = executor.cuisine.file_append('$varDir/cfg/caddy/caddyfile', proxy)
+            executor.cuisine.processmanager.reload('caddy')
+
+    def start(self):
+        executor.cuisine.processmanager.start('shellinabox_%s' % self.service.instance)
+
+    def stop(self):
+        executor.cuisine.processmanager.stop('shellinabox_%s' % self.service.instance)
