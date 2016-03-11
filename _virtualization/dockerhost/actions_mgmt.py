@@ -115,10 +115,12 @@ class Actions(ActionsBase):
             executor.cuisine.installer.jumpscale8(force=True)
         else:
             executor.cuisine.installerdevelop.jumpscale8(force=True)
+        #    build core only if no aysfs
+        #    if self.service.hrd.getBool('agent'):
+        #        executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
 
         # get gid from cockpit config
         # if self.service.hrd.getBool('agent'):
-        #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
         #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
     def uninstall(self):
