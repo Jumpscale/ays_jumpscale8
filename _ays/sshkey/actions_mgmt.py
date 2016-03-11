@@ -23,7 +23,7 @@ class Actions(ActionsBase):
         return privkey, pubkey
 
     def _checkAgent(self):
-        rc, out = j.do.execute("ssh-add -l", outputStdout=False, outputStderr=False, dieOnNonZeroExitCode=False)
+        rc, out = j.do.execute("ssh-add -l", showout=False, outputStderr=False, die=False)
         
         # is running
         if rc == 0:
@@ -38,7 +38,7 @@ class Actions(ActionsBase):
     
     def _startAgent(self):
         # FIXME
-        j.do.execute("ssh-agent", dieOnNonZeroExitCode=False, outputStdout=False, outputStderr=False)
+        j.do.execute("ssh-agent", die=False, showout=False, outputStderr=False)
 
     def hrd(self):
         """
