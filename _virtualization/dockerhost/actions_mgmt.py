@@ -99,7 +99,7 @@ class Actions(ActionsBase):
         self.service.hrd.set("machine.sshport", executor.port)
 
         # authorize sshkey for root user
-        executor.cuisine.set_sudomode()
+        # executor.cuisine.set_sudomode()
         if 'sshkey' in self.service.producers:
             sshkey = self.service.producers['sshkey'][0]
             sshkey_pub = sshkey.hrd.get('key.pub')
@@ -115,12 +115,10 @@ class Actions(ActionsBase):
             executor.cuisine.installer.jumpscale8(force=True)
         else:
             executor.cuisine.installerdevelop.jumpscale8(force=True)
-        #    build core only if no aysfs
-        #    if self.service.hrd.getBool('agent'):
-        #        executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
 
         # get gid from cockpit config
         # if self.service.hrd.getBool('agent'):
+        #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
         #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
     def uninstall(self):

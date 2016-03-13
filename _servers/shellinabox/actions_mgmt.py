@@ -8,7 +8,10 @@ class Actions(ActionsBase):
         executor = j.tools.executor.getLocal()
         executor.cuisine.package.install('shellinabox')
 
-        docker = self.service.parent
+        if 'docker' not in self.service.producers:
+            raise RuntimeError("Can't find docker in producers. please comsume a docker service")
+        docker = self.service.producers['docker'][0]
+
         dockerip = docker.parent.hrd.get('machine.publicip').strip()
 
         port = 4200
@@ -40,3 +43,8 @@ proxy %s 127.0.0.1:%s {
 
     def stop(self):
         executor.cuisine.processmanager.stop('shellinabox_%s' % self.service.instance)
+
+    def uninstall(self):
+        pass
+        # TODO remove config in caddy
+
