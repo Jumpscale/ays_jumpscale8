@@ -63,7 +63,6 @@ class Actions(ActionsBase):
 
     def getMachine(self):
         space = self.getSpace()
-
         if self.service.instance in space.machines:
             machine = space.machines[self.service.instance]
         else:
@@ -75,6 +74,9 @@ class Actions(ActionsBase):
     def install(self):
         machine = self.getMachine()
         executor = machine.get_ssh_connection()
+        print("OUT: Dockerhost %s deployed" % self.service.instance)
+        print("OUT: IP: %s" % executor.addr)
+        print("OUT: SSH port: %s" % executor.port)
 
         # expose weave
         if self.service.hrd.getBool('weave'):

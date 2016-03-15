@@ -105,6 +105,10 @@ class Actions(ActionsBase):
 
         self._createPortForwards(pfmap)
 
+        print("OUT: Docker %s deployed.", self.service.instance)
+        print("OUT: IP %s", cuisine.executor.addr)
+        print("OUT: SSH port %s", sshport)
+
         if self.service.hrd.getBool('shellinabox'):
             recipe = j.atyourservice.getRecipe('shellinabox')
             recipe.newInstance(instance=self.service.instance, consume=self.service)
