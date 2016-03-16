@@ -112,16 +112,17 @@ class Actions(ActionsBase):
 
         # reconnect as root
         executor = j.tools.executor.getSSHBased(executor.addr, executor.port, 'root')
-        # executor.cuisine.run('apt-get update')
+
         if self.service.hrd.getBool("aysfs"):
             executor.cuisine.installer.jumpscale8(force=True)
         else:
             executor.cuisine.installerdevelop.jumpscale8(force=True)
+            if self.service.hrd.getBool('agent'):
+                executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
 
-        # get gid from cockpit config
-        # if self.service.hrd.getBool('agent'):
-        #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
-        #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
+        if self.service.hrd.getBool('agent'):
+            executor.cuisine.bash.addPath('/opt/jumpscale8/bin')
+            executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
     def uninstall(self):
         machine = self.getMachine()
