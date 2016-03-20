@@ -117,12 +117,10 @@ class Actions(ActionsBase):
             executor.cuisine.installer.jumpscale8(force=True)
         else:
             executor.cuisine.installerdevelop.jumpscale8(force=True)
-            if self.service.hrd.getBool('agent'):
-                executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
 
         if self.service.hrd.getBool('agent'):
-            executor.cuisine.bash.addPath('/opt/jumpscale8/bin')
-            executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
+            recipe = j.atyourservice.getRecipe('agent')
+            recipe.newInstance(instance=self.service.instance, args={'nodeid':machine.id, 'aysfs': self.service.hrd.getBool('aysfs')})
 
     def uninstall(self):
         machine = self.getMachine()
