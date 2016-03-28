@@ -16,4 +16,4 @@ class Actions(ActionsBase):
 
     def install(self):
         executor = self.service.parent.getExecutor()
-        executor.cuisine.builder.weave(peer=self._findWeavePeer())
+        executor.cuisine.apps.weave.build(peer=self._findWeavePeer())

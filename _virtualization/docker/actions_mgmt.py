@@ -125,7 +125,7 @@ class Actions(ActionsBase):
         # if self.service.hrd.getBool('caddyproxy'):
         #     rc, _ = local.run('which caddy', die=False)
         #     if rc:
-        #         local.builder.caddy()
+        #         local.apps.caddy.build()
         #     path = "/webaccess/%s" % (fw)
         #     backend = "localhost:4200/%s" % self.service.instance
         #     proxy = """proxy {path} {backend}""".format(path=path, backend=backend)

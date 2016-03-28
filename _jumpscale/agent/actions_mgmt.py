@@ -13,7 +13,7 @@ class Actions(ActionsBase):
     def install(self):        
         machine = self.parent.actions_mgmt.getMachine()
         executor = machine.get_ssh_connection()
-        executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
+        executor.cuisine.apps.core.build(j.application.whoAmI.gid, machine.id)
 
         executor.cuisine.bash.addPath('/opt/jumpscale8/bin')
-        executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
+        executor.cuisine.apps.core.start(j.application.whoAmI.gid, machine.id)
