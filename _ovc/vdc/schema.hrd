@@ -1,6 +1,6 @@
 description = type:multiline  
-location = type:str @ask
-vdcname =  descr:'is space name in openvcloud (ms1), still old name' type:str 
-vdcfarm = type:str parent:'vdcfarm'
+vdcfarm = type:str parent:'vdcfarm' auto
 
+g8.client.name = type:str consume:'g8client' auto
+g8.account = type:str @ASK
 

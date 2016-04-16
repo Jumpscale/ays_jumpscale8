@@ -1,0 +1,3 @@
+g8.url = type:str default:'http://www.mothership1.com'
+g8.login = type:str default:'reem'
+g8.password= type:str default:'rooter'

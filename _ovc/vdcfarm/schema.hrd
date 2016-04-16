@@ -1,5 +1,2 @@
-apiurl = type:str  default:'www.mothership1.com'
-login = type:str  default:'login'
-passwd = type:str  @ask
-description = type:multiline  @ask
-account = type:str @ask
+description = type:multiline
+g8client = type:str consume:g8client:1:1

@@ -1,0 +1,10 @@
+g8.url = type:str default:'http://www.mothership1.com'
+g8.login = type:str default:'reem'
+g8.password = type:str default:'rooter'
+g8.account = type:str @ASK
+telegram.token = type:str  default:'whatever'
+cockpit.name =  type:str  default:'cockpit'
+portal.password = type:str
+aysfs = type:bool default:True
+dns.login = type:str
+dns.password = type:str

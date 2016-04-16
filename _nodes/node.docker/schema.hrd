@@ -1,0 +1,8 @@
+image = type:str default:'ubuntu'
+ports = type:str list
+
+sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
+
+os = type:str parent:'os'
+docker = type:str consume:'app_docker':1 auto
+aysfs = type:str consume:'aysfs':1 auto

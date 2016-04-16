@@ -1,10 +1,9 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 
+class Actions():
 
-class Actions(ActionsBase):
-
+    #@todo should use cuisine methods
     def _generateKey(self):
         name = "key_%s" % self.service.hrd.getStr('key.name')
         keyfile = j.do.joinPaths(self.service.path, name)
@@ -15,7 +14,7 @@ class Actions(ActionsBase):
         j.sal.process.executeWithoutPipe(cmd)
 
         if not j.sal.fs.exists(path=keyfile):
-            raise RuntimeError("cannot find path for key %s, was keygen well executed" % keyfile)
+            raise j.exceptions.RuntimeError("cannot find path for key %s, was keygen well executed" % keyfile)
 
         privkey = j.do.readFile(keyfile)
         pubkey = j.do.readFile(keyfile + ".pub")
@@ -40,7 +39,7 @@ class Actions(ActionsBase):
         # FIXME
         j.do.execute("ssh-agent", die=False, showout=False, outputStderr=False)
 
-    def hrd(self):
+    def init(self):
         """
         create key
         """
@@ -56,10 +55,10 @@ class Actions(ActionsBase):
         self.service.hrd.set("key.priv", privkey)
         self.service.hrd.set("key.pub", pubkey)
         
-        if self.service.hrd.get("required") and not self._checkAgent():
+        if self.service.hrd.get("agent.required") and not self._checkAgent():
             # print("agent not started")
             # self._startAgent()
-            raise RuntimeError("ssh-agent is not running and you need it, please run: eval $(ssh-agent -s)")
+            raise j.exceptions.RuntimeError("ssh-agent is not running and you need it, please run: eval $(ssh-agent -s)")
 
         try:
             keyloc = j.do.getSSHKeyPathFromAgent(name, die=False)
@@ -67,15 +66,16 @@ class Actions(ActionsBase):
             keyloc = None
 
         if keyloc is None:
-            keyloc = j.do.joinPaths(self.service.path, name)
+            keyloc = j.sal.fs.joinPaths(self.service.path, name)
 
-        j.do.chmod(keyloc, 0o600)
+        j.sal.fs.chmod(keyloc, 0o600)
 
-        keyfile = j.do.joinPaths(self.service.path, name)
+        keyfile = j.sal.fs.joinPaths(self.service.path, name)
         if not j.sal.fs.exists(path=keyfile):
-            raise RuntimeError("could not find sshkey:%s" % keyfile)
+            raise j.exceptions.RuntimeError("could not find sshkey:%s" % keyfile)
 
         if j.do.getSSHKeyPathFromAgent(name, die=False) is None:
+            # TODO: if previous key has been loaded with same name, kick that one out first
             cmd = 'ssh-add %s' % keyfile
             j.do.executeInteractive(cmd)
 
@@ -86,7 +86,7 @@ class Actions(ActionsBase):
     def _getKeyPath(self):
         keyfile = j.do.joinPaths(self.service.path, "key_$(key.name)")
         if not j.sal.fs.exists(path=keyfile):
-            raise RuntimeError("could not find sshkey:%s" % keyfile)
+            raise j.exceptions.RuntimeError("could not find sshkey:%s" % keyfile)
         return keyfile
 
     def start(self):

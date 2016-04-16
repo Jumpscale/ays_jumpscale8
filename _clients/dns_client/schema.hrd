@@ -1,0 +1,3 @@
+url = type:str default:'dns1.aydo.com'
+login = type:str
+password = type:str

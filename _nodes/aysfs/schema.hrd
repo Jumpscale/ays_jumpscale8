@@ -1,0 +1,1 @@
+os = descr:'node to mount aysfs on' parent:os

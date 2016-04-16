@@ -1,0 +1,11 @@
+
+
+description = type:multiline
+disk.size = type:int descr:'20,40,80,100 (is in GB)' default:10
+os.size = default:2 type:int
+os.image =  descr:'image as used in ms1' default:'Ubuntu 15.10' type:str
+ports = type:str list
+
+sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
+
+vdc = type:str parent:'vdc' auto
