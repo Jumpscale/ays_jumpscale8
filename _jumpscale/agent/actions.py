@@ -10,17 +10,10 @@ class Actions(ActionsBase):
         self.service = service
         self._cuisine = None
 
-    @property
-    def cuisine(self):
-        if not self._cuisine:
-            self._cuisine = self.service.parent.action_methods_mgmt.getExecutor().cuisine
-        return self._cuisine
+    def install(self):        
+        machine = self.parent.actions_mgmt.getMachine()
+        executor = machine.get_ssh_connection()
+        executor.cuisine.apps.core.build(j.application.whoAmI.gid, machine.id)
 
-    def install(self):
-        nid = self.service.parent.hrd.get("machine.id",None)
-        gid = 1 #@todo needs to be gid of where I want the agent to be
-        self.cuisine.builder.core(gid,nid)
-
-
-    def start(self):
-        pass
+        executor.cuisine.bash.addPath('/opt/jumpscale8/bin')
+        executor.cuisine.apps.core.start(j.application.whoAmI.gid, machine.id)

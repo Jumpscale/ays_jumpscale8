@@ -44,9 +44,13 @@ class Actions():
             else:
                 pf_creation.append("%s:%s" % (p, docker_port))
 
-        aysfs = self.service.hrd.getBool('aysfs')
-        connection_str = self.service.executor.cuisine.docker.ubuntu(name=self.service.instance, image=image,
-                                                    pubkey=pubkey, aydofs=aysfs, ports=' '.join(pf_creation))
+        if self.service.parent.hrd.getBool('aysfs'):
+            aysfs = self.service.hrd.getBool('aysfs')
+            connection_str = self.service.executor.cuisine.docker.ubuntu(name=self.service.instance, image=image,
+                                                        pubkey=pubkey, aydofs=aysfs, ports=' '.join(pf_creation))
+        else:
+            # js not available
+            connection_str = self.service.executor.cuisine.core.run("docker run -t jumpscale/ubuntu1510")
         # self.service.executor.cuisine.docker.enableSSH(connection_str)
 
         local_port = connection_str.split(':')[1]
