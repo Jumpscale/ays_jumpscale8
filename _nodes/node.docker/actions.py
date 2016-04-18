@@ -18,6 +18,16 @@ class Actions():
         else:
             raise j.exceptions.NotFound("Can't find host node of this service %s" % self.service)
 
+        def _pf_map(docker_ports):
+            pf_creation = []
+            for docker_port in docker_ports:
+                p = get_host_port(docker_port)
+                if p is None:
+                    pf_creation.append("%s:%s" % (docker_port, docker_port))
+                else:
+                    pf_creation.append("%s:%s" % (p, docker_port))
+            return pf_creation
+
         def get_host_port(docker_port):
             """
             find the private port the docker need to use to forward to public
@@ -36,29 +46,34 @@ class Actions():
             return None
 
         docker_ports = self.service.hrd.getList('ports')
-        pf_creation = []
-        for docker_port in docker_ports:
-            p = get_host_port(docker_port)
-            if p is None:
-                pf_creation.append("%s:%s" % (docker_port, docker_port))
-            else:
-                pf_creation.append("%s:%s" % (p, docker_port))
+        pf_creation = _pf_map(docker_ports)
 
         if self.service.parent.hrd.getBool('aysfs'):
             aysfs = self.service.hrd.getBool('aysfs')
+            pfs = ' '.join(pf_creation)
             connection_str = self.service.executor.cuisine.docker.ubuntu(name=self.service.instance, image=image,
-                                                        pubkey=pubkey, aydofs=aysfs, ports=' '.join(pf_creation))
+                                                        pubkey=pubkey, aydofs=aysfs, ports=pfs)
+            local_port = connection_str.split(':')[1]
+            public_port = host_node.actions.open_port(local_port)
         else:
             # js not available
-            connection_str = self.service.executor.cuisine.core.run("docker run -t jumpscale/ubuntu1510")
+            pfs = ' -p '.join(pf_creation)
+            self.service.executor.cuisine.core.run("docker run -d -p %s -p 22 --name %s --privileged=true jumpscale/ubuntu1510 " % (pfs, self.service.instance))
+            public_port = self.service.executor.cuisine.core.run("docker port %s 22" % self.service.instance).split(':')[1]
+            # add sshkey
+            self.service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (self.service.instance))
+            self.service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (self.service.instance, pubkey))
+            # self.service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (self.service.instance, pubkey))
+            
         # self.service.executor.cuisine.docker.enableSSH(connection_str)
-
-        local_port = connection_str.split(':')[1]
-        public_port = host_node.actions.open_port(local_port)
 
         self.service.hrd.set('docker.sshport', public_port)
         self.service.hrd.set('node.addr', self.service.executor.addr)
         self.service.hrd.set('portforwards', pf_creation)
+
+        for child in self.service.children:
+            child.hrd.set("ssh.addr", self.service.executor.addr)
+            child.hrd.set("ssh.port", public_port)
 
         # use proper logger
         print("OUT: Docker %s deployed." % self.service.instance)
