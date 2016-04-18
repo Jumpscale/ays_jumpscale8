@@ -124,3 +124,15 @@ class Actions():
         keyfile = self._getKeyPath(self.service)
         j.sal.fs.delete(keyfile)
         j.sal.fs.delete(keyfile + ".pub")
+
+    def _delete_key(self):
+        name = "key_%s" % self.service.hrd.getStr('key.name')
+        keyfile = j.do.joinPaths(self.service.path, name)
+        keyfile = keyfile.replace("!", "\!")
+        cmd = "ssh-add -d %s" % (keyfile)
+        print(cmd)
+        j.sal.process.executeWithoutPipe(cmd)
+
+    def uninstall(self):
+        self._delete_key()
+
