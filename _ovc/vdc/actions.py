@@ -8,7 +8,7 @@ class Actions():
         pass
 
     def getClient(self):
-        clientname="$(g8.client.name)"
-        g8client=j.atyourservice.getService("g8client",instance=clientname)
+        clientname = """$(producer.g8client)"""
+        clientname = clientname.strip().strip("',")
+        g8client = j.atyourservice.getServiceFromKey(clientname)
         return g8client.actions.getClient()
-        

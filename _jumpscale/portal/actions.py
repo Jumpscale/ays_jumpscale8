@@ -1,58 +1,23 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
 
+class Actions:
 
-class Actions(ActionsBase):
-
-    def __init__(self, service):
-        super(Actions, self).__init__(service)
-        self.service = service
-        self._cuisine = None
-        self.dockermap = None
-
-    @property
-    def cuisine(self):
-        if not self._cuisine:
-            self._cuisine = self.service.parent.action_methods_mgmt.getExecutor().cuisine
-        return self._cuisine
-
-    def addUser(self):
+    def add_user(self):
         cmd = 'jsuser list'
         res = self.cuisine.run(cmd, profile=True)
         for line in res.splitlines():
-            if line.find('demo') != -1:
+            if line.find('$(admin.login)') != -1:
                 return True
 
-        cmd = 'jsuser add -d demo:$(demo.user.passwd):$(demo.user.groups):$(demo.user.email):$(demo.user.domain)'
+        cmd = 'jsuser add -d $(admin.login):$(admin.passwd):admin:admin@fake_email.com:fake_domain.com'
         self.cuisine.run(cmd, profile=True)
 
     def install(self):
-        monogcluster = self.service.getProducers('mongocluster')[0]
-        clusterconfig = monogcluster.hrd.getDict('clusterconfig')
+        mongo_ip, mongo_port = '$mongocfg'.split(':') if '$(mongocfg)' and ':' in '$(mongocfg)' else '127.0.0.1', '27017'
+        influx_ip, influx_port = '$influxcfg'.split(':') if '$(influxcfg)' and ':' in '$(influxcfg)' else '127.0.0.1', '8086'
+        grafana_ip, grafana_port = '$grafanacfg'.split(':') if '$(grafanacfg)' and ':' in '$(grafanacfg)' else '127.0.0.1', '3000'
 
-        for host, config in clusterconfig.items():
-            if 'mongos:' in config:
-                port = config.split('mongos:')[1]
-                port = port.split()[0].strip()
-                break
-
-        content = self.cuisine.file_read('$cfgDir/portals/example/config.hrd')
-        hrd = j.data.hrd.get(content=content, prefixWithName=False)
-        cfg = {'host': host, 'port': int(port)}
-        hrd.set('param.mongoengine.connection', cfg)
-        self.cuisine.file_write('$cfgDir/portals/example/config.hrd', str(hrd))
-        self.addcmd()
-
-    def addcmd(self):
-        pm = self.cuisine.processmanager.get(pm='tmux')
-        pm.ensure(name='portal_%s' % self.service.instance, cmd='jspython portal_start.py', path='$cfgDir/portals/example')
-
-    def load(self):
-        self.addcmd()
-        self.cuisine.processmanager.start('portal_%s' % self.service.instance)
-
-    def halt(self):
-        self.addcmd()
-        self.cuisine.processmanager.stop('portal_%s' % self.service.instance)
-        
+        self.service.executor.cuisine.apps.portal.install(mongodbip=mongo_ip, mongoport=mongo_port, influxip=influx_ip,
+                                                          influxport=influx_port, grafanaip=grafana_ip, grafanaport=grafana_port)
+        self.add_user()

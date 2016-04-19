@@ -6,9 +6,9 @@ class Actions():
     #@todo should use cuisine methods
     def _generateKey(self):
         name = "key_%s" % self.service.hrd.getStr('key.name')
-        keyfile = j.do.joinPaths(self.service.path, name)
-        j.do.delete(keyfile)
-        j.do.delete(keyfile + ".pub")
+        keyfile = j.sal.fs.joinPaths(self.service.path, name)
+        j.sal.fs.delete(keyfile)
+        j.sal.fs.delete(keyfile + ".pub")
         cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, self.service.hrd.getStr('key.passphrase'))
         print(cmd)
         j.sal.process.executeWithoutPipe(cmd)
@@ -16,25 +16,33 @@ class Actions():
         if not j.sal.fs.exists(path=keyfile):
             raise j.exceptions.RuntimeError("cannot find path for key %s, was keygen well executed" % keyfile)
 
-        privkey = j.do.readFile(keyfile)
-        pubkey = j.do.readFile(keyfile + ".pub")
+        privkey = j.sal.fs.fileGetContents(keyfile)
+        pubkey = j.sal.fs.fileGetContents(keyfile + ".pub")
+
+        return privkey, pubkey
+
+    def _loadKey(self):
+        name = "key_%s" % self.service.hrd.getStr('key.name')
+        j.sal.fs.copyFile('$(key.path)', j.sal.fs.joinPaths(self.service.path, name))
+        privkey = j.sal.fs.fileGetContents('$(key.path)')
+        pubkey = j.sal.fs.fileGetContents('$(key.path)' + ".pub")
 
         return privkey, pubkey
 
     def _checkAgent(self):
         rc, out = j.do.execute("ssh-add -l", showout=False, outputStderr=False, die=False)
-        
+
         # is running
         if rc == 0:
             return True
-        
+
         # running but no keys
         if rc == 1:
             return True
-        
+
         # another error
         return False
-    
+
     def _startAgent(self):
         # FIXME
         j.do.execute("ssh-agent", die=False, showout=False, outputStderr=False)
@@ -43,18 +51,19 @@ class Actions():
         """
         create key
         """
-        if self.service.hrd.get("key.name")=="":
-            self.service.hrd.set("key.name",self.service.instance)
-        
+        if self.service.hrd.get("key.name") == "":
+            self.service.hrd.set("key.name", self.service.instance)
+
         name = "key_%s" % self.service.hrd.getStr('key.name')
 
-        # if '$(key.passphrase)'=="":
-        print("generate key")
-        privkey, pubkey = self._generateKey()
+        if '$(key.path)' == "":
+            privkey, pubkey = self._generateKey()
+        else:
+            privkey, pubkey = self._loadKey()
 
         self.service.hrd.set("key.priv", privkey)
         self.service.hrd.set("key.pub", pubkey)
-        
+
         if self.service.hrd.get("agent.required") and not self._checkAgent():
             # print("agent not started")
             # self._startAgent()
@@ -84,7 +93,7 @@ class Actions():
         return True
 
     def _getKeyPath(self):
-        keyfile = j.do.joinPaths(self.service.path, "key_$(key.name)")
+        keyfile = j.sal.fs.joinPaths(self.service.path, "key_$(key.name)")
         if not j.sal.fs.exists(path=keyfile):
             raise j.exceptions.RuntimeError("could not find sshkey:%s" % keyfile)
         return keyfile
@@ -113,5 +122,17 @@ class Actions():
         remove key data
         """
         keyfile = self._getKeyPath(self.service)
-        j.delete(keyfile)
-        j.delete(keyfile + ".pub")
+        j.sal.fs.delete(keyfile)
+        j.sal.fs.delete(keyfile + ".pub")
+
+    def _delete_key(self):
+        name = "key_%s" % self.service.hrd.getStr('key.name')
+        keyfile = j.do.joinPaths(self.service.path, name)
+        keyfile = keyfile.replace("!", "\!")
+        cmd = "ssh-add -d %s" % (keyfile)
+        print(cmd)
+        j.sal.process.executeWithoutPipe(cmd)
+
+    def uninstall(self):
+        self._delete_key()
+
