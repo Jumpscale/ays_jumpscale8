@@ -9,7 +9,7 @@ repo.type =  type:'str' descr:'proj,code,ays,doc,user' @ASK
 
 code.path = type:'str' default:""
 
-github.client = type:'str' consume:'github_client:1'
+github.client = type:'str' consume:'github_client:1' auto
 
 github.config= type:'str' consume:'github_config:1' auto
 

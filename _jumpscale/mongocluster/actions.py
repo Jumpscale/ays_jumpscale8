@@ -26,7 +26,7 @@ class Actions(ActionsBase):
                 cluster.get(role, []).append(roleconfig)
 
         cuisine = j.tools.cuisine.get()
-        cuisine.builder.mongoCluster(cluster['shard'], cluster['config'], cluster['mongos'])
+        cuisine.apps.mongodb.mongoCluster(cluster['shard'], cluster['config'], cluster['mongos'])
 
     def load(self):
         nodes = self.service.getProducers('docker')
