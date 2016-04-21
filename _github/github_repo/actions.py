@@ -61,9 +61,9 @@ class Actions():
         return True
 
     def install(self):
-        self.service.actions.pull()
-        self.service.actions.getIssuesFromGithub()
-        self.service.actions.setMilestonesOnGithub()
+        self.service.actions.pull(force=True)
+        self.service.actions.getIssuesFromGithub(force=True)
+        self.service.actions.setMilestonesOnGithub(force=True)
 
     def action_pull(self):
         j.do.pullGitRepo(url=self.service.hrd.get("repo.url"), dest= self.service.hrd.get("code.path"), login=None, passwd=None, depth=1, \
@@ -91,10 +91,13 @@ class Actions():
                 if name not in milestonesSet:
                     repo.deleteMilestone(name)
         else:
-            for name in repo.milestoneNames:
-                repo.deleteMilestone(name)
+            if repo.type not in ["code"]:
+                for name in repo.milestoneNames:
+                    # repo.deleteMilestone(name)
+                    print ("DELETE MILESTONE:%s %s"%(repo,name))
 
-    def action_getIssuesFromAYS(self):
+
+    def getIssuesFromAYS(self):
 
         repo=self.service.actions.get_github_repo()
 
@@ -113,10 +116,6 @@ class Actions():
                 if issueNumber!=0:
                     #process previously gathered issue
                     issue=repo.getIssueFromMarkdown(issueNumber,issueblock)
-                    from IPython import embed
-                    print ("DEBUG NOW gotissue")
-                    embed()
-                    p
 
                 issueblock=""
                 state="block"
@@ -128,10 +127,27 @@ class Actions():
 
         if issueNumber!=0:
             repo.getIssueFromMarkdown(issueNumber,issueblock)
+
+        from IPython import embed
+        print ("DEBUG NOW get issues from repo")
+        embed()
+        
+
+        return repo
         
     def get_github_repo(self):
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
         return client.getRepo("$(repo.account)/$(repo.name)")
+
+    def action_processIssues(self):
+        # repo=self.service.actions.getIssuesFromAYS()
+        repo=self.service.actions.get_github_repo()
+        if repo.issues==[]:
+            self.service.state.set("getIssuesFromGithub","WAIT")
+            self.service.actions.getIssuesFromGithub()   
+            repo=self.service.actions.get_github_repo()
+
+        repo.process_issues()
         
     def action_getIssuesFromGithub(self):
         config=self.service.getProducers('github_config')[0]
@@ -143,7 +159,8 @@ class Actions():
             # label=key.split(".")[-1]
             label=key.replace(".","_")
             if projtype in value or "*" in value:
-                labels.append(label)        
+                labels.append(label)   
+
 
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
 
@@ -162,7 +179,7 @@ class Actions():
 
         res=r.issues_by_type_state()
 
-        for type in r.issuePossibleTypes:
+        for type in r.types:
             typeheader=False            
             for state in r.states:
                 issues=res[type][state]
@@ -179,6 +196,9 @@ class Actions():
         path=j.sal.fs.joinPaths(self.service.path,"issues.md")
 
         j.sal.fs.writeFile(path,str(md))
+
+        self.service.actions.processIssues(force=True)
+
 
 
     def change(self,stateitem):

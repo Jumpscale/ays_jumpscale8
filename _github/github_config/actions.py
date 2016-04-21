@@ -19,12 +19,12 @@ class Actions():
         github.label.type.bug: [code, ays, cockpit, doc, www]
         github.label.type.feature: [code, ays, cockpit, doc, www]
         github.label.type.monitor: [proj, www, cockpit]
-        github.label.type.question: [home, code, proj, ays, doc, cockpit, www,milestone]
-        github.label.type.story: [home, proj, milestone]
-        github.label.type.task: [home,milestone,proj]
-        github.label.type.ticket: [proj]
-        github.label.type.lead: [proj]
-        github.project.types: [home, proj, cockpit, doc, ays, code, www, milestone]
+        github.label.type.question: [home, code, proj, ays, doc, cockpit, www,milestone,org]
+        github.label.type.story: [home, proj, milestone,org]
+        github.label.type.task: [home,milestone,proj,org]
+        github.label.type.ticket: [proj,org]
+        github.label.type.lead: [proj,org]
+        github.project.types: [home, proj, cockpit, doc, ays, code, www, milestone,org]
         """
 
         j.data.text.strip(config)

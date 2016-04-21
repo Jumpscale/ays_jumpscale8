@@ -2,5 +2,6 @@ description = type:multiline
 vdcfarm = type:str parent:'vdcfarm' auto
 
 g8.client.name = type:str consume:'g8client' auto
-g8.account = type:str @ASK
+g8.account = type:str default:''
+g8.location = type:str default:''
 

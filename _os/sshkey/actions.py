@@ -3,45 +3,11 @@ from JumpScale import j
 
 class Actions():
 
-    #@todo should use cuisine methods
-    def _generateKey(self):
-        name = "key_%s" % self.service.hrd.getStr('key.name')
-        keyfile = j.sal.fs.joinPaths(self.service.path, name)
-        j.sal.fs.delete(keyfile)
-        j.sal.fs.delete(keyfile + ".pub")
-        cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, self.service.hrd.getStr('key.passphrase'))
-        print(cmd)
-        j.sal.process.executeWithoutPipe(cmd)
-
-        if not j.sal.fs.exists(path=keyfile):
-            raise j.exceptions.RuntimeError("cannot find path for key %s, was keygen well executed" % keyfile)
-
-        privkey = j.sal.fs.fileGetContents(keyfile)
-        pubkey = j.sal.fs.fileGetContents(keyfile + ".pub")
-
+    def getSSHKey(self):
+        keydest = j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        privkey = j.sal.fs.fileGetContents(keydest)
+        pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
         return privkey, pubkey
-
-    def _loadKey(self):
-        name = "key_%s" % self.service.hrd.getStr('key.name')
-        j.sal.fs.copyFile('$(key.path)', j.sal.fs.joinPaths(self.service.path, name))
-        privkey = j.sal.fs.fileGetContents('$(key.path)')
-        pubkey = j.sal.fs.fileGetContents('$(key.path)' + ".pub")
-
-        return privkey, pubkey
-
-    def _checkAgent(self):
-        rc, out = j.do.execute("ssh-add -l", showout=False, outputStderr=False, die=False)
-
-        # is running
-        if rc == 0:
-            return True
-
-        # running but no keys
-        if rc == 1:
-            return True
-
-        # another error
-        return False
 
     def _startAgent(self):
         # FIXME
@@ -54,85 +20,58 @@ class Actions():
         if self.service.hrd.get("key.name") == "":
             self.service.hrd.set("key.name", self.service.instance)
 
-        name = "key_%s" % self.service.hrd.getStr('key.name')
+        name=self.service.hrd.get("key.name") 
+        
+        tmpdir=j.sal.fs.getTmpDirPath()
 
-        if '$(key.path)' == "":
-            privkey, pubkey = self._generateKey()
+        if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
+            keyfile = j.do.getSSHKeyPathFromAgent(name)
+        elif '$(key.path)' != "":
+            keyfile = '$(key.path)'
         else:
-            privkey, pubkey = self._loadKey()
+            keyfile=j.sal.fs.joinPaths(tmpdir,name)
+            cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, self.service.hrd.getStr('key.passphrase'))
+            print(cmd)
+            j.sal.process.executeWithoutPipe(cmd)
 
-        self.service.hrd.set("key.priv", privkey)
-        self.service.hrd.set("key.pub", pubkey)
+        if not j.sal.fs.exists(keyfile):
+            raise j.exceptions.Input("Cannot find ssh key location:%s"%keyfile)
 
-        if self.service.hrd.get("agent.required") and not self._checkAgent():
-            # print("agent not started")
-            # self._startAgent()
-            raise j.exceptions.RuntimeError("ssh-agent is not running and you need it, please run: eval $(ssh-agent -s)")
+        keydest = j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        j.sal.fs.copyFile(keyfile,keydest)
+        j.sal.fs.copyFile(keyfile+".pub",keydest+".pub")
 
-        try:
-            keyloc = j.do.getSSHKeyPathFromAgent(name, die=False)
-        except:
-            keyloc = None
+        j.sal.fs.chmod(keydest, 0o600)
+        j.sal.fs.chmod(keydest+".pub", 0o600)
 
-        if keyloc is None:
-            keyloc = j.sal.fs.joinPaths(self.service.path, name)
+        j.sal.fs.removeDir(tmpdir)
 
-        j.sal.fs.chmod(keyloc, 0o600)
+        self.install()
 
-        keyfile = j.sal.fs.joinPaths(self.service.path, name)
-        if not j.sal.fs.exists(path=keyfile):
-            raise j.exceptions.RuntimeError("could not find sshkey:%s" % keyfile)
 
-        if j.do.getSSHKeyPathFromAgent(name, die=False) is None:
-            # TODO: if previous key has been loaded with same name, kick that one out first
-            cmd = 'ssh-add %s' % keyfile
-            j.do.executeInteractive(cmd)
-
-    def install_post(self):
+    def install(self):
+        j.do.loadSSHAgent()
         self.start()
-        return True
 
-    def _getKeyPath(self):
-        keyfile = j.sal.fs.joinPaths(self.service.path, "key_$(key.name)")
-        if not j.sal.fs.exists(path=keyfile):
-            raise j.exceptions.RuntimeError("could not find sshkey:%s" % keyfile)
-        return keyfile
 
     def start(self):
         """
         Add key to SSH Agent if not already loaded
         """
-        keyfile = self._getKeyPath()
-        if j.do.getSSHKeyPathFromAgent("$(key.name)", die=False) is None:
-            cmd = 'ssh-add %s' % keyfile
-            j.do.executeInteractive(cmd)
+        keypath=j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        j.do.loadSSHKeys(keypath)
 
-    def stop(self):
-        """
-        Remove key from SSH Agent
-        """
-        keyfile = self._getKeyPath()
-        if j.do.getSSHKeyPathFromAgent('$(key.name)', die=False) is not None:
-            keyloc = "/root/.ssh/%s" % '$(key.name)'
-            cmd = 'ssh-add -d %s' % keyfile
-            j.do.executeInteractive(cmd)
 
-    def removedata(self):
-        """
-        remove key data
-        """
-        keyfile = self._getKeyPath(self.service)
-        j.sal.fs.delete(keyfile)
-        j.sal.fs.delete(keyfile + ".pub")
+    #not sure we can remove, key can be used for something else
+    # def stop(self):
+    #     """
+    #     Remove key from SSH Agent
+    #     """
+    #     keyfile = self._getKeyPath()
+    #     if j.do.getSSHKeyPathFromAgent('$(key.name)', die=False) is not None:
+    #         keyloc = "/root/.ssh/%s" % '$(key.name)'
+    #         cmd = 'ssh-add -d %s' % keyfile
+    #         j.do.executeInteractive(cmd)
 
-    def _delete_key(self):
-        name = "key_%s" % self.service.hrd.getStr('key.name')
-        keyfile = j.do.joinPaths(self.service.path, name)
-        keyfile = keyfile.replace("!", "\!")
-        cmd = "ssh-add -d %s" % (keyfile)
-        print(cmd)
-        j.sal.process.executeWithoutPipe(cmd)
 
-    def uninstall(self):
-        self._delete_key()
 

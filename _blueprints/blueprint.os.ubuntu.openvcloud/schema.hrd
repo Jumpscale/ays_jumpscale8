@@ -1,0 +1,4 @@
+
+g8.location = type:str default:''
+vdc.name = type:str @ASK
+mem.size = type:int default:2

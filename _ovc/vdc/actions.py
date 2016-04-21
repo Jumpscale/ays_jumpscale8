@@ -5,7 +5,26 @@ from JumpScale import j
 class Actions():
 
     def init(self):
-        pass
+
+        clientaysi=self.service.getProducers("g8client")[0]
+
+        if self.service.hrd.get("g8.account")=="":
+            self.service.hrd.set("g8.account",clientaysi.hrd.get("g8.login"))
+
+        if self.service.hrd.get("g8.location")=="":
+
+            cl=self.service.actions.getClient()
+            locations=cl.api.cloudapi.locations.list()
+
+            loc2set=""
+
+            if len(locations)==1:
+                loc2set=locations[0]["name"]
+            else:
+                for space in cl.api.cloudapi.cloudspaces.list():
+                    if space["name"]==self.service.instance:
+                        loc2set=space['location']
+
 
     def getClient(self):
         clientname = """$(producer.g8client)"""

@@ -13,6 +13,11 @@ class Actions():
 
         spacename = self.service.parent.instance
 
+        from IPython import embed
+        print ("DEBUG NOW gemachine node ovc")
+        embed()
+        
+
         space = account.space_get(spacename, location=client.locations[0]['name'])
         if self.service.instance in space.machines:
             return space.machines[self.service.instance]

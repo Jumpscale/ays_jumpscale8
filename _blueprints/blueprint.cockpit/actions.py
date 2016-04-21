@@ -9,8 +9,6 @@ class Actions():
                 'g8.password': "$(g8.password)"}
 
         account="$(g8.account)"
-        if account.strip()=="":
-            account="$(g8.login)"
 
         j.atyourservice.new('g8client', args=args, instance="main")
 
