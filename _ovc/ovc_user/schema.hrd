@@ -1,0 +1,9 @@
+vdcfarm = type:str parent:'vdcfarm' auto
+vdc = type:str consume:'vdc' auto
+g8.client.name = type:str consume:'g8client' auto
+
+username = type:str
+password = type:str
+groups = type:str list default:'user'
+email = type:str
+domain = type:str default:''
