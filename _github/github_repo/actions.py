@@ -61,9 +61,9 @@ class Actions():
         return True
 
     def install(self):
-        self.service.actions.pull(force=True)
-        self.service.actions.getIssuesFromGithub(force=True)
-        self.service.actions.setMilestonesOnGithub(force=True)
+        self.service.actions.pull()
+        self.service.actions.getIssuesFromGithub()
+        self.service.actions.setMilestonesOnGithub()
 
     def action_pull(self):
         j.do.pullGitRepo(url=self.service.hrd.get("repo.url"), dest= self.service.hrd.get("code.path"), login=None, passwd=None, depth=1, \
@@ -131,16 +131,31 @@ class Actions():
         from IPython import embed
         print ("DEBUG NOW get issues from repo")
         embed()
-        
+        p
+
+        repo.issues_loaded=True
 
         return repo
         
     def get_github_repo(self):
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
-        return client.getRepo("$(repo.account)/$(repo.name)")
+        repo=client.getRepo("$(repo.account)/$(repo.name)")
+        fromAys=True
+        if self.service.state.get("getIssuesFromGithub")!="OK":
+            #means have not been able to get the issues from github properly, so do again
+            fromAys=False
+        if repo.issues_loaded==False:
+            if fromAys:
+                print ("LOAD ISSUES FROM AYS")
+                # self.service.state.set("getIssuesFromAYS","DO")
+                self.service.actions.getIssuesFromAYS(force=True)
+            else:
+                print ("LOAD ISSUES FROM GITHUB")
+                # self.service.state.set("getIssuesFromGithub","DO")
+                self.service.actions.getIssuesFromGithub(force=True)   
+        return repo
 
-    def action_processIssues(self):
-        # repo=self.service.actions.getIssuesFromAYS()
+    def action_processIssues(self):       
         repo=self.service.actions.get_github_repo()
         if repo.issues==[]:
             self.service.state.set("getIssuesFromGithub","WAIT")
@@ -148,6 +163,13 @@ class Actions():
             repo=self.service.actions.get_github_repo()
 
         repo.process_issues()
+
+    def action_stories2pdf(self):
+        repo=self.service.actions.get_github_repo()
+        from IPython import embed
+        print ("DEBUG NOW stories 2 pdf")
+        embed()
+        
         
     def action_getIssuesFromGithub(self):
         config=self.service.getProducers('github_config')[0]
@@ -197,16 +219,22 @@ class Actions():
 
         j.sal.fs.writeFile(path,str(md))
 
+        self.service.state.set("getIssuesFromGithub","OK")
+        self.service.state.save()
+
+        r.issues_loaded=True
+
         self.service.actions.processIssues(force=True)
 
 
 
-    def change(self,stateitem):
-        if stateitem.name not in ["install"]:
-            stateitemToChange=self.service.state.getSet("install")
-            if stateitemToChange.state=="OK":
-                stateitemToChange.state="CHANGED"
-                self.service.state.save()
+
+    # def change(self,stateitem):
+    #     if stateitem.name not in ["install"]:
+    #         stateitemToChange=self.service.state.getSet("install")
+    #         if stateitemToChange.state=="OK":
+    #             stateitemToChange.state="CHANGED"
+    #             self.service.state.save()
 
 
 
