@@ -135,13 +135,12 @@ class Actions():
         
     def get_github_repo(self):
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
-        repo=client.getRepo("$(repo.account)/$(repo.name)")
+        repo=client.getRepo(self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name"))
         fromAys=True
         if self.service.state.get("getIssuesFromGithub")!="OK":
             #means have not been able to get the issues from github properly, so do again
             fromAys=False
-        if repo.issues_loaded==False:
-            
+        if repo.issues_loaded==False:            
             if fromAys:
                 print ("LOAD ISSUES FROM AYS")
                 # self.service.state.set("getIssuesFromAYS","DO")
@@ -149,7 +148,7 @@ class Actions():
                 repo.issues_loaded=True
             else:
                 from IPython import embed
-                print ("DEBUG NOW issues loaded false")
+                print ("DEBUG NOW issues loaded false,LOAD ISSUES FROM GITHUB")
                 embed()
                 ppp
                 print ("LOAD ISSUES FROM GITHUB")
@@ -161,12 +160,6 @@ class Actions():
     @action()
     def processIssues(self):       
         repo=self.service.actions.get_github_repo()
-
-        if repo.issues==[]:
-            self.service.state.set("getIssuesFromGithub","WAIT")
-            self.service.actions.getIssuesFromGithub()   
-            repo=self.service.actions.get_github_repo()
-
         repo.process_issues()
 
     def stories2pdf(self):
@@ -199,7 +192,7 @@ class Actions():
         labelsprint=",".join(labels)
 
         self.service.logger.info ("Have set labels in %s:%s"%(self.service,labelsprint))
-        
+
         issues=r.loadIssues()
 
         md=j.data.markdown.getDocument()
