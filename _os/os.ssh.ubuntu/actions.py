@@ -19,7 +19,7 @@ class Actions:
         return True
 
     def getExecutor(self):
-        return j.tools.executor.getSSHBased(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), 'root')
+        return j.tools.executor.getSSHBased("$(ssh.addr)", int("$(ssh.port)"), 'root')
 
     def monitor(self):
         j.sal.nettools.tcpPortConnectionTest(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), timeout=5)

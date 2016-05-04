@@ -58,13 +58,15 @@ class Actions():
         else:
             # js not available
             pfs = ' -p '.join(pf_creation)
-            self.service.executor.cuisine.core.run("docker run -d -p %s -p 22 --name %s --privileged=true jumpscale/ubuntu1510 " % (pfs, self.service.instance))
+            out = self.service.executor.cuisine.core.run('docker ps -f name=%s -q' % self.service.instance)
+            if not out:
+                self.service.executor.cuisine.core.run("docker run -d -p %s -p 22 --name %s --privileged=true jumpscale/ubuntu1510 " % (pfs, self.service.instance))
             public_port = self.service.executor.cuisine.core.run("docker port %s 22" % self.service.instance).split(':')[1]
             # add sshkey
             self.service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (self.service.instance))
             self.service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (self.service.instance, pubkey))
             # self.service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (self.service.instance, pubkey))
-            
+
         # self.service.executor.cuisine.docker.enableSSH(connection_str)
 
         self.service.hrd.set('docker.sshport', public_port)

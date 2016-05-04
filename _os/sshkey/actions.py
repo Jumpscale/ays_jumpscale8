@@ -41,6 +41,12 @@ class Actions():
         j.sal.fs.copyFile(keyfile,keydest)
         j.sal.fs.copyFile(keyfile+".pub",keydest+".pub")
 
+        privkey = j.sal.fs.fileGetContents(keydest)
+        pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
+
+        self.service.hrd.set('key.pub', pubkey)
+        self.service.hrd.set('key.priv', privkey)
+
         j.sal.fs.chmod(keydest, 0o600)
         j.sal.fs.chmod(keydest+".pub", 0o600)
 
