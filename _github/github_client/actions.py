@@ -1,14 +1,11 @@
-from JumpScale import j
-
 
 class Actions():
 
-    def init(self):
-        return True
-
+    @action
     def install(self):
         self.monitor()
 
+    @action
     def monitor(self):
         g=self.getGithubClient()
         #@todo implement test
@@ -17,5 +14,16 @@ class Actions():
         g=j.clients.github.getClient("$(github.secret)")
         return g
 
-    def action_test(self):
+    @action
+    def test(self):
         print ("test")
+
+    @action
+    def test2(self):
+        print ("test2")        
+        print ("$(github.secret)")        
+
+    @action(queue="main")
+    def testasync(self):
+        print ("testasync")        
+        print ("$(github.secret)")                

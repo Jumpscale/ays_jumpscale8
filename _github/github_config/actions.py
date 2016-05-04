@@ -4,6 +4,7 @@ from JumpScale import j
 
 class Actions():
 
+    @action
     def init(self):
 
         config="""
@@ -38,11 +39,12 @@ class Actions():
         g=Github("$(github.secret)")
         return g
 
+
+    @action
     def install(self):
         self.monitor()
 
-    def monitor(self):
+    @action
+    def monitor(self,hrd):
         g=self.getGithubClient()
-
-
-        
+    
