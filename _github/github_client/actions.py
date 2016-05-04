@@ -1,24 +1,22 @@
 
 class Actions():
 
-    @action
     def install(self):
         self.monitor()
 
-    @action
     def monitor(self):
         g=self.getGithubClient()
         #@todo implement test
 
     def getGithubClient(self):
-        g=j.clients.github.getClient("$(github.secret)")
+        g=j.clients.github.getClient(self.service.hrd.get("github.secret"))        
         return g
 
-    @action
+    @action()
     def test(self):
         print ("test")
 
-    @action
+    @action()
     def test2(self):
         print ("test2")        
         print ("$(github.secret)")        

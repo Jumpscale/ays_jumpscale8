@@ -61,16 +61,17 @@ class Actions():
         return True
 
     def install(self):
-        self.service.actions.pull()
+        # self.service.actions.pull()
         self.service.actions.getIssuesFromGithub()
         self.service.actions.setMilestonesOnGithub()
 
-    def action_pull(self):
+    @action()   
+    def pull(self):
         j.do.pullGitRepo(url=self.service.hrd.get("repo.url"), dest= self.service.hrd.get("code.path"), login=None, passwd=None, depth=1, \
             ignorelocalchanges=False, reset=False, branch=None, revision=None, ssh=True, executor=None, codeDir=None)
 
-
-    def action_setMilestonesOnGithub(self):
+    @action()
+    def setMilestonesOnGithub(self):
 
         repo=self.service.actions.get_github_repo()
 
@@ -87,19 +88,19 @@ class Actions():
 
                 milestonesSet.append(name)
 
-            for name in repo.milestoneNames:
-                if name not in milestonesSet:
-                    repo.deleteMilestone(name)
+            # for name in repo.milestoneNames:
+            #     if name not in milestonesSet:
+            #         repo.deleteMilestone(name)
         else:
             if repo.type not in ["code"]:
                 for name in repo.milestoneNames:
                     # repo.deleteMilestone(name)
                     print ("DELETE MILESTONE:%s %s"%(repo,name))
 
-
     def getIssuesFromAYS(self):
 
-        repo=self.service.actions.get_github_repo()
+        client=self.service.getProducers('github_client')[0].actions.getGithubClient()
+        repo=client.getRepo("$(repo.account)/$(repo.name)")
 
         path=j.sal.fs.joinPaths(self.service.path,"issues.md")
         content=j.sal.fs.fileGetContents(path)
@@ -128,11 +129,6 @@ class Actions():
         if issueNumber!=0:
             repo.getIssueFromMarkdown(issueNumber,issueblock)
 
-        from IPython import embed
-        print ("DEBUG NOW get issues from repo")
-        embed()
-        p
-
         repo.issues_loaded=True
 
         return repo
@@ -145,18 +141,27 @@ class Actions():
             #means have not been able to get the issues from github properly, so do again
             fromAys=False
         if repo.issues_loaded==False:
+            
             if fromAys:
                 print ("LOAD ISSUES FROM AYS")
                 # self.service.state.set("getIssuesFromAYS","DO")
-                self.service.actions.getIssuesFromAYS(force=True)
+                self.service.actions.getIssuesFromAYS()
+                repo.issues_loaded=True
             else:
+                from IPython import embed
+                print ("DEBUG NOW issues loaded false")
+                embed()
+                ppp
                 print ("LOAD ISSUES FROM GITHUB")
                 # self.service.state.set("getIssuesFromGithub","DO")
                 self.service.actions.getIssuesFromGithub(force=True)   
+                repo.issues_loaded=True
         return repo
 
-    def action_processIssues(self):       
+    @action()
+    def processIssues(self):       
         repo=self.service.actions.get_github_repo()
+
         if repo.issues==[]:
             self.service.state.set("getIssuesFromGithub","WAIT")
             self.service.actions.getIssuesFromGithub()   
@@ -164,14 +169,14 @@ class Actions():
 
         repo.process_issues()
 
-    def action_stories2pdf(self):
+    def stories2pdf(self):
         repo=self.service.actions.get_github_repo()
         from IPython import embed
         print ("DEBUG NOW stories 2 pdf")
         embed()
         
-        
-    def action_getIssuesFromGithub(self):
+    @action()        
+    def getIssuesFromGithub(self):
         config=self.service.getProducers('github_config')[0]
 
         projtype=self.service.hrd.get("repo.type")
@@ -183,17 +188,18 @@ class Actions():
             if projtype in value or "*" in value:
                 labels.append(label)   
 
-
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
 
-        r=client.getRepo("$(repo.account)/$(repo.name)")
+        reponame="$(repo.account)/$(repo.name)"
+        r=client.getRepo(reponame)
 
         #first make sure issues get right labels
         r.labels=labels
 
-        print ("Have set labels in %s:\n***\n%s\n***\n"%(self.service,labels))
-        # from pudb import set_trace; set_trace() 
+        labelsprint=",".join(labels)
 
+        self.service.logger.info ("Have set labels in %s:%s"%(self.service,labelsprint))
+        
         issues=r.loadIssues()
 
         md=j.data.markdown.getDocument()

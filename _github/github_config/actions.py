@@ -4,7 +4,7 @@ from JumpScale import j
 
 class Actions():
 
-    @action
+    
     def init(self):
 
         config="""
@@ -40,11 +40,9 @@ class Actions():
         return g
 
 
-    @action
     def install(self):
         self.monitor()
 
-    @action
-    def monitor(self,hrd):
+    def monitor(self):
         g=self.getGithubClient()
     
