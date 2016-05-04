@@ -100,7 +100,8 @@ class Actions():
     def getIssuesFromAYS(self):
 
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
-        repo=client.getRepo("$(repo.account)/$(repo.name)")
+        repokey=self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name")
+        repo=client.getRepo(repokey)
 
         path=j.sal.fs.joinPaths(self.service.path,"issues.md")
         content=j.sal.fs.fileGetContents(path)
@@ -135,7 +136,8 @@ class Actions():
         
     def get_github_repo(self):
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
-        repo=client.getRepo(self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name"))
+        repokey=self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name")
+        repo=client.getRepo(repokey)
         fromAys=True
         if self.service.state.get("getIssuesFromGithub")!="OK":
             #means have not been able to get the issues from github properly, so do again
