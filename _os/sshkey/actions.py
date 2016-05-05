@@ -26,8 +26,8 @@ class Actions():
 
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
             keyfile = j.do.getSSHKeyPathFromAgent(name)
-        elif '$(key.path)' != "":
-            keyfile = '$(key.path)'
+        elif self.service.hrd.get("key.path") != "":
+            keyfile = self.service.hrd.get("key.path")
         else:
             keyfile=j.sal.fs.joinPaths(tmpdir,name)
             cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, self.service.hrd.getStr('key.passphrase'))

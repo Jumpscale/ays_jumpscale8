@@ -19,7 +19,7 @@ class Actions:
         return True
 
     def getExecutor(self):
-        return j.tools.executor.getSSHBased("$(ssh.addr)", int("$(ssh.port)"), 'root')
+        return j.tools.executor.getSSHBased(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), 'root')
 
     def monitor(self):
         j.sal.nettools.tcpPortConnectionTest(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), timeout=5)
@@ -39,3 +39,17 @@ class Actions:
         cuisine = executor.cuisine
 
         cuisine.ssh.authorize('root', sshkey_pub)
+
+        if self.service.parent.hrd.get("type","")=="develop":
+
+            from IPython import embed
+            print ("DEBUG NOW wipe machine!!!")
+            embed()
+            p
+        else:
+            from IPython import embed
+            print ("DEBUG NOW cssh.ubuntu")
+            embed()
+            p
+            
+        

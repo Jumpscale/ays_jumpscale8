@@ -48,7 +48,7 @@ class Actions():
         docker_ports = self.service.hrd.getList('ports')
         pf_creation = _pf_map(docker_ports)
 
-        if self.service.parent.hrd.getBool('aysfs'):
+        if self.service.parent.hrd.getBool('aysfs'): #@todo (*1*) not right !
             aysfs = self.service.hrd.getBool('aysfs')
             pfs = ' '.join(pf_creation)
             connection_str = self.service.executor.cuisine.docker.ubuntu(name=self.service.instance, image=image,

@@ -1,3 +1,4 @@
 
 rack = type:str parent:rack 
 description = type:multiline
+type = type:str

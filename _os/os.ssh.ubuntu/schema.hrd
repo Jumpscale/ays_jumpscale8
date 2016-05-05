@@ -1,5 +1,6 @@
-aysfs = type:bool descr:'install JS in AYSFS mounted mode' default:True
-agent = type:bool descr:'start agent by on installation' default:True
+
+aysfs = type:bool descr:'install JS in AYSFS mounted mode' default:False
+agent = type:bool descr:'start agent on installation' default:False
 weave = type:bool descr:'install weave' default:False
 
 node                           = type:str parent:node
