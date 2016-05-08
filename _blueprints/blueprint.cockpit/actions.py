@@ -10,26 +10,26 @@ class Actions():
 
         account="$(g8.account)"
 
-        j.atyourservice.new('g8client', args=args, instance="main")
+        self.service.aysrepo.new('g8client', args=args, instance="main")
 
         args = {
             'url': 'https://dns1.aydo.com/etcd',
             'login': '$(dns.login)',
             'password': '$(dns.password)'
         }
-        dns_client = j.atyourservice.new('dns_client', args=args, instance="main")
+        dns_client = self.service.aysrepo.new('dns_client', args=args, instance="main")
 
-        sshkey = j.atyourservice.new('sshkey', instance="main")
+        sshkey = self.service.aysrepo.new('sshkey', instance="main")
 
-        vdcfarm = j.atyourservice.new('vdcfarm', instance="main")
+        vdcfarm = self.service.aysrepo.new('vdcfarm', instance="main")
 
-        vdc = j.atyourservice.new('vdc', args={'g8.account': account},instance="$(cockpit.name)", parent=vdcfarm)
+        vdc = self.service.aysrepo.new('vdc', args={'g8.account': account},instance="$(cockpit.name)", parent=vdcfarm)
 
         args = {'ports': '80:80, 443:443, 18384:18384'}
-        node_ovc = j.atyourservice.new('node.ovc', args=args, instance="cockpitvm", parent=vdc)
+        node_ovc = self.service.aysrepo.new('node.ovc', args=args, instance="cockpitvm", parent=vdc)
 
         args = {'node': node_ovc.instance}
-        os = j.atyourservice.new('os.ssh.ubuntu', args=args, instance=self.service.instance, parent=node_ovc)
+        os = self.service.aysrepo.new('os.ssh.ubuntu', args=args, instance=self.service.instance, parent=node_ovc)
 
         args = {
             "image": "jumpscale/g8cockpit",
@@ -37,7 +37,7 @@ class Actions():
             'aysfs': False,
             'ports': '80, 443, 18384'
         }
-        docker = j.atyourservice.new('node.docker', args=args, instance="cockpit", parent=os)
+        docker = self.service.aysrepo.new('node.docker', args=args, instance="cockpit", parent=os)
 
         args = {
             "telegram.token": self.service.hrd.getStr('telegram.token'),
@@ -47,4 +47,4 @@ class Actions():
             'node': docker.instance,
             'dns_client': dns_client.instance
         }
-        cockpit = j.atyourservice.new('os.cockpit', args=args, instance="$(cockpit.name)", parent=docker)
+        cockpit = self.service.aysrepo.new('os.cockpit', args=args, instance="$(cockpit.name)", parent=docker)

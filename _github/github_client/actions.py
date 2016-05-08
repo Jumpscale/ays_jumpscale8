@@ -1,5 +1,5 @@
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def install(self):
         self.monitor()

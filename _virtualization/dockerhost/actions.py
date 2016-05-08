@@ -1,6 +1,6 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
+ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
@@ -119,7 +119,7 @@ class Actions(ActionsBase):
             executor.cuisine.installerdevelop.jumpscale8(force=True)
 
         if self.service.hrd.getBool('agent'):
-            recipe = j.atyourservice.getRecipe('agent')
+            recipe = self.service.aysrepo.getRecipe('agent')
             recipe.newInstance(instance=self.service.instance, args={'nodeid':machine.id, 'aysfs': self.service.hrd.getBool('aysfs')})
 
     def uninstall(self):

@@ -2,7 +2,7 @@ from JumpScale import j
 
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     
     def init(self):
@@ -28,19 +28,22 @@ class Actions():
         github.project.types: [home, proj, cockpit, doc, ays, code, www, milestone,org]
         """
 
+
         j.data.text.strip(config)
 
         labels=j.data.serializer.yaml.loads(config)
 
+        self.service.hrdCreate()
         self.service.hrd.setArgs(labels)
 
-    def getGithubClient(self):
+    def getGithubClient(self):        
         from github import Github
         g=Github("$(github.secret)")
         return g
 
 
     def install(self):
+        #test
         self.monitor()
 
     def monitor(self):

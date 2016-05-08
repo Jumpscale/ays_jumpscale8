@@ -40,5 +40,5 @@ class Actions():
     def getClient(self):
         clientname = """$(producer.g8client)"""
         clientname = clientname.strip().strip("',")
-        g8client = j.atyourservice.getServiceFromKey(clientname)
+        g8client = self.service.aysrepo.getServiceFromKey(clientname)
         return g8client.actions.getClient()

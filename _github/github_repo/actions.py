@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
 
     def input(self,name,role,instance,args={}):
@@ -12,7 +12,7 @@ class Actions():
 
         cats={}
         #check milestone membership
-        for aysi in j.atyourservice.findServices(role="github_milestone"):
+        for aysi in self.service.aysrepo.findServices(role="github_milestone"):
             categories=aysi.hrd.getList("milestone.category")
             for cat in categories:
                 if cat not in cats:
@@ -37,10 +37,12 @@ class Actions():
                     for ays_repo in cats[catToFillIn]:
                         args["milestones"].append(ays_repo.instance)        
 
-        args["milestones"].sort()
+        if "milestones" in args:
+            args["milestones"].sort()
 
         return args
 
+    @action()   
     def init(self):
 
         #set url based on properties of parent
@@ -97,42 +99,42 @@ class Actions():
                     # repo.deleteMilestone(name)
                     print ("DELETE MILESTONE:%s %s"%(repo,name))
 
-    def getIssuesFromAYS(self):
+    # def getIssuesFromAYS(self):
 
-        client=self.service.getProducers('github_client')[0].actions.getGithubClient()
-        repokey=self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name")
-        repo=client.getRepo(repokey)
+    #     client=self.service.getProducers('github_client')[0].actions.getGithubClient()
+    #     repokey=self.service.hrd.get("repo.account")+"/"+self.service.hrd.get("repo.name")
+    #     repo=client.getRepo(repokey)
 
-        path=j.sal.fs.joinPaths(self.service.path,"issues.md")
-        content=j.sal.fs.fileGetContents(path)
+    #     path=j.sal.fs.joinPaths(self.service.path,"issues.md")
+    #     content=j.sal.fs.fileGetContents(path)
 
-        md=j.data.markdown.getDocument(content)    
+    #     md=j.data.markdown.getDocument(content)    
 
-        issueblock=""        
-        state="start"
-        issueNumber=0
-        for item in md.items:
-            print(item.type)
+    #     issueblock=""        
+    #     state="start"
+    #     issueNumber=0
+    #     for item in md.items:
+    #         print(item.type)
 
-            if item.type=="comment1line": 
-                if issueNumber!=0:
-                    #process previously gathered issue
-                    issue=repo.getIssueFromMarkdown(issueNumber,issueblock)
+    #         if item.type=="comment1line": 
+    #             if issueNumber!=0:
+    #                 #process previously gathered issue
+    #                 issue=repo.getIssueFromMarkdown(issueNumber,issueblock)
 
-                issueblock=""
-                state="block"
-                issueNumber=j.data.tags.getObject(item.text).tagGet("issue")                   
-                continue
+    #             issueblock=""
+    #             state="block"
+    #             issueNumber=j.data.tags.getObject(item.text).tagGet("issue")                   
+    #             continue
 
-            if state=="block":
-                issueblock+=str(item)+"\n"   
+    #         if state=="block":
+    #             issueblock+=str(item)+"\n"   
 
-        if issueNumber!=0:
-            repo.getIssueFromMarkdown(issueNumber,issueblock)
+    #     if issueNumber!=0:
+    #         repo.getIssueFromMarkdown(issueNumber,issueblock)
 
-        repo.issues_loaded=True
+    #     repo.issues_loaded=True
 
-        return repo
+    #     return repo
         
     def get_github_repo(self):
         client=self.service.getProducers('github_client')[0].actions.getGithubClient()
@@ -169,6 +171,10 @@ class Actions():
         from IPython import embed
         print ("DEBUG NOW stories 2 pdf")
         embed()
+
+    @action()  
+    def test(self):
+        print ("TEST")
         
     @action()        
     def getIssuesFromGithub(self):
@@ -197,28 +203,16 @@ class Actions():
 
         issues=r.loadIssues()
 
-        md=j.data.markdown.getDocument()
-        md.addMDHeader(1, "Issues")
+        if issues!=[]:
 
-        res=r.issues_by_type_state()
+            from IPython import embed
+            print ("DEBUG NOW getIssuesFromGithub")
+            embed()
+            p
+        
 
-        for type in r.types:
-            typeheader=False            
-            for state in r.states:
-                issues=res[type][state]
-                stateheader=False
-                for issue in issues:
-                    if typeheader==False:
-                        md.addMDHeader(2, "Type:%s"%type)
-                        typeheader=True
-                    if stateheader==False:
-                        md.addMDHeader(3, "State:%s"%state)
-                        stateheader=True
-                    md.addMDBlock(str(issue.getMarkdown()))
-
-        path=j.sal.fs.joinPaths(self.service.path,"issues.md")
-
-        j.sal.fs.writeFile(path,str(md))
+        # path=j.sal.fs.joinPaths(self.service.path,"issues.md")
+        # r.serialize2Markdown(path)
 
         self.service.state.set("getIssuesFromGithub","OK")
         self.service.state.save()

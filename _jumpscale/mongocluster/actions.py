@@ -1,6 +1,6 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
+ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):

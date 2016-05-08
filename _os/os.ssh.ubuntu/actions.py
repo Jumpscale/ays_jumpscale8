@@ -4,13 +4,13 @@ class Actions:
 
     def init(self):
         if self.service.hrd.getBool('aysfs', False):
-            j.atyourservice.new('aysfs', args={'os': self.service.instance}, parent=self.service)
+            self.service.aysrepo.new('aysfs', args={'os': self.service.instance}, parent=self.service)
 
         # if weave:
         #     instantiate weave
         # if agent:
         #     instantiate agent
-        # sshkey = j.atyourservice.getService(role='sshkey', instance=self.service.hrd.getStr('sshkey'))
+        # sshkey = self.service.aysrepo.getService(role='sshkey', instance=self.service.hrd.getStr('sshkey'))
         # self.service.hrd.set("ssh.key.public", sshkey.hrd.get("key.pub"))
         # self.service.hrd.set("ssh.key.private", sshkey.hrd.get("key.priv"))
 

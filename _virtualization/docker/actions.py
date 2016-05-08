@@ -1,6 +1,6 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
+ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
@@ -110,7 +110,7 @@ class Actions(ActionsBase):
         print("OUT: SSH port %s", sshport)
 
         if self.service.hrd.getBool('shellinabox'):
-            recipe = j.atyourservice.getRecipe('shellinabox')
+            recipe = self.service.aysrepo.getRecipe('shellinabox')
             recipe.newInstance(instance=self.service.instance, consume=self.service)
 
 

@@ -6,7 +6,7 @@ class Actions():
     def init(self):
 
         # if self.service.hrd.getBool('shellinabox'):
-        #     shellinabox = j.atyourservice.new(instance=self.service.instance, consume=self.service)
+        #     shellinabox = self.service.aysrepo.new(instance=self.service.instance, consume=self.service)
         return True
 
     def install(self):

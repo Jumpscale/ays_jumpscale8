@@ -1,11 +1,11 @@
 from JumpScale import j
 
-ActionsBase = j.atyourservice.getActionsBaseClassMgmt()
+ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
     def _findWeavePeer(self):
-        services = j.atyourservice.findServices(role='dockerhost')
+        services = self.service.aysrepo.findServices(role='dockerhost')
         for service in services:
             if service.instance == self.service.instance or not service.hrd.exists('machine.publicip'):
                 continue
