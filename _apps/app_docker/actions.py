@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
     def install(self):
         self.service.executor.cuisine.docker.install()
 

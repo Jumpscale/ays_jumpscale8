@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def init(self):
 
@@ -60,8 +60,9 @@ class Actions():
             pfs = ' -p '.join(pf_creation)
             out = self.service.executor.cuisine.core.run('docker ps -f name=%s -q' % self.service.instance)
             if not out:
-                self.service.executor.cuisine.core.run("docker run -d -p %s -p 22 --name %s --privileged=true jumpscale/ubuntu1510 " % (pfs, self.service.instance))
-            public_port = self.service.executor.cuisine.core.run("docker port %s 22" % self.service.instance).split(':')[1]
+                self.service.executor.cuisine.core.run("docker run -d -t -p %s -p 22 --name %s --privileged=true %s " % (pfs, self.service.instance, image))
+            vm_port = self.service.executor.cuisine.core.run("docker port %s 22" % self.service.instance).split(':')[1]
+            public_port = host_node.actions.open_port(vm_port)
             # add sshkey
             self.service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (self.service.instance))
             self.service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (self.service.instance, pubkey))

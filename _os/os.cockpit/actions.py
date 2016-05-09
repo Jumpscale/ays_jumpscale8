@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def getExecutor(self):
         addr = self.service.parent.producers['os'][0].hrd.getStr('ssh.addr')
@@ -33,7 +33,8 @@ class Actions():
         self.service.actions.robot()
         self.service.actions.gid()
 
-    def action_dns(self):
+    @action()
+    def dns(self):
         def get_dns_client():
             if 'dns_client' not in self.service.producers:
                 raise j.exceptions.AYSNotFound("No dns client found in producers")
@@ -69,11 +70,12 @@ class Actions():
 
         dns_client.setRecordA(domain, ip, ttl=120) # TODO, set real TTL
 
-    def action_grafana(self):
+    @action()
+    def grafana(self):
         cuisine = self.service.actions.getExecutor().cuisine
         cuisine.apps.grafana.start()
         cfg = cuisine.core.file_read('$cfgDir/grafana/grafana.ini')
-        cfg = cfg.replace('domain = localhost', 'domain = $(domain)')
+        cfg = cfg.replace('domain = localhost', 'domain = %s' % self.service.hrd.getStr('dns.domain'))
         cfg = cfg.replace('root_url = %(protocol)s://%(domain)s:%(http_port)s/', 'root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana')
         cuisine.core.file_write('$cfgDir/grafana/grafana.ini', cfg)
         # restart to take in account new config
@@ -87,9 +89,10 @@ class Actions():
         cl.addDataSource(GrafanaData.datasource)
         cl.changePassword(self.service.hrd.getStr('portal.password'))
 
-    def action_portal(self):
+    @action()
+    def portal(self):
         cuisine = self.service.actions.getExecutor().cuisine
-        cuisine.apps.portal.start(force=True, passwd="$(portal.password)")
+        cuisine.apps.portal.start(force=True, passwd=self.service.hrd.getStr('portal.password'))
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit", "$cfgDir/portals/main/base/Cockpit")
@@ -99,14 +102,16 @@ class Actions():
         cuisine.processmanager.stop('portal')
         cuisine.processmanager.start('portal')
 
-    def action_shellinaboxd(self):
+    @action()
+    def shellinaboxd(self):
         cuisine = self.service.actions.getExecutor().cuisine
         # TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
         cmd = 'shellinaboxd --disable-ssl --port 4200 %s ' % config
         cuisine.processmanager.ensure('shellinabox_cockpit', cmd=cmd)
 
-    def action_caddy(self):
+    @action()
+    def caddy(self):
         cuisine = self.service.actions.getExecutor().cuisine
         caddy_main_cfg = """
         $hostname
@@ -155,12 +160,14 @@ class Actions():
         # cmd += ' -ca https://acme-staging.api.letsencrypt.org/directory'
         cuisine.processmanager.ensure('caddy', cmd)
 
-    def action_robot(self):
+    @action()
+    def robot(self):
         cuisine = self.service.actions.getExecutor().cuisine
         cmd = "ays bot --token %s" % self.service.hrd.getStr('telegram.token')
         cuisine.tmux.executeInScreen('aysrobot', 'aysrobot', cmd, wait=0)
 
-    def action_gid(self):
+    @action()
+    def gid(self):
         cuisine = self.service.actions.getExecutor().cuisine
         content = "grid.id = %d\nnode.id = 0" % self.service.hrd.getInt('gid')
         cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)

@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def getSSHKey(self):
         keydest = j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
@@ -20,8 +20,8 @@ class Actions():
         if self.service.hrd.get("key.name") == "":
             self.service.hrd.set("key.name", self.service.instance)
 
-        name=self.service.hrd.get("key.name") 
-        
+        name=self.service.hrd.get("key.name")
+
         tmpdir=j.sal.fs.getTmpDirPath()
 
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
@@ -50,7 +50,7 @@ class Actions():
         j.sal.fs.chmod(keydest, 0o600)
         j.sal.fs.chmod(keydest+".pub", 0o600)
 
-        j.sal.fs.removeDir(tmpdir)
+        j.sal.fs.removeDirTree(tmpdir)
 
         self.install()
 
@@ -78,6 +78,3 @@ class Actions():
     #         keyloc = "/root/.ssh/%s" % '$(key.name)'
     #         cmd = 'ssh-add -d %s' % keyfile
     #         j.do.executeInteractive(cmd)
-
-
-

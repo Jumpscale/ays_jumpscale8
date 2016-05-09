@@ -2,7 +2,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def init(self):
 
@@ -29,16 +29,14 @@ class Actions():
     def install(self):
         client = self.service.actions.getClient()
         acc = client.account_get(self.service.hrd.get('g8.account'))
-        space = acc.space_get("$(service.instance)", self.service.hrd.get('g8.location'))
+        space = acc.space_get(self.service.instance, self.service.hrd.get('g8.location'))
 
     def uninstall(self):
         client = self.service.actions.getClient()
         acc = client.account_get(self.service.hrd.get('g8.account'))
-        space = acc.space_get("$(service.instance)", self.service.hrd.get('g8.location'))
+        space = acc.space_get(self.service.instance, self.service.hrd.get('g8.location'))
         client.api.cloudapi.cloudspaces.delete(id=space.id)
 
     def getClient(self):
-        clientname = """$(producer.g8client)"""
-        clientname = clientname.strip().strip("',")
-        g8client = self.service.aysrepo.getServiceFromKey(clientname)
+        g8client = self.service.getProducers("g8client")[0]
         return g8client.actions.getClient()

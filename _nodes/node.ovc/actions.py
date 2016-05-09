@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
     def getMachine(self):
 
@@ -12,11 +12,6 @@ class Actions():
         account = client.account_get(vdcobj.hrd.get("g8.account"))
 
         spacename = self.service.parent.instance
-
-        from IPython import embed
-        print ("DEBUG NOW gemachine node ovc")
-        embed()
-        
 
         space = account.space_get(spacename, location=client.locations[0]['name'])
         if self.service.instance in space.machines:
@@ -75,6 +70,7 @@ class Actions():
             self.service.hrd.set('sshport', executor.port)
             if len(self.service.producers['sshkey']) >= 1:
                 sshkey = self.service.producers['sshkey'][0]
+                executor.cuisine.core.hostname = self.service.instance
                 executor.cuisine.ssh.authorize('root', sshkey.hrd.get('key.pub'))
 
         for child in self.service.children:

@@ -1,6 +1,6 @@
 
 
-class Actions:
+class Actions(ActionsBaseMgmt):
 
     def init(self):
         if self.service.hrd.getBool('aysfs', False):
@@ -39,17 +39,3 @@ class Actions:
         cuisine = executor.cuisine
 
         cuisine.ssh.authorize('root', sshkey_pub)
-
-        if self.service.parent.hrd.get("type","")=="develop":
-
-            from IPython import embed
-            print ("DEBUG NOW wipe machine!!!")
-            embed()
-            p
-        else:
-            from IPython import embed
-            print ("DEBUG NOW cssh.ubuntu")
-            embed()
-            p
-            
-        

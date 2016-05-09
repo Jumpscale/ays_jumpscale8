@@ -1,7 +1,7 @@
 from JumpScale import j
 
 
-class Actions():
+class Actions(ActionsBaseMgmt):
 
 
     def input(self,name,role,instance,args={}):
@@ -19,4 +19,7 @@ class Actions():
         """
         return client towards g8 master
         """
-        return j.clients.openvcloud.get("$(g8.url)", '$(g8.login)', '$(g8.password)')
+        url = self.service.hrd.getStr('g8.url')
+        login = self.service.hrd.getStr('g8.login')
+        password = self.service.hrd.getStr('g8.password')
+        return j.clients.openvcloud.get(url, login, password)
