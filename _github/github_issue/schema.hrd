@@ -3,5 +3,3 @@
 
 
 github.repo = parent:'github_repo' @ASK
-
-issue.data = type:'yaml'

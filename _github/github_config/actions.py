@@ -5,7 +5,7 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     
-    def init(self):
+    def init(self,service):
 
         config="""
         github.label.priority.critical: ['*']
@@ -20,6 +20,7 @@ class Actions(ActionsBaseMgmt):
         github.label.type.bug: [code, ays, cockpit, doc, www]
         github.label.type.feature: [code, ays, cockpit, doc, www]
         github.label.type.monitor: [proj, www, cockpit]
+        github.label.type.assistance_request: [proj]
         github.label.type.question: [home, code, proj, ays, doc, cockpit, www,milestone,org]
         github.label.type.story: [home, proj, milestone,org]
         github.label.type.task: [home,milestone,proj,org]
@@ -33,19 +34,19 @@ class Actions(ActionsBaseMgmt):
 
         labels=j.data.serializer.yaml.loads(config)
 
-        self.service.hrdCreate()
-        self.service.hrd.setArgs(labels)
+        service.hrdCreate()
+        service.hrd.setArgs(labels)
 
-    def getGithubClient(self):        
+    def getGithubClient(self,service):        
         from github import Github
         g=Github("$(github.secret)")
         return g
 
 
-    def install(self):
+    def install(self,service):
         #test
         self.monitor()
 
-    def monitor(self):
+    def monitor(self,service):
         g=self.getGithubClient()
     

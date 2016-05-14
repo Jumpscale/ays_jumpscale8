@@ -18,6 +18,6 @@ class Actions:
         influx_ip, influx_port = '$influxcfg'.split(':') if '$(influxcfg)' and ':' in '$(influxcfg)' else '127.0.0.1', '8086'
         grafana_ip, grafana_port = '$grafanacfg'.split(':') if '$(grafanacfg)' and ':' in '$(grafanacfg)' else '127.0.0.1', '3000'
 
-        self.service.executor.cuisine.apps.portal.install(mongodbip=mongo_ip, mongoport=mongo_port, influxip=influx_ip,
+        service.executor.cuisine.apps.portal.install(mongodbip=mongo_ip, mongoport=mongo_port, influxip=influx_ip,
                                                           influxport=influx_port, grafanaip=grafana_ip, grafanaport=grafana_port)
         self.add_user()

@@ -1,13 +1,13 @@
 from JumpScale import j
 
-ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
+ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
 
     def __init__(self, service):
         super(Actions, self).__init__(service)
-        self.service = service
+        service = service
         self._cuisine = None
 
     def install(self):        

@@ -4,7 +4,7 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     def getSSHKey(self):
-        keydest = j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        keydest = j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
         privkey = j.sal.fs.fileGetContents(keydest)
         pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
         return privkey, pubkey
@@ -17,35 +17,35 @@ class Actions(ActionsBaseMgmt):
         """
         create key
         """
-        if self.service.hrd.get("key.name") == "":
-            self.service.hrd.set("key.name", self.service.instance)
+        if service.hrd.get("key.name") == "":
+            service.hrd.set("key.name", service.instance)
 
-        name=self.service.hrd.get("key.name")
+        name=service.hrd.get("key.name")
 
         tmpdir=j.sal.fs.getTmpDirPath()
 
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
             keyfile = j.do.getSSHKeyPathFromAgent(name)
-        elif self.service.hrd.get("key.path") != "":
-            keyfile = self.service.hrd.get("key.path")
+        elif service.hrd.get("key.path") != "":
+            keyfile = service.hrd.get("key.path")
         else:
             keyfile=j.sal.fs.joinPaths(tmpdir,name)
-            cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, self.service.hrd.getStr('key.passphrase'))
+            cmd = "ssh-keygen -t rsa -f %s -P '%s' " % (keyfile, service.hrd.getStr('key.passphrase'))
             print(cmd)
             j.sal.process.executeWithoutPipe(cmd)
 
         if not j.sal.fs.exists(keyfile):
             raise j.exceptions.Input("Cannot find ssh key location:%s"%keyfile)
 
-        keydest = j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        keydest = j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
         j.sal.fs.copyFile(keyfile,keydest)
         j.sal.fs.copyFile(keyfile+".pub",keydest+".pub")
 
         privkey = j.sal.fs.fileGetContents(keydest)
         pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
 
-        self.service.hrd.set('key.pub', pubkey)
-        self.service.hrd.set('key.priv', privkey)
+        service.hrd.set('key.pub', pubkey)
+        service.hrd.set('key.priv', privkey)
 
         j.sal.fs.chmod(keydest, 0o600)
         j.sal.fs.chmod(keydest+".pub", 0o600)
@@ -64,7 +64,7 @@ class Actions(ActionsBaseMgmt):
         """
         Add key to SSH Agent if not already loaded
         """
-        keypath=j.sal.fs.joinPaths(self.service.path, "sshkey_%s"%self.service.instance)
+        keypath=j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
         j.do.loadSSHKeys(keypath)
 
 

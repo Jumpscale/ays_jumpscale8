@@ -3,39 +3,39 @@
 class Actions(ActionsBaseMgmt):
 
     def init(self):
-        if self.service.hrd.getBool('aysfs', False):
-            self.service.aysrepo.new('aysfs', args={'os': self.service.instance}, parent=self.service)
+        if service.hrd.getBool('aysfs', False):
+            service.aysrepo.new('aysfs', args={'os': service.instance}, parent=service)
 
         # if weave:
         #     instantiate weave
         # if agent:
         #     instantiate agent
-        # sshkey = self.service.aysrepo.getService(role='sshkey', instance=self.service.hrd.getStr('sshkey'))
-        # self.service.hrd.set("ssh.key.public", sshkey.hrd.get("key.pub"))
-        # self.service.hrd.set("ssh.key.private", sshkey.hrd.get("key.priv"))
+        # sshkey = service.aysrepo.getService(role='sshkey', instance=service.hrd.getStr('sshkey'))
+        # service.hrd.set("ssh.key.public", sshkey.hrd.get("key.pub"))
+        # service.hrd.set("ssh.key.private", sshkey.hrd.get("key.priv"))
 
-        # if self.service.hrd.get("system.backdoor.passwd").strip() == "":
-        #     self.service.hrd.set("system.backdoor.passwd", j.data.idgenerator.generateXCharID(12))
+        # if service.hrd.get("system.backdoor.passwd").strip() == "":
+        #     service.hrd.set("system.backdoor.passwd", j.data.idgenerator.generateXCharID(12))
         return True
 
     def getExecutor(self):
-        return j.tools.executor.getSSHBased(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), 'root')
+        return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root')
 
     def monitor(self):
-        j.sal.nettools.tcpPortConnectionTest(self.service.hrd.get("ssh.addr"), self.service.hrd.getInt("ssh.port"), timeout=5)
-        j.clients.ssh.get(self.service.hrd.get("ssh.addr"), port=self.service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True, forward_agent=False, allow_agent=True, look_for_keys=True, timeout=5, testConnection=True, die=True)
+        j.sal.nettools.tcpPortConnectionTest(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), timeout=5)
+        j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True, forward_agent=False, allow_agent=True, look_for_keys=True, timeout=5, testConnection=True, die=True)
 
 
     def install(self):
-        if 'sshkey' in self.service.producers:
-            sshkey = self.service.producers['sshkey'][0]
+        if 'sshkey' in service.producers:
+            sshkey = service.producers['sshkey'][0]
             sshkey_pub = sshkey.hrd.get('key.pub')
         else:
             raise RuntimeError("No sshkey found. please consume an sshkey service")
 
         print("authorize ssh key to machine")
 
-        executor = self.service.actions.getExecutor()
+        executor = service.actions.getExecutor()
         cuisine = executor.cuisine
 
         cuisine.ssh.authorize('root', sshkey_pub)

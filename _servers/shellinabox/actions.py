@@ -1,6 +1,6 @@
 from JumpScale import j
 
-ActionsBase = self.service.aysrepo.getActionsBaseClassMgmt()
+ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
@@ -8,9 +8,9 @@ class Actions(ActionsBase):
         executor = j.tools.executor.getLocal()
         executor.cuisine.package.install('shellinabox')
 
-        if 'docker' not in self.service.producers:
+        if 'docker' not in service.producers:
             raise RuntimeError("Can't find docker in producers. please comsume a docker service")
-        docker = self.service.producers['docker'][0]
+        docker = service.producers['docker'][0]
 
         dockerip = docker.parent.hrd.get('machine.publicip').strip()
 
@@ -21,14 +21,14 @@ class Actions(ActionsBase):
             raise RuntimeError("Can't find free port for shellinabox")
 
         config = "--port %s -s '/:root:root:/:ssh root@%s -p %s'" % (port, dockerip, docker.hrd.get('sshport'))
-        self.service.hrd.set('config', config)
-        self.service.hrd.set('listen.port', port)
+        service.hrd.set('config', config)
+        service.hrd.set('listen.port', port)
         cmd = 'shellinaboxd --disable-ssl %s ' % config
-        executor.cuisine.processmanager.ensure('shellinabox_%s' % self.service.instance, cmd=cmd)
+        executor.cuisine.processmanager.ensure('shellinabox_%s' % service.instance, cmd=cmd)
 
         if j.sal.process.checkProcessRunning('caddy'):
             # try to configure caddy to proxy shellinabox
-            fw = "/%s/%s" % (self.service.instance, j.data.idgenerator.generateXCharID(15))
+            fw = "/%s/%s" % (service.instance, j.data.idgenerator.generateXCharID(15))
             proxy = """
 proxy %s 127.0.0.1:%s {
    without %s
@@ -39,10 +39,10 @@ proxy %s 127.0.0.1:%s {
             executor.cuisine.processmanager.reload('caddy')
 
     def start(self):
-        executor.cuisine.processmanager.start('shellinabox_%s' % self.service.instance)
+        executor.cuisine.processmanager.start('shellinabox_%s' % service.instance)
 
     def stop(self):
-        executor.cuisine.processmanager.stop('shellinabox_%s' % self.service.instance)
+        executor.cuisine.processmanager.stop('shellinabox_%s' % service.instance)
 
     def uninstall(self):
         pass
