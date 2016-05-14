@@ -37,16 +37,5 @@ class Actions(ActionsBaseMgmt):
         service.hrdCreate()
         service.hrd.setArgs(labels)
 
-    def getGithubClient(self,service):        
-        from github import Github
-        g=Github("$(github.secret)")
-        return g
-
-
     def install(self,service):
-        #test
-        self.monitor()
-
-    def monitor(self,service):
-        g=self.getGithubClient()
-    
+        return True

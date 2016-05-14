@@ -2,10 +2,10 @@
 class Actions(ActionsBaseMgmt):
 
     def install(self,service):
-        self.monitor()
+        self.monitor(service=service)
 
     def monitor(self,service):
-        g=self.getGithubClient()
+        g=self.getGithubClient(service=service)
         #@todo implement test
 
     def getGithubClient(self,service):

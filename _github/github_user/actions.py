@@ -10,7 +10,7 @@ class Actions(ActionsBaseMgmt):
         self.monitor()
 
     def monitor(self,service):
-        g=self.getGithubClient(service)
+        g=self.getGithubClient(service=service)
         #@todo implement test
 
     def getGithubClient(self):

@@ -8,7 +8,7 @@ class Actions(ActionsBaseMgmt):
         pass
 
     def install(self):
-        client = service.actions.getClient()
+        client = self.getClient()
         # create vdc if it doesn't exists
         if not client.api.system.usermanager.userexists(name='$(username)'):
             groups = service.hrd.getList('groups')

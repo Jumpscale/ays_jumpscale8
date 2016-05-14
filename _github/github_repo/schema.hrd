@@ -16,3 +16,5 @@ github.config= type:'str' consume:'github_config:1' auto
 milestone.category = type:'str' list
 
 milestones = type:'str' list consume:'github_milestone'
+
+kds.name== type:'str' default:'ss'

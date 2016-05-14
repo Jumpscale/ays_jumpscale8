@@ -35,7 +35,7 @@ class Actions(ActionsBaseMgmt):
                     return candidate
                 else:
                     candidate += 1
-        machine = service.actions.getMachine()
+        machine = self.getMachine()
         executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
 
         # check if already open, if yes return public port
@@ -61,7 +61,7 @@ class Actions(ActionsBaseMgmt):
         return spaceport
 
     def install(self):
-        machine = service.actions.getMachine()
+        machine = self.getMachine()
         service.hrd.set('machineid', machine.id)
 
         executor = machine.get_ssh_connection()
@@ -80,12 +80,12 @@ class Actions(ActionsBaseMgmt):
         for port in service.hrd.getList('ports'):
             ss = port.split(':')
             if len(ss) == 2:
-                service.actions.open_port(requested_port=ss[1], public_port=ss[0])
+                self.open_port(requested_port=ss[1], public_port=ss[0])
             else:
-                service.actions.open_port(requested_port=port)
+                self.open_port(requested_port=port)
 
 
     def uninstall(self):
         if service.hrd.get('machineid', ''):
-            machine = service.actions.getMachine()
+            machine = self.getMachine()
             machine.delete()

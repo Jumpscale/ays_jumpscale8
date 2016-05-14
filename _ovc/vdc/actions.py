@@ -13,7 +13,7 @@ class Actions(ActionsBaseMgmt):
 
         if service.hrd.get("g8.location") == "":
 
-            cl = service.actions.getClient()
+            cl = self.getClient()
             locations = cl.api.cloudapi.locations.list()
 
             loc2set = ""
@@ -27,12 +27,12 @@ class Actions(ActionsBaseMgmt):
             service.hrd.set('g8.location', loc2set)
 
     def install(self):
-        client = service.actions.getClient()
+        client = self.getClient()
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
 
     def uninstall(self):
-        client = service.actions.getClient()
+        client = self.getClient()
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
         client.api.cloudapi.cloudspaces.delete(id=space.id)

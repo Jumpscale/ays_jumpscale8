@@ -61,9 +61,9 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def install(self,service):
-        # service.actions.pull()
-        service.actions.getIssuesFromGithub()
-        service.actions.setMilestonesOnGithub()
+        # self.pull()
+        self.getIssuesFromGithub(service=service)
+        self.setMilestonesOnGithub(service=service)
 
     @action()
     def pull(self,service):
@@ -73,7 +73,9 @@ class Actions(ActionsBaseMgmt):
     @action()
     def setMilestonesOnGithub(self,service):
 
-        repo = service.actions.get_github_repo()
+        
+        repo = self.get_github_repo(service=service)
+            
 
         if repo.type in ["proj", "org"]:
             milestonesSet = []
@@ -91,14 +93,15 @@ class Actions(ActionsBaseMgmt):
             # for name in repo.milestoneNames:
             #     if name not in milestonesSet:
             #         repo.deleteMilestone(name)
-        else:
-            if repo.type not in ["code"]:
-                for name in repo.milestoneNames:
-                    # repo.deleteMilestone(name)
-                    print("DELETE MILESTONE:%s %s" % (repo, name))
+        # else:
+        #     if repo.type not in ["code"]:
+        #         for name in repo.milestoneNames:
+        #             # repo.deleteMilestone(name)
+        #             print("DELETE MILESTONE:%s %s" % (repo, name))
 
     def getIssuesFromAYS(self,service):
-        client = service.getProducers('github_client')[0].actions.getGithubClient()
+        githubclientays=service.getProducers('github_client')[0]
+        client = githubclientays.actions.getGithubClient(service=githubclientays)
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
 
@@ -114,7 +117,8 @@ class Actions(ActionsBaseMgmt):
         return repo
 
     def get_github_repo(self,service):
-        client = service.getProducers('github_client')[0].actions.getGithubClient()
+        githubclientays=service.getProducers('github_client')[0]
+        client = githubclientays.actions.getGithubClient(service=githubclientays)
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
         fromAys = True
@@ -125,7 +129,7 @@ class Actions(ActionsBaseMgmt):
             if fromAys:
                 print("LOAD ISSUES FROM AYS")
                 # service.state.set("getIssuesFromAYS","DO")
-                service.actions.getIssuesFromAYS()
+                self.getIssuesFromAYS()
                 repo.issues_loaded = True
             else:
                 from IPython import embed
@@ -134,17 +138,17 @@ class Actions(ActionsBaseMgmt):
                 ppp
                 print("LOAD ISSUES FROM GITHUB")
                 # service.state.set("getIssuesFromGithub","DO")
-                service.actions.getIssuesFromGithub(force=True)
+                self.getIssuesFromGithub(service=service)
                 repo.issues_loaded = True
         return repo
 
     @action()
     def processIssues(self,service):
-        repo = service.actions.get_github_repo()
+        repo = self.get_github_repo(service)
         repo.process_issues()
 
     def stories2pdf(self,service):
-        repo = service.actions.get_github_repo()
+        repo = self.get_github_repo(service)
         from IPython import embed
         print("DEBUG NOW stories 2 pdf")
         embed()
@@ -166,13 +170,14 @@ class Actions(ActionsBaseMgmt):
             if projtype in value or "*" in value:
                 labels.append(label)
 
-        client = service.getProducers('github_client')[0].actions.getGithubClient()
+        githubclientays=service.getProducers('github_client')[0]
+        client = githubclientays.actions.getGithubClient(service=githubclientays)
 
         reponame = "$(repo.account)/$(repo.name)"
         r = client.getRepo(reponame)
 
         # first make sure issues get right labels
-        r.labels = labels
+        r.labelsSet(labels,ignoreDelete=["p_"])
 
         labelsprint = ",".join(labels)
 
@@ -183,11 +188,11 @@ class Actions(ActionsBaseMgmt):
         if issues != []:
             for issue in issues:
                 args = {'github.repo': service.instance}
-                service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
+                issue_service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
 
         service.state.set("getIssuesFromGithub", "OK")
         service.state.save()
 
         r.issues_loaded = True
 
-        service.actions.processIssues(force=True)
+        self.processIssues(service=service)

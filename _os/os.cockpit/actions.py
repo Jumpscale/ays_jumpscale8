@@ -17,21 +17,21 @@ class Actions(ActionsBaseMgmt):
             raise j.exceptions.NotFound("No sshkey found. please consume an sshkey service")
 
         print("authorize ssh key to machine")
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
 
         cuisine.core.file_write('/root/.ssh/id_rsa', sshkey_priv, mode='0600')
         cuisine.core.file_write('/root/.ssh/id_rsa.pub', sshkey_pub, mode='0600')
 
-        service.actions.dns()
-        service.actions.caddy()
+        self.dns()
+        self.caddy()
         cuisine.apps.influxdb.start()
         cuisine.apps.mongodb.start()
         cuisine.apps.controller.start()
-        service.actions.portal()
-        service.actions.shellinaboxd()
-        service.actions.grafana()
-        service.actions.robot()
-        service.actions.gid()
+        self.portal()
+        self.shellinaboxd()
+        self.grafana()
+        self.robot()
+        self.gid()
 
     @action()
     def dns(self):
@@ -72,7 +72,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def grafana(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         cuisine.apps.grafana.start()
         cfg = cuisine.core.file_read('$cfgDir/grafana/grafana.ini')
         cfg = cfg.replace('domain = localhost', 'domain = %s' % service.hrd.getStr('dns.domain'))
@@ -91,7 +91,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def portal(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         cuisine.apps.portal.start(force=True, passwd=service.hrd.getStr('portal.password'))
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
@@ -104,7 +104,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def shellinaboxd(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         # TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
         cmd = 'shellinaboxd --disable-ssl --port 4200 %s ' % config
@@ -112,7 +112,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def caddy(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         caddy_main_cfg = """
         $hostname
         gzip
@@ -162,12 +162,12 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def robot(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         cmd = "ays bot --token %s" % service.hrd.getStr('telegram.token')
         cuisine.tmux.executeInScreen('aysrobot', 'aysrobot', cmd, wait=0)
 
     @action()
     def gid(self):
-        cuisine = service.actions.getExecutor().cuisine
+        cuisine = self.getExecutor().cuisine
         content = "grid.id = %d\nnode.id = 0" % service.hrd.getInt('gid')
         cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)

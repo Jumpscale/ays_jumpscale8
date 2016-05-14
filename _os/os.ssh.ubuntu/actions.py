@@ -35,7 +35,7 @@ class Actions(ActionsBaseMgmt):
 
         print("authorize ssh key to machine")
 
-        executor = service.actions.getExecutor()
+        executor = self.getExecutor()
         cuisine = executor.cuisine
 
         cuisine.ssh.authorize('root', sshkey_pub)

@@ -47,7 +47,7 @@ class Actions(ActionsBaseMgmt):
                 # TODO, send email back to client to tell him
                 return
 
-            repo = repo_service.actions.get_github_repo()
+            repo = repo_self.get_github_repo()
             issue = repo.getIssue(github_payload['issue']['number'])
             if issue.body.startswith('Ticket_'):
                 # already processed
@@ -109,7 +109,7 @@ class Actions(ActionsBaseMgmt):
             return
 
         Issue = j.clients.github.getIssueClass()
-        repo = repo_service.actions.get_github_repo()
+        repo = repo_self.get_github_repo()
         # allocation of a unique ID to the Ticket
         guid = j.data.idgenerator.generateGUID()
         # Add ticket id in issue description
