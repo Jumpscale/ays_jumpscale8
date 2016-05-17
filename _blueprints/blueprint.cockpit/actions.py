@@ -13,6 +13,7 @@ class Actions(ActionsBaseMgmt):
         cockpit_name = self.service.hrd.getStr('cockpit.name')
         telegram_token = self.service.hrd.getStr('telegram.token')
         portal_password = self.service.hrd.getStr('portal.password')
+        dns_domain = self.service.hrd.getStr("dns.domain")
 
         args = {'g8.url': g8_url,
                 'g8.login': g8_login,
@@ -57,7 +58,7 @@ class Actions(ActionsBaseMgmt):
             "telegram.token": telegram_token,
             "gid": 1,
             "portal.password": portal_password,
-            "dns.domain": g8_login,
+            "dns.domain": dns_domain,
             'node': docker.instance,
             'dns_client': dns_client.instance
         }
