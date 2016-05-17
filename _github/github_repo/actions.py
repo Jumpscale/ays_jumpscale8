@@ -99,7 +99,7 @@ class Actions(ActionsBaseMgmt):
 
     def getIssuesFromAYS(self):
         githubclientays = self.service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
+        client = githubclientays.actions.getGithubClient()
         repokey = self.service.hrd.get("repo.account") + "/" + self.service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
 
@@ -116,7 +116,7 @@ class Actions(ActionsBaseMgmt):
 
     def get_github_repo(self):
         githubclientays = self.service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
+        client = githubclientays.actions.getGithubClient()
         repokey = self.service.hrd.get("repo.account") + "/" + self.service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
         fromAys = True
@@ -142,11 +142,11 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def processIssues(self):
-        repo = self.get_github_repo(service)
+        repo = self.get_github_repo()
         repo.process_issues()
 
     def stories2pdf(self):
-        repo = self.get_github_repo(service)
+        repo = self.get_github_repo()
         from IPython import embed
         print("DEBUG NOW stories 2 pdf")
         embed()
@@ -169,7 +169,7 @@ class Actions(ActionsBaseMgmt):
                 labels.append(label)
 
         githubclientays = self.service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
+        client = githubclientays.actions.getGithubClient()
 
         reponame = "$(repo.account)/$(repo.name)"
         r = client.getRepo(reponame)
