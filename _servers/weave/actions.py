@@ -1,19 +1,17 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-
-class Actions(ActionsBase):
+class Actions(ActionsBaseMgmt):
     def _findWeavePeer(self):
-        services = service.aysrepo.findServices(role='dockerhost')
+        services = self.service.aysrepo.findServices(role='dockerhost')
         for service in services:
-            if service.instance == service.instance or not service.hrd.exists('machine.publicip'):
+            if self.service.instance == self.service.instance or not self.service.hrd.exists('machine.publicip'):
                 continue
-            ip = service.hrd.getStr('machine.publicip')
+            ip = self.service.hrd.getStr('machine.publicip')
             if ip:
                 return ip
         return None
 
     def install(self):
-        executor = service.parent.getExecutor()
+        executor = self.service.parent.getExecutor()
         executor.cuisine.apps.weave.build(peer=self._findWeavePeer())

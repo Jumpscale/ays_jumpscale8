@@ -1,13 +1,11 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-
-class Actions(ActionsBase):
+class Actions(ActionsBaseMgmt):
 
     # def _generateProxies(self):
     #     proxies = []
-    #     for docker in service.hrd.getList('backends'):
+    #     for docker in self.service.hrd.getList('backends'):
     #             # path = "/webaccess/%s/%s" % (docker, j.data.idgenerator.generateXCharID(15))
     #             # backend = "localhost:4200/%s" % docker
     #             proxy = """proxy / localhost:4200""".format(path=path, backend=backend)
@@ -15,29 +13,29 @@ class Actions(ActionsBase):
     #     return proxies
 
     def _registerDomain(self):
-        if 'skydnsclient' not in service.producers:
+        if 'skydnsclient' not in self.service.producers:
             raise RuntimeError("No skydns client found, please make sure this service consume a skydns client")
 
-        cl = service.producers['skydnsclient'][0].action_methods_mgmt.getClient()
-        domain = service.hrd.getStr('domain')
-        target = service.parent.parent.hrd.getStr('machine.publicip')
+        cl = self.service.producers['skydnsclient'][0].action_methods_mgmt.getClient()
+        domain = self.service.hrd.getStr('domain')
+        target = self.service.parent.parent.hrd.getStr('machine.publicip')
         print(cl.setRecordA(domain, target, ttl=300))
 
     def showProxyURL(self):
         print("OUT: Accessible dockers : ")
-        ip = service.parent.parent.hrd.getStr('machine.publicip')
-        for docker in service.hrd.getList('backends'):
+        ip = self.service.parent.parent.hrd.getStr('machine.publicip')
+        for docker in self.service.hrd.getList('backends'):
             url = "http://%s/%s" % (ip, docker)
             print("OUT: ", url)
 
     def install(self):
         self._registerDomain()
 
-        # service.hrd.set('proxy.backends', self._getBackends())
-        cuisine = service.parent.action_methods_mgmt.getExecutor().cuisine
-        # domain = service.hrd.getStr('domain')
-        # backends = service.hrd.getStr('proxy.backends')
-        shellinabox = service.getProducers('shellinabox')
+        # self.service.hrd.set('proxy.backends', self._getBackends())
+        cuisine = self.service.parent.action_methods_mgmt.getExecutor().cuisine
+        # domain = self.service.hrd.getStr('domain')
+        # backends = self.service.hrd.getStr('proxy.backends')
+        shellinabox = self.service.getProducers('shellinabox')
         if not shellinabox:
             address = 'localhost'
         else:
