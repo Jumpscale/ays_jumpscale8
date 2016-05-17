@@ -3,18 +3,8 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-#     def notify_telegram(self, ticket_url):
-#         evt = j.data.models.cockpit_event.Telegram()
-#         evt.io = 'output'
-#         evt.args['chat_id'] =
-#         msg = """*New support ticket received*
-# Link to ticket: {url}
-#         """.format(url=ticket_url)
-#         evt.args['msg'] = msg
-#         self.bot.sendMessage(chat_id=chat_id, text=msg, parse_mode=telegram.ParseMode.MARKDOWN)
-
     @action()
-    def from_github_ticket(self,service, event):
+    def from_github_ticket(self, event):
         event = j.data.models.cockpit_event.Generic.from_json(event)
 
         if 'source' not in event.args or event.args['source'] != 'github':
@@ -37,7 +27,7 @@ class Actions(ActionsBaseMgmt):
             name = github_payload['repository']['name']
 
             repo_service = None
-            for s in service.producers['github_repo']:
+            for s in self.service.producers['github_repo']:
                 if name == s.hrd.getStr('repo.name') and account == s.hrd.getStr('repo.account'):
                     repo_service = s
                     break
@@ -68,14 +58,14 @@ class Actions(ActionsBaseMgmt):
             repo.issues.append(issue)
             # Create issue service instance of the newly created github issue
             args = {'github.repo': repo_service.instance}
-            service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
+            service = self.service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
 
             # delete issue from redis when processed
             j.core.db.hdel('webhooks', key)
 
 
     @action()
-    def from_email_ticket(self,service, event):
+    def from_email_ticket(self, event):
         email = j.data.models.cockpit_event.Email.from_json(event)
 
         if not email.subject.startswith('(Ticket)'):
@@ -98,7 +88,7 @@ class Actions(ActionsBaseMgmt):
             return
 
         repo_service = None
-        for s in service.producers['github_repo']:
+        for s in self.service.producers['github_repo']:
             if repo_name == s.hrd.getStr('repo.name'):
                 repo_service = s
                 break
@@ -121,4 +111,4 @@ class Actions(ActionsBaseMgmt):
         repo.issues.append(issue)
         # Create issue service instance of the newly created github issue
         args = {'github.repo': repo_service.instance}
-        service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
+        service = self.service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)

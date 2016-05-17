@@ -3,16 +3,16 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self,service):
+    def init(self):
         return True
 
-    def install(self,service):
+    def install(self):
         self.monitor()
 
-    def monitor(self,service):
-        g=self.getGithubClient(service=service)
+    def monitor(self):
+        g=self.getGithubClient()
         #@todo implement test
 
     def getGithubClient(self):
-        g=j.clients.github.getClient(service.hrd.get("github.secret"))
+        g=j.clients.github.getClient(self.service.hrd.get("github.secret"))
         return g

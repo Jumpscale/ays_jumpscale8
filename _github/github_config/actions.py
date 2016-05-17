@@ -4,7 +4,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    
+
     def init(self,service):
 
         config="""
@@ -34,8 +34,8 @@ class Actions(ActionsBaseMgmt):
 
         labels=j.data.serializer.yaml.loads(config)
 
-        service.hrdCreate()
-        service.hrd.setArgs(labels)
+        self.service.hrdCreate()
+        self.service.hrd.setArgs(labels)
 
     def install(self,service):
         return True

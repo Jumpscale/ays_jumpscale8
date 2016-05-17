@@ -5,21 +5,21 @@ class Actions(ActionsBaseMgmt):
 
     def getMachine(self):
 
-        client = service.parent.actions.getClient()
+        client = self.service.parent.actions.getClient()
 
-        vdcobj = service.parent
+        vdcobj = self.service.parent
 
         account = client.account_get(vdcobj.hrd.get("g8.account"))
 
-        spacename = service.parent.instance
+        spacename = self.service.parent.instance
 
         space = account.space_get(spacename, location=client.locations[0]['name'])
-        if service.instance in space.machines:
-            return space.machines[service.instance]
+        if self.service.instance in space.machines:
+            return space.machines[self.service.instance]
         else:
-            machine = space.machine_create(name=service.instance,
-                                           image=service.hrd.get('os.image'),
-                                           memsize=int(service.hrd.get('os.size')))
+            machine = space.machine_create(name=self.service.instance,
+                                           image=self.service.hrd.get('os.image'),
+                                           memsize=int(self.service.hrd.get('os.size')))
             return machine
 
     def open_port(self, requested_port, public_port=None):
@@ -36,7 +36,7 @@ class Actions(ActionsBaseMgmt):
                 else:
                     candidate += 1
         machine = self.getMachine()
-        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
+        executor = j.tools.executor.getSSHBased(self.service.hrd.get("publicip"), self.service.hrd.getInt("sshport"), 'root')
 
         # check if already open, if yes return public port
         spaceport = None
@@ -54,30 +54,30 @@ class Actions(ActionsBaseMgmt):
 
             machine.create_portforwarding(spaceport, requested_port)
 
-        pf = service.hrd.getList('portforwards', [])
+        pf = self.service.hrd.getList('portforwards', [])
         pf.append("%s:%s" % (spaceport, requested_port))
-        service.hrd.set('portforwards', pf)
+        self.service.hrd.set('portforwards', pf)
 
         return spaceport
 
     def install(self):
         machine = self.getMachine()
-        service.hrd.set('machineid', machine.id)
+        self.service.hrd.set('machineid', machine.id)
 
         executor = machine.get_ssh_connection()
-        if not service.hrd.get('publicip', ''):
-            service.hrd.set('publicip', machine.space.model['publicipaddress'])
-            service.hrd.set('sshport', executor.port)
-            if len(service.producers['sshkey']) >= 1:
-                sshkey = service.producers['sshkey'][0]
-                executor.cuisine.core.hostname = service.instance
+        if not self.service.hrd.get('publicip', ''):
+            self.service.hrd.set('publicip', machine.space.model['publicipaddress'])
+            self.service.hrd.set('sshport', executor.port)
+            if len(self.service.producers['sshkey']) >= 1:
+                sshkey = self.service.producers['sshkey'][0]
+                executor.cuisine.core.hostname = self.service.instance
                 executor.cuisine.ssh.authorize('root', sshkey.hrd.get('key.pub'))
 
-        for child in service.children:
-            child.hrd.set("ssh.addr", service.hrd.get("publicip"))
-            child.hrd.set("ssh.port", service.hrd.get("sshport"))
+        for child in self.service.children:
+            child.hrd.set("ssh.addr", self.service.hrd.get("publicip"))
+            child.hrd.set("ssh.port", self.service.hrd.get("sshport"))
 
-        for port in service.hrd.getList('ports'):
+        for port in self.service.hrd.getList('ports'):
             ss = port.split(':')
             if len(ss) == 2:
                 self.open_port(requested_port=ss[1], public_port=ss[0])
@@ -86,6 +86,6 @@ class Actions(ActionsBaseMgmt):
 
 
     def uninstall(self):
-        if service.hrd.get('machineid', ''):
+        if self.service.hrd.get('machineid', ''):
             machine = self.getMachine()
             machine.delete()

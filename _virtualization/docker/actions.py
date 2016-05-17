@@ -1,9 +1,7 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-
-class Actions(ActionsBase):
+class Actions(ActionsBaseMgmt):
 
     def __init__(self, service):
         super(Actions, self).__init__(service)
@@ -13,22 +11,22 @@ class Actions(ActionsBase):
 
     @property
     def dockerhost(self):
-        return service.parent
+        return self.service.parent
 
     def getExecutor(self):
-        sshkey = service.getProducers('sshkey')[0]
+        sshkey = self.service.getProducers('sshkey')[0]
         keypath = j.sal.fs.joinPaths(sshkey.path, 'key_%s.pub' % sshkey.hrd.get('key.name'))
         addr = getattr(self.dockerhost.action_methods_mgmt.cuisine.executor, 'addr', 'localhost')
         return j.tools.executor.getSSHBased(addr=addr,
-                                            port=service.hrd.getInt('sshport'),
+                                            port=self.service.hrd.getInt('sshport'),
                                             pushkey=keypath)
 
     @property
     def portmap(self):
         if self._portmap:
             return self._portmap
-        if service.hrd.get('dockermap', {}):
-            dockermap = service.hrd.getDict('dockermap')
+        if self.service.hrd.get('dockermap', {}):
+            dockermap = self.service.hrd.getDict('dockermap')
             return {int(local): int(public) for local, public in dockermap.items()}
 
     def _findFreePort(self, takenports):
@@ -46,7 +44,7 @@ class Actions(ActionsBase):
             host.create_portforwarding(spaceport, vmport)
 
     def _createMap(self, source):
-        portforwards = service.hrd.getList('ports')
+        portforwards = self.service.hrd.getList('ports')
         portmap = dict()
         for port in portforwards:
             if port.find(':') != -1:
@@ -68,8 +66,8 @@ class Actions(ActionsBase):
 
         self._portmap = self._createMap(spaceports)
 
-        # service.hrd.set('dockermap', '\n'.join(['%i:%i,' % (local, public) for local, public in self._portmap.items()]))
-        service.hrd.set('dockermap', self._portmap)
+        # self.service.hrd.set('dockermap', '\n'.join(['%i:%i,' % (local, public) for local, public in self._portmap.items()]))
+        self.service.hrd.set('dockermap', self._portmap)
 
         openports = self.dockerhost.action_methods_mgmt.cuisine.run("ss -al", showout=False)
         vmports = list()
@@ -84,12 +82,12 @@ class Actions(ActionsBase):
 
         portforwards = ' '.join(['%i:%i' % (local, public) for local, public in dockermap.items()])
 
-        sshkey = service.getProducers('sshkey')[0]
+        sshkey = self.service.getProducers('sshkey')[0]
         pubkey = sshkey.hrd.get('key.pub')
         portforwards = "-p '%s'" % portforwards if portforwards else ""
-        image = service.hrd.getStr('image')
-        cuisine.run("/opt/jumpscale8/bin/jsdocker create -i %s -n %s %s --pubkey '%s' --aysfs" % (image, service.instance, portforwards, pubkey), profile=True)
-        sshport = cuisine.run('docker port %s 22' % service.instance)
+        image = self.service.hrd.getStr('image')
+        cuisine.run("/opt/jumpscale8/bin/jsdocker create -i %s -n %s %s --pubkey '%s' --aysfs" % (image, self.service.instance, portforwards, pubkey), profile=True)
+        sshport = cuisine.run('docker port %s 22' % self.service.instance)
         if ':' in sshport:
             sshport = sshport.rsplit(':', 1)[1]
 
@@ -99,19 +97,19 @@ class Actions(ActionsBase):
 
         pfmap = {int(sshport): spaceport}
 
-        service.hrd.set('sshport', spaceport)
+        self.service.hrd.set('sshport', spaceport)
         for dockerport, vmport in dockermap.items():
             pfmap[vmport] = self._portmap[dockerport]
 
         self._createPortForwards(pfmap)
 
-        print("OUT: Docker %s deployed.", service.instance)
+        print("OUT: Docker %s deployed.", self.service.instance)
         print("OUT: IP %s", cuisine.executor.addr)
         print("OUT: SSH port %s", sshport)
 
-        if service.hrd.getBool('shellinabox'):
-            recipe = service.aysrepo.getRecipe('shellinabox')
-            recipe.newInstance(instance=service.instance, consume=service)
+        if self.service.hrd.getBool('shellinabox'):
+            recipe = self.service.aysrepo.getRecipe('shellinabox')
+            recipe.newInstance(instance=self.service.instance, consume=service)
 
 
         # prepare docker with js paths
@@ -121,13 +119,13 @@ class Actions(ActionsBase):
 
         # make sure docker is registered in caddy and shellinabox if set to do so
         # local = j.tools.cuisine.get()
-        # fw = "%s/%s" % (service.instance, j.data.idgenerator.generateXCharID(15))
-        # if service.hrd.getBool('caddyproxy'):
+        # fw = "%s/%s" % (self.service.instance, j.data.idgenerator.generateXCharID(15))
+        # if self.service.hrd.getBool('caddyproxy'):
         #     rc, _ = local.run('which caddy', die=False)
         #     if rc:
         #         local.apps.caddy.build()
         #     path = "/webaccess/%s" % (fw)
-        #     backend = "localhost:4200/%s" % service.instance
+        #     backend = "localhost:4200/%s" % self.service.instance
         #     proxy = """proxy {path} {backend}""".format(path=path, backend=backend)
         #
         #     local.file_append('$cfgDir/caddy/caddyfile.conf', '\n%s' % proxy)
@@ -137,11 +135,11 @@ class Actions(ActionsBase):
         #     local.processmanager.stop('caddy')
         #     local.processmanager.start('caddy')
         #
-        # if service.hrd.getBool('shellinabox'):
+        # if self.service.hrd.getBool('shellinabox'):
         #     rc, _ = local.run('which shellinaboxd', die=False)
         #     if rc:
         #         local.package.install('shellinabox')
-        #     dockerip = service.parent.hrd.get('machine.publicip').strip()
+        #     dockerip = self.service.parent.hrd.get('machine.publicip').strip()
         #     path = ('$cfgDir/shellinabox')
         #     config = local.file_read(path).splitlines()
         #     config.append('/%s:root:root:/:ssh root@%s -p %s' % (fw, dockerip, self.hrd.get('sshport')))

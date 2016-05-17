@@ -1,12 +1,10 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-
-class Actions(ActionsBase):
+class Actions(ActionsBaseMgmt):
 
     def getClient(self):
-        url = service.hrd.getStr('url')
-        login = service.hrd.getStr('login')
-        passwd = service.hrd.getStr('password')
+        url = self.service.hrd.getStr('url')
+        login = self.service.hrd.getStr('login')
+        passwd = self.service.hrd.getStr('password')
         return j.clients.skydns.get(url, login, passwd)

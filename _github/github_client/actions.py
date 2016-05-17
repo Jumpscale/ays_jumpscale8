@@ -1,27 +1,27 @@
 
 class Actions(ActionsBaseMgmt):
 
-    def install(self,service):
-        self.monitor(service=service)
+    def install(self):
+        self.monitor()
 
-    def monitor(self,service):
-        g=self.getGithubClient(service=service)
+    def monitor(self):
+        g = self.getGithubClient()
         #@todo implement test
 
-    def getGithubClient(self,service):
-        g=j.clients.github.getClient(service.hrd.get("github.secret"))        
+    def getGithubClient(self):
+        g = j.clients.github.getClient(self.service.hrd.get("github.secret"))
         return g
 
     @action()
-    def test(self,service):
-        print ("test")
+    def test(self):
+        print("test")
 
     @action()
-    def test2(self,service):
-        print ("test2")        
-        print ("$(github.secret)")        
+    def test2(self):
+        print("test2")
+        print("$(github.secret)")
 
     @action(queue="main")
-    def testasync(self,service):
-        print ("testasync")        
-        print ("$(github.secret)")                
+    def testasync(self):
+        print("testasync")
+        print("$(github.secret)")
