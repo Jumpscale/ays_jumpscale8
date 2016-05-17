@@ -4,15 +4,16 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     def init(self):
-        g8_url = service.hrd.getStr('g8.url')
-        g8_login = service.hrd.getStr('g8.login')
-        g8_password = service.hrd.getStr('g8.password')
-        g8_account = service.hrd.getStr('g8.account')
-        dns_login = service.hrd.getStr('dns.login')
-        dns_password = service.hrd.getStr('dns.password')
-        cockpit_name = service.hrd.getStr('cockpit.name')
-        telegram_token = service.hrd.getStr('telegram.token')
-        portal_password = service.hrd.getStr('portal.password')
+        g8_url = self.service.hrd.getStr('g8.url')
+        g8_login = self.service.hrd.getStr('g8.login')
+        g8_password = self.service.hrd.getStr('g8.password')
+        g8_account = self.service.hrd.getStr('g8.account')
+        dns_login = self.service.hrd.getStr('dns.login')
+        dns_password = self.service.hrd.getStr('dns.password')
+        cockpit_name = self.service.hrd.getStr('cockpit.name')
+        telegram_token = self.service.hrd.getStr('telegram.token')
+        portal_password = self.service.hrd.getStr('portal.password')
+        dns_domain = self.service.hrd.getStr("dns.domain")
 
         args = {'g8.url': g8_url,
                 'g8.login': g8_login,
@@ -57,7 +58,7 @@ class Actions(ActionsBaseMgmt):
             "telegram.token": telegram_token,
             "gid": 1,
             "portal.password": portal_password,
-            "dns.domain": g8_login,
+            "dns.domain": dns_domain,
             'node': docker.instance,
             'dns_client': dns_client.instance
         }

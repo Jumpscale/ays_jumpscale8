@@ -8,3 +8,4 @@ portal.password = type:str
 aysfs = type:bool default:True
 dns.login = type:str
 dns.password = type:str
+dns.domain = type:str
