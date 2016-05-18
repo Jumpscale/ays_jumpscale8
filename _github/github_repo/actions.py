@@ -136,7 +136,7 @@ class Actions(ActionsBaseMgmt):
                 ppp
                 print("LOAD ISSUES FROM GITHUB")
                 # self.service.state.set("getIssuesFromGithub","DO")
-                self.getIssuesFromGithub()
+                self.getIssuesFromGithub(service=service)
                 repo.issues_loaded = True
         return repo
 
