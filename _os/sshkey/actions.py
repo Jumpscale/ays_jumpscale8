@@ -52,9 +52,6 @@ class Actions(ActionsBaseMgmt):
 
         j.sal.fs.removeDirTree(tmpdir)
 
-        self.install()
-
-
     def install(self):
         j.do.loadSSHAgent()
         self.start()
