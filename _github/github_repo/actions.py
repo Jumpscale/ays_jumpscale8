@@ -179,7 +179,7 @@ class Actions(ActionsBaseMgmt):
 
         labelsprint = ",".join(labels)
 
-        self.service.logger.info("Have set labels in %s:%s" % (self.service, labelsprint))
+        self.service.logger.info("Have set labels in %s:%s" % (service, labelsprint))
 
         issues = r.loadIssues()
 

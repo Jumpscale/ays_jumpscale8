@@ -5,7 +5,7 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
 
-    def init(self):
+    def init(self,service):
 
         config="""
         github.label.priority.critical: ['*']
@@ -37,5 +37,5 @@ class Actions(ActionsBaseMgmt):
         self.service.hrdCreate()
         self.service.hrd.setArgs(labels)
 
-    def install(self):
+    def install(self,service):
         return True
