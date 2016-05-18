@@ -6,7 +6,7 @@ class Actions(ActionsBaseMgmt):
     @action()
     def process(self):
         Issue = j.clients.github.getIssueClass()
-        repo = self.service.parent.actions.get_github_repo()
+        repo = self.service.parent.actions.get_github_repo(service=self.service.parent)
 
         # only process this specific issue.
         for issue in repo.issues:
