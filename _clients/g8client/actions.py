@@ -4,12 +4,12 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
 
-    def input(self,name,role,instance,args={}):
+    def input(self,service,name,role,instance,serviceargs):
 
-        if "g8.account" not in args or args["g8.account"].strip()=="":
-            args['g8.account']=args["g8.login"]
+        if "g8.account" not in serviceargs or serviceargs["g8.account"].strip()=="":
+            serviceargs['g8.account']=serviceargs["g8.login"]
 
-        return args
+        return serviceargs
 
 
     def init(self):
