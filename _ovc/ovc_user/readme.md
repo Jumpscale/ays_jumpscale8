@@ -6,6 +6,7 @@ g8client__bescale1:
   g8.url: 'be-scale-1.demo.greenitglobe.com'
   g8.login: 'mylogin'
   g8.password: 'secret'
+  g8.account: 'cloudpatato01'
 
 vdc__user1:
   g8.client.name: 'bescale1'
