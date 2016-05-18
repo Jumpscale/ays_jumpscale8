@@ -4,4 +4,11 @@ vdcfarm = type:str parent:'vdcfarm' auto
 g8.client.name = type:str consume:'g8client' auto
 g8.account = type:str default:''
 g8.location = type:str default:''
-
+maxMemoryCapacity: type:int default:-1
+maxVDiskCapacity: type:int default:-1
+maxCPUCapacity: type:int default:-1
+maxNASCapacity: type:int default:-1
+maxArchiveCapacity: type:int default:-1
+maxNetworkOptTransfer: type:int default:-1
+maxNetworkPeerTransfer: type:int default:-1
+maxNumPublicIP: type:int default:-1
