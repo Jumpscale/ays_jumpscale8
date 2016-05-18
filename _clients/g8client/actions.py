@@ -19,7 +19,7 @@ class Actions(ActionsBaseMgmt):
         """
         return client towards g8 master
         """
-        url = self.service.hrd.getStr('g8.url')
-        login = self.service.hrd.getStr('g8.login')
-        password = self.service.hrd.getStr('g8.password')
+        url = service.hrd.getStr('g8.url')
+        login = service.hrd.getStr('g8.login')
+        password = service.hrd.getStr('g8.password')
         return j.clients.openvcloud.get(url, login, password)

@@ -7,4 +7,4 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def install(self):
-        self.service.executor.cuisine.installer.jumpscale8()
+        service.executor.cuisine.installer.jumpscale8()

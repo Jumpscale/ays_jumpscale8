@@ -3,7 +3,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
     def install(self):
-        self.service.executor.cuisine.docker.install()
+        service.executor.cuisine.docker.install()
 
     def start(self):
         pass

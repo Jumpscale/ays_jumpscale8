@@ -7,10 +7,10 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def install(self):
-        self.service.executor.cuisine.installer.jumpscale8()
+        service.executor.cuisine.installer.jumpscale8()
 
     def start(self):
-        self.service.executor.cuisine.core.run('js8 start')
+        service.executor.cuisine.core.run('js8 start')
 
     def stop(self):
-        self.service.executor.cuisine.core.run('js8 stop')
+        service.executor.cuisine.core.run('js8 stop')

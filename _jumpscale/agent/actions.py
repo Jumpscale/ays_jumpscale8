@@ -1,13 +1,16 @@
 from JumpScale import j
 
+ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-class Actions(ActionsBaseMgmt):
+
+class Actions(ActionsBase):
 
     def __init__(self, service):
         super(Actions, self).__init__(service)
+        service = service
         self._cuisine = None
 
-    def install(self):
+    def install(self):        
         machine = self.parent.actions_mgmt.getMachine()
         executor = machine.get_ssh_connection()
         executor.cuisine.apps.core.build(j.application.whoAmI.gid, machine.id)

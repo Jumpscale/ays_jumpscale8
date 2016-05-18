@@ -1,7 +1,9 @@
 from JumpScale import j
 
+ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-class Actions(ActionsBaseMgmt):
+
+class Actions(ActionsBase):
 
     def __init__(self, service):
         super(Actions, self).__init__(service)
@@ -11,7 +13,7 @@ class Actions(ActionsBaseMgmt):
     def cuisine(self):
         if self._cuisine is None:
             machine = self.getMachine()
-            self.service.hrd.set("machine.id", machine.id)
+            service.hrd.set("machine.id", machine.id)
             executor = machine.get_ssh_connection()
             addr = executor.addr
             port = executor.port
@@ -20,39 +22,39 @@ class Actions(ActionsBaseMgmt):
 
     def hrd(self):
         # def setDockerSize():
-        #     size = self.service.hrd.getInt("docker.size")
+        #     size = service.hrd.getInt("docker.size")
         #     ok = [8]
         #     for item in ok:
         #         if item == size:
-        #             self.service.hrd.set("docker.size", item)
+        #             service.hrd.set("docker.size", item)
         #             return
         #         if size < item:
-        #             self.service.hrd.set("docker.size", item)
+        #             service.hrd.set("docker.size", item)
         #             return
-        #     self.service.hrd.set("docker.size", item)
+        #     service.hrd.set("docker.size", item)
 
         def setDiskSize():
-            size = self.service.hrd.getInt("disk.size")
+            size = service.hrd.getInt("disk.size")
             ok = [20]
             for item in ok:
                 if item == size:
-                    self.service.hrd.set("disk.size", item)
+                    service.hrd.set("disk.size", item)
                     return
                 if size < item:
-                    self.service.hrd.set("disk.size", item)
+                    service.hrd.set("disk.size", item)
                     return
-            self.service.hrd.set("disk.size", item)
+            service.hrd.set("disk.size", item)
 
         # setDockerSize()
         setDiskSize()
 
     def getClient(self):
-        vdc = self.service.parent
+        vdc = service.parent
         client = vdc.action_methods_mgmt.getClient()
         return client
 
     def getSpace(self):
-        vdc = self.service.parent
+        vdc = service.parent
         farm = vdc.parent
 
         account = self.getClient().account_get(farm.hrd.get('account'))
@@ -62,10 +64,10 @@ class Actions(ActionsBaseMgmt):
     def getMachine(self):
         space = self.getSpace()
 
-        if self.service.instance in space.machines:
-            machine = space.machines[self.service.instance]
+        if service.instance in space.machines:
+            machine = space.machines[service.instance]
         else:
-            machine = space.machine_create(name=self.service.instance,
+            machine = space.machine_create(name=service.instance,
                                            image='$(os.image)',
                                            memsize=int('$(os.size)'))
         return machine
@@ -75,7 +77,7 @@ class Actions(ActionsBaseMgmt):
         executor = machine.get_ssh_connection()
 
         # expose weave
-        if self.service.hrd.getBool('weave'):
+        if service.hrd.getBool('weave'):
             pf_existing = {'tcp': [], 'udp': []}
             for pf in machine.portforwardings:
                 pf_existing[pf['protocol']].append(pf['publicPort'])
@@ -88,18 +90,18 @@ class Actions(ActionsBaseMgmt):
             if '6784' not in pf_existing['udp']:
                 machine.create_portforwarding('6784', '6784', 'udp')
 
-        self.service.hrd.set("machine.id", machine.id)
-        self.service.hrd.set("machine.publicip", executor.addr)
+        service.hrd.set("machine.id", machine.id)
+        service.hrd.set("machine.publicip", executor.addr)
         nics = machine.model['nics']
         if nics:
             privateip = nics[0]['ipAddress']
-            self.service.hrd.set("machine.privateip", privateip)
-        self.service.hrd.set("machine.sshport", executor.port)
+            service.hrd.set("machine.privateip", privateip)
+        service.hrd.set("machine.sshport", executor.port)
 
         # authorize sshkey for root user
         # executor.cuisine.set_sudomode()
-        if 'sshkey' in self.service.producers:
-            sshkey = self.service.producers['sshkey'][0]
+        if 'sshkey' in service.producers:
+            sshkey = service.producers['sshkey'][0]
             sshkey_pub = sshkey.hrd.get('key.pub')
         else:
             raise RuntimeError("No sshkey found. please consume an sshkey service")
@@ -109,13 +111,13 @@ class Actions(ActionsBaseMgmt):
         # reconnect as root
         executor = j.tools.executor.getSSHBased(executor.addr, executor.port, 'root')
         # executor.cuisine.run('apt-get update')
-        if self.service.hrd.getBool("aysfs"):
+        if service.hrd.getBool("aysfs"):
             executor.cuisine.installer.jumpscale8(force=True)
         else:
             executor.cuisine.installerdevelop.jumpscale8(force=True)
 
         # get gid from cockpit config
-        # if self.service.hrd.getBool('agent'):
+        # if service.hrd.getBool('agent'):
         #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
         #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
