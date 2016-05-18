@@ -10,7 +10,7 @@ class Actions(ActionsBase):
         service = service
         self._cuisine = None
 
-    def install(self):        
+    def install(self, service):        
         machine = self.parent.actions_mgmt.getMachine()
         executor = machine.get_ssh_connection()
         executor.cuisine.apps.core.build(j.application.whoAmI.gid, machine.id)

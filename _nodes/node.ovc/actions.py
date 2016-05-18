@@ -3,7 +3,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def getMachine(self):
+    def getMachine(self, service):
 
         client = service.parent.actions.getClient()
 
@@ -60,7 +60,7 @@ class Actions(ActionsBaseMgmt):
 
         return spaceport
 
-    def install(self):
+    def install(self, service):
         machine = self.getMachine()
         service.hrd.set('machineid', machine.id)
 
@@ -85,7 +85,7 @@ class Actions(ActionsBaseMgmt):
                 self.open_port(requested_port=port)
 
 
-    def uninstall(self):
+    def uninstall(self, service):
         if service.hrd.get('machineid', ''):
             machine = self.getMachine()
             machine.delete()

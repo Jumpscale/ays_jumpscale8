@@ -3,12 +3,12 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def getExecutor(self):
+    def getExecutor(self, service):
         addr = service.parent.producers['os'][0].hrd.getStr('ssh.addr')
         port = service.parent.hrd.get('docker.sshport')
         return j.tools.executor.getSSHBased(addr, port, 'root')
 
-    def install(self):
+    def install(self, service):
         if 'sshkey' in service.producers:
             sshkey = service.producers['sshkey'][0]
             sshkey_priv = sshkey.hrd.get('key.priv')
@@ -34,7 +34,7 @@ class Actions(ActionsBaseMgmt):
         self.gid()
 
     @action()
-    def dns(self):
+    def dns(self, service):
         def get_dns_client():
             if 'dns_client' not in service.producers:
                 raise j.exceptions.AYSNotFound("No dns client found in producers")
@@ -71,7 +71,7 @@ class Actions(ActionsBaseMgmt):
         dns_client.setRecordA(domain, ip, ttl=120) # TODO, set real TTL
 
     @action()
-    def grafana(self):
+    def grafana(self, service):
         cuisine = self.getExecutor().cuisine
         cuisine.apps.grafana.start()
         cfg = cuisine.core.file_read('$cfgDir/grafana/grafana.ini')
@@ -90,7 +90,7 @@ class Actions(ActionsBaseMgmt):
         cl.changePassword(service.hrd.getStr('portal.password'))
 
     @action()
-    def portal(self):
+    def portal(self, service):
         cuisine = self.getExecutor().cuisine
         cuisine.apps.portal.start(force=True, passwd=service.hrd.getStr('portal.password'))
         # link required cockpit spaces
@@ -103,7 +103,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.start('portal')
 
     @action()
-    def shellinaboxd(self):
+    def shellinaboxd(self, service):
         cuisine = self.getExecutor().cuisine
         # TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
@@ -111,7 +111,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.ensure('shellinabox_cockpit', cmd=cmd)
 
     @action()
-    def caddy(self):
+    def caddy(self, service):
         cuisine = self.getExecutor().cuisine
         caddy_main_cfg = """
         $hostname
@@ -161,13 +161,13 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.ensure('caddy', cmd)
 
     @action()
-    def robot(self):
+    def robot(self, service):
         cuisine = self.getExecutor().cuisine
         cmd = "ays bot --token %s" % service.hrd.getStr('telegram.token')
         cuisine.tmux.executeInScreen('aysrobot', 'aysrobot', cmd, wait=0)
 
     @action()
-    def gid(self):
+    def gid(self, service):
         cuisine = self.getExecutor().cuisine
         content = "grid.id = %d\nnode.id = 0" % service.hrd.getInt('gid')
         cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)

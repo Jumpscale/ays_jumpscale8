@@ -12,10 +12,10 @@ class Actions(ActionsBase):
         self._portmap = dict()
 
     @property
-    def dockerhost(self):
+    def dockerhost(self, service):
         return service.parent
 
-    def getExecutor(self):
+    def getExecutor(self, service):
         sshkey = service.getProducers('sshkey')[0]
         keypath = j.sal.fs.joinPaths(sshkey.path, 'key_%s.pub' % sshkey.hrd.get('key.name'))
         addr = getattr(self.dockerhost.action_methods_mgmt.cuisine.executor, 'addr', 'localhost')
@@ -24,7 +24,7 @@ class Actions(ActionsBase):
                                             pushkey=keypath)
 
     @property
-    def portmap(self):
+    def portmap(self, service):
         if self._portmap:
             return self._portmap
         if service.hrd.get('dockermap', {}):
@@ -59,7 +59,7 @@ class Actions(ActionsBase):
             portmap[port] = toport
         return portmap
 
-    def install(self):
+    def install(self, service):
         cuisine = self.dockerhost.action_methods_mgmt.cuisine
         # cuisine.bash.include('/opt/jumpscale8/env.sh')
 

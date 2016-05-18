@@ -3,13 +3,13 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self):
+    def init(self, service):
 
         # if service.hrd.getBool('shellinabox'):
         #     shellinabox = service.aysrepo.new(instance=service.instance, consume=service)
         return True
 
-    def install(self):
+    def install(self, service):
         sshkey = service.getProducers('sshkey')[0]
         pubkey = sshkey.hrd.get('key.pub')
         image = service.hrd.getStr('image')

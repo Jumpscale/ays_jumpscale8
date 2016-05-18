@@ -3,7 +3,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self):
+    def init(self, service):
         
         args=service.args
 

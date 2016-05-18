@@ -4,7 +4,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self):
+    def init(self, service):
 
         clientaysi = service.getProducers("g8client")[0]
 
@@ -26,17 +26,17 @@ class Actions(ActionsBaseMgmt):
                         loc2set = space['location']
             service.hrd.set('g8.location', loc2set)
 
-    def install(self):
+    def install(self, service):
         client = self.getClient()
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
 
-    def uninstall(self):
+    def uninstall(self, service):
         client = self.getClient()
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
         client.api.cloudapi.cloudspaces.delete(id=space.id)
 
-    def getClient(self):
+    def getClient(self, service):
         g8client = service.getProducers("g8client")[0]
         return g8client.actions.getClient()

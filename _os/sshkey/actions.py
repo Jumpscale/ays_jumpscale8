@@ -3,17 +3,17 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def getSSHKey(self):
+    def getSSHKey(self, service):
         keydest = j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
         privkey = j.sal.fs.fileGetContents(keydest)
         pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
         return privkey, pubkey
 
-    def _startAgent(self):
+    def _startAgent(self, service):
         # FIXME
         j.do.execute("ssh-agent", die=False, showout=False, outputStderr=False)
 
-    def init(self):
+    def init(self, service):
         """
         create key
         """
@@ -52,12 +52,12 @@ class Actions(ActionsBaseMgmt):
 
         j.sal.fs.removeDirTree(tmpdir)
 
-    def install(self):
+    def install(self, service):
         j.do.loadSSHAgent()
         self.start()
 
 
-    def start(self):
+    def start(self, service):
         """
         Add key to SSH Agent if not already loaded
         """
@@ -66,7 +66,7 @@ class Actions(ActionsBaseMgmt):
 
 
     #not sure we can remove, key can be used for something else
-    # def stop(self):
+    # def stop(self, service):
     #     """
     #     Remove key from SSH Agent
     #     """

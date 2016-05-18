@@ -13,6 +13,6 @@ class Actions(ActionsBaseMgmt):
         g=self.getGithubClient(service=service)
         #@todo implement test
 
-    def getGithubClient(self):
+    def getGithubClient(self, service):
         g=j.clients.github.getClient(service.hrd.get("github.secret"))
         return g

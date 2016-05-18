@@ -4,7 +4,7 @@ ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
-    def install(self):
+    def install(self, service):
         executor = j.tools.executor.getLocal()
         executor.cuisine.package.install('shellinabox')
 
@@ -38,13 +38,13 @@ proxy %s 127.0.0.1:%s {
             cfg = executor.cuisine.file_append('$varDir/cfg/caddy/caddyfile', proxy)
             executor.cuisine.processmanager.reload('caddy')
 
-    def start(self):
+    def start(self, service):
         executor.cuisine.processmanager.start('shellinabox_%s' % service.instance)
 
-    def stop(self):
+    def stop(self, service):
         executor.cuisine.processmanager.stop('shellinabox_%s' % service.instance)
 
-    def uninstall(self):
+    def uninstall(self, service):
         pass
         # TODO remove config in caddy
 

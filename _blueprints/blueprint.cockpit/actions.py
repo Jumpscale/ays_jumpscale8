@@ -3,7 +3,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self):
+    def init(self, service):
         g8_url = service.hrd.getStr('g8.url')
         g8_login = service.hrd.getStr('g8.login')
         g8_password = service.hrd.getStr('g8.password')

@@ -10,7 +10,7 @@ class Actions(ActionsBase):
         self._cuisine = None
 
     @property
-    def cuisine(self):
+    def cuisine(self, service):
         if self._cuisine is None:
             machine = self.getMachine()
             service.hrd.set("machine.id", machine.id)
@@ -20,7 +20,7 @@ class Actions(ActionsBase):
             self._cuisine = j.tools.executor.getSSHBased(addr, port).cuisine
         return self._cuisine
 
-    def hrd(self):
+    def hrd(self, service):
         # def setDockerSize():
         #     size = service.hrd.getInt("docker.size")
         #     ok = [8]
@@ -48,12 +48,12 @@ class Actions(ActionsBase):
         # setDockerSize()
         setDiskSize()
 
-    def getClient(self):
+    def getClient(self, service):
         vdc = service.parent
         client = vdc.action_methods_mgmt.getClient()
         return client
 
-    def getSpace(self):
+    def getSpace(self, service):
         vdc = service.parent
         farm = vdc.parent
 
@@ -61,7 +61,7 @@ class Actions(ActionsBase):
         space = account.space_get(vdc.instance, location=vdc.hrd.get('location'))
         return space
 
-    def getMachine(self):
+    def getMachine(self, service):
         space = self.getSpace()
 
         if service.instance in space.machines:
@@ -72,7 +72,7 @@ class Actions(ActionsBase):
                                            memsize=int('$(os.size)'))
         return machine
 
-    def install(self):
+    def install(self, service):
         machine = self.getMachine()
         executor = machine.get_ssh_connection()
 
@@ -121,7 +121,7 @@ class Actions(ActionsBase):
         #     executor.cuisine.builder.core(j.application.whoAmI.gid, machine.id)
         #     executor.cuisine.builder._startCore(j.application.whoAmI.gid, machine.id)
 
-    def uninstall(self):
+    def uninstall(self, service):
         machine = self.getMachine()
         machine.stop()
         machine.delete()

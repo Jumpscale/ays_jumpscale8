@@ -5,7 +5,7 @@ ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 class Actions(ActionsBase):
 
-    # def _generateProxies(self):
+    # def _generateProxies(self, service):
     #     proxies = []
     #     for docker in service.hrd.getList('backends'):
     #             # path = "/webaccess/%s/%s" % (docker, j.data.idgenerator.generateXCharID(15))
@@ -14,7 +14,7 @@ class Actions(ActionsBase):
     #             proxies.append(proxy)
     #     return proxies
 
-    def _registerDomain(self):
+    def _registerDomain(self, service):
         if 'skydnsclient' not in service.producers:
             raise RuntimeError("No skydns client found, please make sure this service consume a skydns client")
 
@@ -23,14 +23,14 @@ class Actions(ActionsBase):
         target = service.parent.parent.hrd.getStr('machine.publicip')
         print(cl.setRecordA(domain, target, ttl=300))
 
-    def showProxyURL(self):
+    def showProxyURL(self, service):
         print("OUT: Accessible dockers : ")
         ip = service.parent.parent.hrd.getStr('machine.publicip')
         for docker in service.hrd.getList('backends'):
             url = "http://%s/%s" % (ip, docker)
             print("OUT: ", url)
 
-    def install(self):
+    def install(self, service):
         self._registerDomain()
 
         # service.hrd.set('proxy.backends', self._getBackends())

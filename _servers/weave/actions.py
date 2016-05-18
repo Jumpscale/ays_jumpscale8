@@ -4,7 +4,7 @@ ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 
 class Actions(ActionsBase):
-    def _findWeavePeer(self):
+    def _findWeavePeer(self, service):
         services = service.aysrepo.findServices(role='dockerhost')
         for service in services:
             if service.instance == service.instance or not service.hrd.exists('machine.publicip'):
@@ -14,6 +14,6 @@ class Actions(ActionsBase):
                 return ip
         return None
 
-    def install(self):
+    def install(self, service):
         executor = service.parent.getExecutor()
         executor.cuisine.apps.weave.build(peer=self._findWeavePeer())

@@ -5,7 +5,7 @@ ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
 class Actions(ActionsBase):
 
-    def install(self):
+    def install(self, service):
         nodes = service.getProducers('docker')
         cluster = {'shard': [], 'config': [], 'mongos': []}
         clusterconfig = service.hrd.get('clusterconfig')
@@ -28,7 +28,7 @@ class Actions(ActionsBase):
         cuisine = j.tools.cuisine.get()
         cuisine.apps.mongodb.mongoCluster(cluster['shard'], cluster['config'], cluster['mongos'])
 
-    def load(self):
+    def load(self, service):
         nodes = service.getProducers('docker')
         cluster = {'shard': 'ourmongod', 'config': 'ourmongod_cfg', 'mongos': 'ourmongos'}
         clusterconfig = service.hrd.get('clusterconfig')

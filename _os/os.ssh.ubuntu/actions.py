@@ -2,7 +2,7 @@
 
 class Actions(ActionsBaseMgmt):
 
-    def init(self):
+    def init(self, service):
         if service.hrd.getBool('aysfs', False):
             service.aysrepo.new('aysfs', args={'os': service.instance}, parent=service)
 
@@ -18,15 +18,15 @@ class Actions(ActionsBaseMgmt):
         #     service.hrd.set("system.backdoor.passwd", j.data.idgenerator.generateXCharID(12))
         return True
 
-    def getExecutor(self):
+    def getExecutor(self, service):
         return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root')
 
-    def monitor(self):
+    def monitor(self, service):
         j.sal.nettools.tcpPortConnectionTest(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), timeout=5)
         j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True, forward_agent=False, allow_agent=True, look_for_keys=True, timeout=5, testConnection=True, die=True)
 
 
-    def install(self):
+    def install(self, service):
         if 'sshkey' in service.producers:
             sshkey = service.producers['sshkey'][0]
             sshkey_pub = sshkey.hrd.get('key.pub')

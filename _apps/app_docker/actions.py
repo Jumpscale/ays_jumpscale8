@@ -2,14 +2,14 @@ from JumpScale import j
 
 
 class Actions(ActionsBaseMgmt):
-    def install(self):
+    def install(self, service):
         service.executor.cuisine.docker.install()
 
-    def start(self):
+    def start(self, service):
         pass
 
-    def stop(self):
+    def stop(self, service):
         pass
 
-    def monitor(self):
+    def monitor(self, service):
         pass
