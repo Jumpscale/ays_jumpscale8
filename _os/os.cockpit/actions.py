@@ -87,17 +87,29 @@ class Actions(ActionsBaseMgmt):
         cl = j.clients.grafana.get('https://%s/grafana/' % domain, username='admin', password='admin')
         cl.updateDashboard(GrafanaData.dashboard['dashboard'])
         cl.addDataSource(GrafanaData.datasource)
-        cl.changePassword(service.hrd.getStr('portal.password'))
 
     @action()
     def portal(self, service):
         cuisine = self.getExecutor().cuisine
-        cuisine.apps.portal.start(force=True, passwd=service.hrd.getStr('portal.password'))
+        cuisine.apps.portal.start(force=True)
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit", "$cfgDir/portals/main/base/Cockpit")
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/AYS", "$cfgDir/portals/main/base/AYS")
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__atyourservice", "$cfgDir/portals/main/base/system__atyourservice")
+        content = cuisine.core.file_read("$cfgDir/portals/main/config.hrd")
+        hrd = j.data.hrd.get(content=content, prefixWithName=False)
+        hrd.set('param.cfg.force_oauth_instance', 'itsyou.online')
+        hrd.set('param.cfg.client_url', 'https://itsyou.online/v1/oauth/authorize')
+        hrd.set('param.cfg.token_url', 'https://itsyou.online/v1/oauth/access_token')
+        hrd.set('param.cfg.redirect_url', 'https://%s/restmachine/system/oauth/authorize' % self.service.hrd.getStr('dns.domain'))
+        hrd.set('param.cfg.client_scope', 'user:admin,user:memberof:%s' % self.service.hrd.getStr('oauth.organization'))
+        hrd.set('param.cfg.client_id', self.service.hrd.getStr('oauth.client_id'))
+        hrd.set('param.cfg.client_secret', self.service.hrd.getStr('oauth.client_secret'))
+        hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/users/')
+        hrd.set('param.cfg.client_logout_url', '')
+        content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
+
         # restart portal to load new spaces
         cuisine.processmanager.stop('portal')
         cuisine.processmanager.start('portal')

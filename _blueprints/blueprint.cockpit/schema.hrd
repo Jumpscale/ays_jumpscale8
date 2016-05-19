@@ -9,3 +9,7 @@ aysfs = type:bool default:True
 dns.login = type:str
 dns.password = type:str
 dns.domain = type:str
+
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.organization = type:str

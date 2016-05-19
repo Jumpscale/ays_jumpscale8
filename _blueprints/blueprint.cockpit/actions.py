@@ -13,6 +13,10 @@ class Actions(ActionsBaseMgmt):
         cockpit_name = service.hrd.getStr('cockpit.name')
         telegram_token = service.hrd.getStr('telegram.token')
         portal_password = service.hrd.getStr('portal.password')
+        dns_domain = self.service.hrd.getStr("dns.domain")
+        oauth_secret = self.service.hrd.getStr("oauth.client_secret")
+        oauth_id = self.service.hrd.getStr("oauth.client_id")
+        oauth_organization = self.service.hrd.getStr("oauth.organization")
 
         args = {'g8.url': g8_url,
                 'g8.login': g8_login,
@@ -59,6 +63,9 @@ class Actions(ActionsBaseMgmt):
             "portal.password": portal_password,
             "dns.domain": dns_domain,
             'node': docker.instance,
-            'dns_client': dns_client.instance
+            'dns_client': dns_client.instance,
+            'oauth.client_secret': oauth_secret,
+            'oauth.client_id': oauth_id,
+            'oauth.organization': oauth_organization
         }
         cockpit = service.aysrepo.new('os.cockpit', args=args, instance=cockpit_name, parent=docker)

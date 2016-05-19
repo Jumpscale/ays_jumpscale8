@@ -4,5 +4,8 @@ dns_client = type:str consume:dns_client:1 auto
 
 dns.domain = type:str @ASK descr:'dns domain of the G8 Cockpit'
 telegram.token = type:str @ASK descr:'token for the ays robot'
-portal.password = type:str @ASK descr:'password for the admi user of the portal'
 gid = type:int descr:"Grid ID"
+
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.organization = type:str
