@@ -54,7 +54,7 @@ class Actions(ActionsBaseMgmt):
 
     def install(self, service):
         j.do.loadSSHAgent()
-        self.start()
+        self.start(service=service)
 
 
     def start(self, service):
