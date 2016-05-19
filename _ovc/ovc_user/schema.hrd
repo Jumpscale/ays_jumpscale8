@@ -2,8 +2,6 @@ vdcfarm = type:str parent:'vdcfarm' auto
 vdc = type:str consume:'vdc' auto
 g8.client.name = type:str consume:'g8client' auto
 
-authentication_method = type:str singlechoice:'password', 'oauth2'
-authentication_provider = type:str singlechoice:'itsyou.online'
 username = type:str
 password = type:str
 groups = type:str list default:'user'
