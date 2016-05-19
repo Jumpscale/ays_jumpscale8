@@ -5,7 +5,7 @@ class Actions(ActionsBaseMgmt):
 
     def getMachine(self, service):
 
-        client = service.parent.actions.getClient()
+        client = service.parent.actions.getClient(service.parent)
 
         vdcobj = service.parent
 
@@ -22,7 +22,7 @@ class Actions(ActionsBaseMgmt):
                                            memsize=int(service.hrd.get('os.size')))
             return machine
 
-    def open_port(self, requested_port, public_port=None):
+    def open_port(self, service, requested_port, public_port=None):
         """
         Open port in the firewall by creating port forward
         if public_port is None, auto select available port
@@ -35,7 +35,7 @@ class Actions(ActionsBaseMgmt):
                     return candidate
                 else:
                     candidate += 1
-        machine = self.getMachine()
+        machine = self.getMachine(service)
         executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
 
         # check if already open, if yes return public port
@@ -61,7 +61,7 @@ class Actions(ActionsBaseMgmt):
         return spaceport
 
     def install(self, service):
-        machine = self.getMachine()
+        machine = self.getMachine(service)
         service.hrd.set('machineid', machine.id)
 
         executor = machine.get_ssh_connection()
@@ -80,12 +80,12 @@ class Actions(ActionsBaseMgmt):
         for port in service.hrd.getList('ports'):
             ss = port.split(':')
             if len(ss) == 2:
-                self.open_port(requested_port=ss[1], public_port=ss[0])
+                self.open_port(service, requested_port=ss[1], public_port=ss[0])
             else:
-                self.open_port(requested_port=port)
+                self.open_port(service, requested_port=port)
 
 
     def uninstall(self, service):
         if service.hrd.get('machineid', ''):
-            machine = self.getMachine()
+            machine = self.getMachine(service)
             machine.delete()

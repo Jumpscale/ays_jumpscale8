@@ -13,3 +13,4 @@ dns.domain = type:str
 oauth.client_id = type:str
 oauth.client_secret = type:str
 oauth.organization = type:str
+oauth.jwt_key = type:str multiline

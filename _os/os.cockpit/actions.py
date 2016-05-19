@@ -32,6 +32,7 @@ class Actions(ActionsBaseMgmt):
         self.grafana()
         self.robot()
         self.gid()
+        self.cockpit()
 
     @action()
     def dns(self, service):
@@ -154,6 +155,10 @@ class Actions(ActionsBaseMgmt):
         proxy /grafana 127.0.0.1:3000 {
             without /grafana
         }
+
+        proxy /api 127.0.0.1:5000 {
+            without /api
+        }
         """
 
         caddy_portal_cfg = "proxy / 127.0.0.1:82"
@@ -173,13 +178,15 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.ensure('caddy', cmd)
 
     @action()
-    def robot(self, service):
-        cuisine = self.getExecutor().cuisine
-        cmd = "ays bot --token %s" % service.hrd.getStr('telegram.token')
-        cuisine.tmux.executeInScreen('aysrobot', 'aysrobot', cmd, wait=0)
-
-    @action()
     def gid(self, service):
         cuisine = self.getExecutor().cuisine
         content = "grid.id = %d\nnode.id = 0" % service.hrd.getInt('gid')
         cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)
+
+    @action()
+    def cockpit(self, service):
+        cuisine = self.getExecutor().cuisine
+        token = service.hrd.getStr('telegram.token')
+        jwt_key = service.hrd.getStr('jwt_key')
+        organization = service.hrd.getStr('organization')
+        cuisine.app.cockpit.start(token, jwt_key, organization)

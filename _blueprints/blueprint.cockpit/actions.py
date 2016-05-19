@@ -4,29 +4,17 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     def init(self, service):
-        g8_url = service.hrd.getStr('g8.url')
-        g8_login = service.hrd.getStr('g8.login')
-        g8_password = service.hrd.getStr('g8.password')
-        g8_account = service.hrd.getStr('g8.account')
-        dns_login = service.hrd.getStr('dns.login')
-        dns_password = service.hrd.getStr('dns.password')
         cockpit_name = service.hrd.getStr('cockpit.name')
-        telegram_token = service.hrd.getStr('telegram.token')
-        portal_password = service.hrd.getStr('portal.password')
-        dns_domain = self.service.hrd.getStr("dns.domain")
-        oauth_secret = self.service.hrd.getStr("oauth.client_secret")
-        oauth_id = self.service.hrd.getStr("oauth.client_id")
-        oauth_organization = self.service.hrd.getStr("oauth.organization")
 
-        args = {'g8.url': g8_url,
-                'g8.login': g8_login,
-                'g8.password': g8_password}
+        args = {'g8.url': service.hrd.getStr('g8.url'),
+                'g8.login': service.hrd.getStr('g8.login'),
+                'g8.password': service.hrd.getStr('g8.password')}
         g8_client = service.aysrepo.new('g8client', args=args, instance="main")
 
         args = {
             'url': 'https://dns1.aydo.com/etcd',
-            'login': dns_login,
-            'password': dns_password
+            'login': service.hrd.getStr('dns.login'),
+            'password': service.hrd.getStr('dns.password')
         }
         dns_client = service.aysrepo.new('dns_client', args=args, instance="main")
 
@@ -35,7 +23,8 @@ class Actions(ActionsBaseMgmt):
         vdcfarm = service.aysrepo.new('vdcfarm', instance="main")
 
         args = {
-            'g8.account': g8_account,
+            'g8.account': service.hrd.getStr('g8.account'),
+            'g8.url': service.hrd.getStr('g8.url'),
             'g8.client.name': g8_client.instance
         }
         vdc = service.aysrepo.new('vdc', args=args, instance=cockpit_name, parent=vdcfarm)
@@ -58,14 +47,16 @@ class Actions(ActionsBaseMgmt):
 
         args = {
             'aysfs': True,
-            "telegram.token": telegram_token,
+            "telegram.token": service.hrd.getStr('telegram.token'),
             "gid": 1,
-            "portal.password": portal_password,
-            "dns.domain": dns_domain,
+            "portal.password": service.hrd.getStr('portal.password'),
+            "dns.domain": service.hrd.getStr('dns.domain'),
             'node': docker.instance,
             'dns_client': dns_client.instance,
-            'oauth.client_secret': oauth_secret,
-            'oauth.client_id': oauth_id,
-            'oauth.organization': oauth_organization
+            'oauth.client_secret': service.hrd.getStr("oauth.client_secret"),
+            'oauth.client_id': service.hrd.getStr("oauth.client_id"),
+            'oauth.organization': service.hrd.getStr("oauth.organization"),
+            'oauth.jwt_key': service.hrd.getStr("oauth.jwt_key"),
+
         }
         cockpit = service.aysrepo.new('os.cockpit', args=args, instance=cockpit_name, parent=docker)
