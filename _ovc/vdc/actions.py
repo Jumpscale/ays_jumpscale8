@@ -32,14 +32,14 @@ class Actions(ActionsBaseMgmt):
         space = acc.space_get(name=service.instance,
                               location=service.hrd.get('g8.location'),
                               create=True,
-                              maxMemoryCapacity=service.hrd.getInt('maxMemoryCapacity'),
-                              maxVDiskCapacity=service.hrd.getInt('maxVDiskCapacity'),
-                              maxCPUCapacity=service.hrd.getInt('maxCPUCapacity'),
-                              maxNASCapacity=service.hrd.getInt('maxNASCapacity'),
-                              maxArchiveCapacity=service.hrd.getInt('maxArchiveCapacity'),
-                              maxNetworkOptTransfer=service.hrd.getInt('maxNetworkOptTransfer'),
-                              maxNetworkPeerTransfer=service.hrd.getInt('maxNetworkPeerTransfer'),
-                              maxNumPublicIP=service.hrd.getInt('maxNumPublicIP')
+                              maxMemoryCapacity=service.hrd.getInt('maxmemorycapacity'),
+                              maxVDiskCapacity=service.hrd.getInt('maxvdiskcapacity'),
+                              maxCPUCapacity=service.hrd.getInt('maxcpucapacity'),
+                              maxNASCapacity=service.hrd.getInt('maxnascapacity'),
+                              maxArchiveCapacity=service.hrd.getInt('maxarchivecapacity'),
+                              maxNetworkOptTransfer=service.hrd.getInt('maxnetworkopttransfer'),
+                              maxNetworkPeerTransfer=service.hrd.getInt('maxnetworkpeertransfer'),
+                              maxNumPublicIP=service.hrd.getInt('maxnumpublicip')
                               )
 
     def uninstall(self, service):
