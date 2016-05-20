@@ -9,7 +9,7 @@ class Actions(ActionsBaseMgmt):
         clientaysi = service.getProducers("g8client")[0]
 
         if service.hrd.get("g8.account") == "":
-            service.hrd.set("g8.account", clientaysi.hrd.get("g8.login"))
+            service.hrd.set("g8.account", clientaysi.hrd.get("g8.account"), clientaysi.hrd.get("g8.login"))
 
         if service.hrd.get("g8.location") == "":
 
