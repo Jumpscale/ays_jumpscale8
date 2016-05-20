@@ -41,6 +41,7 @@ class Actions(ActionsBaseMgmt):
                               maxNetworkPeerTransfer=service.hrd.getInt('maxnetworkpeertransfer'),
                               maxNumPublicIP=service.hrd.getInt('maxnumpublicip')
                               )
+        service.hrd.set('vdc.id', space.id)
 
     def uninstall(self, service):
         client = self.getClient(service)
