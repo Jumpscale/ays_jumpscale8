@@ -8,7 +8,7 @@ class Actions(ActionsBaseMgmt):
         pass
 
     def install(self, service):
-        client = self.getClient()
+        client = self.getClient(service)
         # create vdc if it doesn't exists
         if not client.api.system.usermanager.userexists(name='$(username)'):
             groups = service.hrd.getList('groups')
@@ -17,7 +17,9 @@ class Actions(ActionsBaseMgmt):
         for vdc in service.producers['vdc']:
             acc = client.account_get(vdc.hrd.get('g8.account'))
             space = acc.space_get(vdc.instance, vdc.hrd.get('g8.location'))
-            client.api.cloudapi.cloudspaces.addUser(cloudspaceId=space.id, userId='$(username)', accesstype="ARCXDU")
+            username = service.hrd.getStr('username')
+            if username not in [u['userGroupId'] for u in space.model['acl']]:
+                client.api.cloudapi.cloudspaces.addUser(cloudspaceId=space.id, userId=username, accesstype="ARCXDU")
 
     def uninstall(self, service):
         # unauthorize user to all consumed vdc
@@ -27,7 +29,5 @@ class Actions(ActionsBaseMgmt):
             client.api.cloudapi.cloudspaces.deleteUser(cloudspaceId=space.id, userId='$(username)', recursivedelete=True)
 
     def getClient(self, service):
-        clientname = """$(producer.g8client)"""
-        clientname = clientname.strip().strip("',")
-        g8client = service.aysrepo.getServiceFromKey(clientname)
-        return g8client.actions.getClient()
+        g8client = service.producers['g8client'][0]
+        return g8client.actions.getClient(g8client)
