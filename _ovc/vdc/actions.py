@@ -29,7 +29,18 @@ class Actions(ActionsBaseMgmt):
     def install(self, service):
         client = self.getClient(service)
         acc = client.account_get(service.hrd.get('g8.account'))
-        space = acc.space_get(service.instance, service.hrd.get('g8.location'))
+        space = acc.space_get(name=service.instance,
+                              location=service.hrd.get('g8.location'),
+                              create=True,
+                              maxMemoryCapacity=service.hrd.getInt('maxMemoryCapacity'),
+                              maxVDiskCapacity=service.hrd.getInt('maxVDiskCapacity'),
+                              maxCPUCapacity=service.hrd.getInt('maxCPUCapacity'),
+                              maxNASCapacity=service.hrd.getInt('maxNASCapacity'),
+                              maxArchiveCapacity=service.hrd.getInt('maxArchiveCapacity'),
+                              maxNetworkOptTransfer=service.hrd.getInt('maxNetworkOptTransfer'),
+                              maxNetworkPeerTransfer=service.hrd.getInt('maxNetworkPeerTransfer'),
+                              maxNumPublicIP=service.hrd.getInt('maxNumPublicIP')
+                              )
 
     def uninstall(self, service):
         client = self.getClient(service)
