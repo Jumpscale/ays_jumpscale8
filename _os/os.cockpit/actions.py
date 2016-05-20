@@ -17,22 +17,21 @@ class Actions(ActionsBaseMgmt):
             raise j.exceptions.NotFound("No sshkey found. please consume an sshkey service")
 
         print("authorize ssh key to machine")
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
 
         cuisine.core.file_write('/root/.ssh/id_rsa', sshkey_priv, mode='0600')
         cuisine.core.file_write('/root/.ssh/id_rsa.pub', sshkey_pub, mode='0600')
 
-        self.dns()
-        self.caddy()
+        self.dns(service=service)
+        self.caddy(service=service)
         cuisine.apps.influxdb.start()
         cuisine.apps.mongodb.start()
         cuisine.apps.controller.start()
-        self.portal()
-        self.shellinaboxd()
-        self.grafana()
-        self.robot()
-        self.gid()
-        self.cockpit()
+        self.portal(service=service)
+        self.shellinaboxd(service=service)
+        self.grafana(service=service)
+        self.gid(service=service)
+        self.cockpit(service=service)
 
     @action()
     def dns(self, service):
@@ -73,7 +72,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def grafana(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         cuisine.apps.grafana.start()
         cfg = cuisine.core.file_read('$cfgDir/grafana/grafana.ini')
         cfg = cfg.replace('domain = localhost', 'domain = %s' % service.hrd.getStr('dns.domain'))
@@ -91,7 +90,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def portal(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         cuisine.apps.portal.start(force=True)
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
@@ -103,10 +102,10 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.force_oauth_instance', 'itsyou.online')
         hrd.set('param.cfg.client_url', 'https://itsyou.online/v1/oauth/authorize')
         hrd.set('param.cfg.token_url', 'https://itsyou.online/v1/oauth/access_token')
-        hrd.set('param.cfg.redirect_url', 'https://%s/restmachine/system/oauth/authorize' % self.service.hrd.getStr('dns.domain'))
-        hrd.set('param.cfg.client_scope', 'user:admin,user:memberof:%s' % self.service.hrd.getStr('oauth.organization'))
-        hrd.set('param.cfg.client_id', self.service.hrd.getStr('oauth.client_id'))
-        hrd.set('param.cfg.client_secret', self.service.hrd.getStr('oauth.client_secret'))
+        hrd.set('param.cfg.redirect_url', 'https://%s/restmachine/system/oauth/authorize' % service.hrd.getStr('dns.domain'))
+        hrd.set('param.cfg.client_scope', 'user:admin,user:memberof:%s' % service.hrd.getStr('oauth.organization'))
+        hrd.set('param.cfg.client_id', service.hrd.getStr('oauth.client_id'))
+        hrd.set('param.cfg.client_secret', service.hrd.getStr('oauth.client_secret'))
         hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/users/')
         hrd.set('param.cfg.client_logout_url', '')
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
@@ -117,7 +116,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def shellinaboxd(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         # TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
         cmd = 'shellinaboxd --disable-ssl --port 4200 %s ' % config
@@ -125,7 +124,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def caddy(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         caddy_main_cfg = """
         $hostname
         gzip
@@ -179,14 +178,14 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def gid(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         content = "grid.id = %d\nnode.id = 0" % service.hrd.getInt('gid')
         cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)
 
     @action()
     def cockpit(self, service):
-        cuisine = self.getExecutor().cuisine
+        cuisine = self.getExecutor(service).cuisine
         token = service.hrd.getStr('telegram.token')
-        jwt_key = service.hrd.getStr('jwt_key')
-        organization = service.hrd.getStr('organization')
-        cuisine.app.cockpit.start(token, jwt_key, organization)
+        jwt_key = service.hrd.getStr('oauth.jwt_key')
+        organization = service.hrd.getStr('oauth.organization')
+        cuisine.apps.cockpit.start(token, jwt_key, organization)

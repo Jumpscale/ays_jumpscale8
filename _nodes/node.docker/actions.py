@@ -54,7 +54,7 @@ class Actions(ActionsBaseMgmt):
             connection_str = service.executor.cuisine.docker.ubuntu(name=service.instance, image=image,
                                                         pubkey=pubkey, aydofs=aysfs, ports=pfs)
             local_port = connection_str.split(':')[1]
-            public_port = host_node.actions.open_port(local_port)
+            public_port = host_node.actions.open_port(host_node, local_port)
         else:
             # js not available
             pfs = ' -p '.join(pf_creation)
@@ -62,7 +62,7 @@ class Actions(ActionsBaseMgmt):
             if not out:
                 service.executor.cuisine.core.run("docker run -d -t -p %s -p 22 --name %s --privileged=true %s " % (pfs, service.instance, image))
             vm_port = service.executor.cuisine.core.run("docker port %s 22" % service.instance).split(':')[1]
-            public_port = host_node.actions.open_port(vm_port)
+            public_port = host_node.actions.open_port(host_node, vm_port)
             # add sshkey
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
