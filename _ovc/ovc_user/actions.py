@@ -12,12 +12,12 @@ class Actions(ActionsBaseMgmt):
         # create vdc if it doesn't exists
         username = service.hrd.getStr('username')
         password = service.hrd.getStr('password')
-        emails = service.hrd.getList('emails')
+        email = service.hrd.getStr('email')
         provider = service.hrd.getStr('provider', None)
         username = "%s@%s" % (username, provider) if provider else username
         if not client.api.system.usermanager.userexists(name=username):
             groups = service.hrd.getList('groups')
-            client.api.system.usermanager.create(username=username, password=password, groups=groups, emails=emails, domain='', provider=provider)
+            client.api.system.usermanager.create(username=username, password=password, groups=groups, emails=[email], domain='', provider=provider)
         # authorize user to all consumed vdc
         for vdc in service.producers['vdc']:
             acc = client.account_get(vdc.hrd.get('g8.account'))
@@ -27,6 +27,7 @@ class Actions(ActionsBaseMgmt):
 
     def uninstall(self, service):
         # unauthorize user to all consumed vdc
+        client = self.getClient(service)
         username = service.hrd.getStr('username')
         provider = service.hrd.getStr('provider', None)
         username = "%s@%s" % (username, provider) if provider else username
