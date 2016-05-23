@@ -7,3 +7,4 @@ password = type:str
 groups = type:str list default:'user'
 email = type:str
 domain = type:str default:''
+provider = type:str default:''
