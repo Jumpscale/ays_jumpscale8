@@ -47,7 +47,7 @@ class Actions(ActionsBaseMgmt):
         client = self.getClient(service)
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
-        client.api.cloudapi.cloudspaces.delete(id=space.id)
+        client.api.cloudapi.cloudspaces.delete(cloudspaceId=space.id)
 
     def getClient(self, service):
         g8client = service.getProducers("g8client")[0]
