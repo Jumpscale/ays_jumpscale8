@@ -31,7 +31,7 @@ class Actions(ActionsBaseMgmt):
         username = service.hrd.getStr('username')
         provider = service.hrd.getStr('provider', None)
         username = "%s@%s" % (username, provider) if provider else username
-        for vdc in service.producers('vdc', []):
+        for vdc in service.producers.get('vdc', []):
             acc = client.account_get(vdc.hrd.get('g8.account'))
             space = acc.space_get(vdc.instance, vdc.hrd.get('g8.location'))
             client.api.cloudapi.cloudspaces.deleteUser(cloudspaceId=space.id, userId=username, recursivedelete=True)
@@ -39,6 +39,6 @@ class Actions(ActionsBaseMgmt):
     def getClient(self, service):
         g8clients = service.producers.get('g8client', None)
         if g8clients is not None:
-            return g8client[0].actions.getClient(g8client)
+            return g8clients[0].actions.getClient(g8clients[0])
         else:
             raise j.exceptions.NotFound("Not produer g8cient found.")
