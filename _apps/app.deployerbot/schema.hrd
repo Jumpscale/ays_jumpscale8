@@ -1,0 +1,12 @@
+os = type:str parent:os
+webserver = type:str consume:webserver:1:1
+token = type:str descr:'telegram bot token'
+g8.addresses = type:str list
+dns.login = type:str
+dns.password = type:str
+oauth.host = type:str
+oauth.port = type:int
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.redirect_uri = type:str
+oauth.itsyouonlinehost = type:str default:'https://itsyou.online'
