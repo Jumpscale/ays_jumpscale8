@@ -1,6 +1,5 @@
-docker = type:str parent:'docker'
-backends = type:str consume:demoportal:1 descr:'backend server to proxy' list
+os = type:str parent:'os'
+backends = type:str descr:'backend server to proxy' list
 domain = type:str descr:'domain name to use'
-port = type:int default:82
 
-skydns = type:str consume:skydnsclient:1
+dns_client = type:str consume:dns_client:1

@@ -1,66 +1,40 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
+class Actions(ActionsBaseMgmt):
 
+    def add_proxy(self, service, path, address, port=80, trimPrefix=True):
+        proxy = "proxy {path} {address}:{port}".format(path=path, address=address, port=port)
+        if trimPrefix:
+            proxy += '{\n without %s\n}' % path
 
-class Actions(ActionsBase):
+        cfg = service.executor.cuisine.core.file_read("$cfgDir/caddy/caddyfile.conf")
+        cfg += '\n%s' % proxy
 
-    # def _generateProxies(self, service):
-    #     proxies = []
-    #     for docker in service.hrd.getList('backends'):
-    #             # path = "/webaccess/%s/%s" % (docker, j.data.idgenerator.generateXCharID(15))
-    #             # backend = "localhost:4200/%s" % docker
-    #             proxy = """proxy / localhost:4200""".format(path=path, backend=backend)
-    #             proxies.append(proxy)
-    #     return proxies
+        service.executor.cuisine.core.file_write("$cfgDir/caddy/caddyfile.conf", cfg)
+        service.executor.cuisine.processmanager.stop('caddy')
+        service.executor.cuisine.processmanager.start('caddy')
 
     def _registerDomain(self, service):
-        if 'skydnsclient' not in service.producers:
-            raise RuntimeError("No skydns client found, please make sure this service consume a skydns client")
+        if 'dns_client' not in service.producers:
+            raise j.exceptions.NotFound("No skydns client found, please make sure this service consume a skydns client")
 
-        cl = service.producers['skydnsclient'][0].action_methods_mgmt.getClient()
+        dns_client = service.producers['dns_client'][0]
+        cl = j.clients.skydns.get(
+            baseurl=dns_client.hrd.getStr('url'),
+            username=dns_client.hrd.getStr('login'),
+            password=dns_client.hrd.getStr('password'))
+
         domain = service.hrd.getStr('domain')
-        target = service.parent.parent.hrd.getStr('machine.publicip')
-        print(cl.setRecordA(domain, target, ttl=300))
-
-    def showProxyURL(self, service):
-        print("OUT: Accessible dockers : ")
-        ip = service.parent.parent.hrd.getStr('machine.publicip')
-        for docker in service.hrd.getList('backends'):
-            url = "http://%s/%s" % (ip, docker)
-            print("OUT: ", url)
+        target = service.parent.hrd.getStr('ssh.addr')
+        cl.setRecordA(domain, target)
+        return domain
 
     def install(self, service):
-        self._registerDomain()
+        cuisine = service.executor.cuisine
 
-        # service.hrd.set('proxy.backends', self._getBackends())
-        cuisine = service.parent.action_methods_mgmt.getExecutor().cuisine
-        # domain = service.hrd.getStr('domain')
-        # backends = service.hrd.getStr('proxy.backends')
-        shellinabox = service.getProducers('shellinabox')
-        if not shellinabox:
-            address = 'localhost'
+        domain = self._registerDomain(service)
+        path = cuisine.bash.cmdGetPath('caddy', die=False)
+        if not path:
+            cuisine.apps.caddy.build(start=True, ssl=True, dns=domain)
         else:
-            address = shellinabox[0].parent.parent.hrd.get('machine.publicip')
-        tmpl = """
-:80
-gzip
-log /optvar/cfg/caddy/log/access.log
-errors {
-    log /optvar/cfg/caddy/log/errors.log
-}
-root /optvar/cfg/caddy/www
-
-proxy / %s:4200
-""" % address
-        # for proxy in self._generateProxies():
-        #     tmpl += '\n%s' % proxy
-
-        cuisine.file_write('$cfgDir/caddy/caddyfile.conf', tmpl)
-        cuisine.dir_ensure('/optvar/cfg/caddy/log/')
-        cuisine.dir_ensure('/optvar/cfg/caddy/www')
-        cfgPath = cuisine.args_replace("$cfgDir/caddy/caddyfile.conf")
-        cmd = '$binDir/caddy -conf=%s -email=info@greenitglobe.com' % (cfgPath)
-        cuisine.processmanager.ensure('caddy', cmd)
-
-        self.showProxyURL()
+            cuisine.apps.caddy.start(ssl=True)
