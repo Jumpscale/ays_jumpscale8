@@ -1,0 +1,2 @@
+aysfs = type:bool default:False descr:'install JS in sandbox mode (False for development mode)'
+os = type:str parent:'os'

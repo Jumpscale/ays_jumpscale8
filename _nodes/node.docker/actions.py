@@ -64,6 +64,7 @@ class Actions(ActionsBaseMgmt):
             vm_port = service.executor.cuisine.core.run("docker port %s 22" % service.instance).split(':')[1]
             public_port = host_node.actions.open_port(host_node, vm_port)
             # add sshkey
+            service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))
