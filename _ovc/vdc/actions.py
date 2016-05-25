@@ -58,6 +58,12 @@ class Actions(ActionsBaseMgmt):
 
     def uninstall(self, service):
         client = self.getClient(service)
+        consumers = service.get_consumers()
+        for consumer in consumers:
+            if consumer.role != 'ovc_user':
+                continue
+            consumer.remove_producer(role=service.role, instance=service.instance)
+
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
         client.api.cloudapi.cloudspaces.delete(cloudspaceId=space.id)
