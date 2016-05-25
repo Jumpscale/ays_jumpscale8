@@ -29,7 +29,7 @@ class Actions(ActionsBaseMgmt):
     def install(self, service):
         client = self.getClient(service)
         acc = client.account_get(service.hrd.get('g8.account'))
-        import ipdb; ipdb.set_trace()
+
         if service.hrd.exists('vdc.id'):  # this is an update
             space = acc.space_get(name=service.instance, location=service.hrd.get('g8.location'), create=False)
             space.model['maxMemoryCapacity'] = service.hrd.getInt('maxmemorycapacity'),
