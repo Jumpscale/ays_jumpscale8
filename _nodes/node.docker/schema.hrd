@@ -1,4 +1,7 @@
 image = type:str default:'ubuntu'
+build = type:bool default:False
+build.url = type:str
+build.path = type:str default:''
 ports = type:str list
 
 sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto

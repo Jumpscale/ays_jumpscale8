@@ -1,0 +1,4 @@
+os = type:str parent:'js8'
+telegram.token = type:str
+jwt.key = type:str
+organization = type:str

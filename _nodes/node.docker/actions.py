@@ -60,13 +60,19 @@ class Actions(ActionsBaseMgmt):
             pfs = ' -p '.join(pf_creation)
             out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance)
             if not out:
+                if service.hrd.getBool('build'):
+                    dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
+                    service.executor.cuisine.git.pullRepo(service.hrd.get('build.url'), dest)
+                    service.executor.cuisine.core.run('cd %s; docker build  --tag="%s"  %s' % (dest, image, service.hrd.get('build.path')))
                 service.executor.cuisine.core.run("docker run -d -t -p %s -p 22 --name %s --privileged=true %s " % (pfs, service.instance, image))
+                # add sshkey
+                service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
+                service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
+                service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
+
             vm_port = service.executor.cuisine.core.run("docker port %s 22" % service.instance).split(':')[1]
             public_port = host_node.actions.open_port(host_node, vm_port)
-            # add sshkey
-            service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
-            service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
-            service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
+
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))
 
         # service.executor.cuisine.docker.enableSSH(connection_str)

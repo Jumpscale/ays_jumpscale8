@@ -22,7 +22,7 @@ class Actions(ActionsBaseMgmt):
 
         args = {
             'ports': '80:80, 443:443, 18384:18384',
-            'os.image': 'Ubuntu 16.04 x64'
+            'os.image': 'ubuntu 16.04 x64'
         }
         node_ovc = service.aysrepo.new('node.ovc', args=args, instance="ays8test", parent=vdc)
 
@@ -33,17 +33,38 @@ class Actions(ActionsBaseMgmt):
         os = service.aysrepo.new('os.ssh.ubuntu', args=args, instance=service.instance, parent=node_ovc)
 
         args = {
-            "image": "ubuntu:xenial",
+            "image": "jumpscale/ubuntu1604",
+            'build': True,
+            'build.url': 'https://github.com/Jumpscale/dockers',
+            'build.path': 'js8/x86_64/ubuntu1604/2_ubuntu1604/',
             'os': os.instance,
             'aysfs': False,
             'ports': '80, 443, 18384'
         }
-        docker = service.aysrepo.new('node.docker', args=args, instance="js8_devel", parent=os)
+        docker_devel = service.aysrepo.new('node.docker', args=args, instance="docker_devel", parent=os)
+
+        # docker_sandbox = service.aysrepo.new('node.docker', args=args, instance="docker_sandbox", parent=os)
 
         args = {
-            'node': docker.instance,
+            'node': docker_devel.instance,
             'aysfs': False
         }
-        os_docker = service.aysrepo.new('os.ssh.ubuntu', args=args, instance='docker_os', parent=docker)
+        os_docker_devel = service.aysrepo.new('os.ssh.ubuntu', args=args, instance='docker_os', parent=docker_devel)
 
-        js8 = service.aysrepo.new('js8', args={'aysfs': False, 'os': os_docker.instance}, parent=os_docker)
+        # args = {
+        #     'node': docker_sandbox.instance,
+        #     'aysfs': False
+        # }
+        # os_docker_sandbox = service.aysrepo.new('os.ssh.ubuntu', args=args, instance='docker_os', parent=docker_sandbox)
+
+        # js8_sandbox = service.aysrepo.new('js8', args={'aysfs': True, 'os': os_docker_sandbox.instance}, instance='js8_sandbox', parent=os_docker_sandbox)
+
+        js8_devel = service.aysrepo.new('js8', args={'aysfs': False, 'os': os_docker_devel.instance}, instance='js8_development', parent=os_docker_devel)
+
+        args = {
+            'js8': js8_devel.instance,
+            'telegram.token': service.hrd.get('telegram.token'),
+            'jwt.key': service.hrd.get('jwt.key'),
+            'organization': service.hrd.get('organization')
+        }
+        cockpit = service.aysrepo.new('cockpit', args=args, instance=service.instance, parent=js8_devel)
