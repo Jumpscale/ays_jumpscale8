@@ -56,17 +56,32 @@ class Actions(ActionsBaseMgmt):
                                   )
             service.hrd.set('vdc.id', space.id)
 
+        to_be_authorize = set()
+        if 'ovc_user' in service.producers:
+            # some user have access to this space, make sure only the user consumed have access.
+            for user in service.producers['ovc_user']:
+                username = user.hrd.getStr('username')
+                provider = user.hrd.getStr('provider', None)
+                username = "%s@%s" % (username, provider) if provider else username
+                to_be_authorize.add(username)
+
+        to_be_unauthorize = set(space.authorized_users).difference(to_be_authorize)
+        # remove the user account that created the space from the to_be_unauthorize set.
+        for account in acc.model['acl']:
+            to_be_unauthorize.remove(account['userGroupId'])
+
+        for username in to_be_authorize:
+            space.authorize_user(username)
+        for username in to_be_unauthorize:
+            space.unauthorize_user(username)
+
     def uninstall(self, service):
         client = self.getClient(service)
-        consumers = service.get_consumers()
-        for consumer in consumers:
-            if consumer.role != 'ovc_user':
-                continue
-            consumer.remove_producer(role=service.role, instance=service.instance)
-
         acc = client.account_get(service.hrd.get('g8.account'))
         space = acc.space_get(service.instance, service.hrd.get('g8.location'))
         client.api.cloudapi.cloudspaces.delete(cloudspaceId=space.id)
+        if service.hrd.exists('vdc.id'):
+            service.hrd.delete('vdc.id')
 
     def getClient(self, service):
         g8client = service.getProducers("g8client")[0]
