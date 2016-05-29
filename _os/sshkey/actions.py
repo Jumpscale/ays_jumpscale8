@@ -38,8 +38,10 @@ class Actions(ActionsBaseMgmt):
             raise j.exceptions.Input("Cannot find ssh key location:%s"%keyfile)
 
         keydest = j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
-        j.sal.fs.copyFile(keyfile,keydest)
-        j.sal.fs.copyFile(keyfile+".pub",keydest+".pub")
+        if not keyfile == keydest:
+            service.hrd.set("key.path", keydest)
+            j.sal.fs.copyFile(keyfile,keydest)
+            j.sal.fs.copyFile(keyfile+".pub",keydest+".pub")
 
         privkey = j.sal.fs.fileGetContents(keydest)
         pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
