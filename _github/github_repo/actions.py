@@ -121,31 +121,38 @@ class Actions(ActionsBaseMgmt):
         client = githubclientays.actions.getGithubClient(service=githubclientays)
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
-        fromAys = True
-        if service.state.get("getIssuesFromGithub")[0] != "OK":
-            # means have not been able to get the issues from github properly, so do again
-            fromAys = False
-        if not repo.issues_loaded:
-            if fromAys:
-                print("LOAD ISSUES FROM AYS")
-                # service.state.set("getIssuesFromAYS","DO")
-                self.getIssuesFromAYS()
-                repo.issues_loaded = True
-            else:
-                from IPython import embed
-                print("DEBUG NOW issues loaded false,LOAD ISSUES FROM GITHUB")
-                embed()
-                ppp
-                print("LOAD ISSUES FROM GITHUB")
-                # service.state.set("getIssuesFromGithub","DO")
-                self.getIssuesFromGithub(service=service)
-                repo.issues_loaded = True
         return repo
+        #
+        # fromAys = True
+        # if service.state.get("getIssuesFromGithub")[0] != "OK":
+        #     # means have not been able to get the issues from github properly, so do again
+        #     fromAys = False
+        # if not repo.issues_loaded:
+        #     if fromAys:
+        #         print("LOAD ISSUES FROM AYS")
+        #         # service.state.set("getIssuesFromAYS","DO")
+        #         self.getIssuesFromAYS()
+        #         repo.issues_loaded = True
+        #     else:
+        #         from IPython import embed
+        #         print("DEBUG NOW issues loaded false,LOAD ISSUES FROM GITHUB")
+        #         embed()
+        #         print("LOAD ISSUES FROM GITHUB")
+        #         # service.state.set("getIssuesFromGithub","DO")
+        #         self.getIssuesFromGithub(service=service)
+        #         repo.issues_loaded = True
+        # return repo
 
     @action()
-    def processIssues(self,service):
+    def processIssues(self, service):
         repo = self.get_github_repo(service)
         repo.process_issues()
+
+        for issue in repo.issues:
+            args = {'github.repo': service.instance}
+            import ipdb; ipdb.set_trace()
+            service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
+
 
     def stories2pdf(self,service):
         repo = self.get_github_repo(service)
@@ -158,7 +165,7 @@ class Actions(ActionsBaseMgmt):
         print("TEST")
 
     @action()
-    def getIssuesFromGithub(self,service):
+    def getIssuesFromGithub(self, service):
         config = service.getProducers('github_config')[0]
 
         projtype = service.hrd.get("repo.type")
@@ -183,16 +190,7 @@ class Actions(ActionsBaseMgmt):
 
         service.logger.info("Have set labels in %s:%s" % (service, labelsprint))
 
-        issues = r.loadIssues()
-
-        if issues != []:
-            for issue in issues:
-                args = {'github.repo': service.instance}
-                issue_service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
-
         service.state.set("getIssuesFromGithub", "OK")
         service.state.save()
-
-        r.issues_loaded = True
 
         self.processIssues(service=service)
