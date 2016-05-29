@@ -150,7 +150,6 @@ class Actions(ActionsBaseMgmt):
 
         for issue in repo.issues:
             args = {'github.repo': service.instance}
-            import ipdb; ipdb.set_trace()
             service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
 
 
@@ -182,7 +181,6 @@ class Actions(ActionsBaseMgmt):
 
         reponame = "$(repo.account)/$(repo.name)"
         r = client.getRepo(reponame)
-
         # first make sure issues get right labels
         r.labelsSet(labels,ignoreDelete=["p_"])
 
