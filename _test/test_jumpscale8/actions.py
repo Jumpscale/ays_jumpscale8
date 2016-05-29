@@ -68,3 +68,12 @@ class Actions(ActionsBaseMgmt):
             'organization': service.hrd.get('organization')
         }
         cockpit = service.aysrepo.new('cockpit', args=args, instance=service.instance, parent=js8_devel)
+
+
+        args = {
+            'spaces': ['/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit'],
+            'actors': ['/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__atyourservice/',
+                       '/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__webhooks/',
+                       '/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__gridmanager/'],
+        }
+        #cockpit_portal = service.aysrepo.new('portal', args=args, instance=service.instance, parent=js8_devel)
