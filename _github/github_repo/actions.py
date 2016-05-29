@@ -61,9 +61,8 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def install(self,service):
-        # self.pull()
-        self.getIssuesFromGithub(service=service)
         self.setMilestonesOnGithub(service=service)
+        self.getIssuesFromGithub(service=service)
 
     @action()
     def pull(self,service):
@@ -72,10 +71,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def setMilestonesOnGithub(self,service):
-
-        
         repo = self.get_github_repo(service=service)
-            
 
         if repo.type in ["proj", "org"]:
             milestonesSet = []
