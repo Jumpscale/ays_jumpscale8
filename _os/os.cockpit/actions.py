@@ -106,7 +106,8 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_scope', 'user:email:main,user:memberof:%s' % service.hrd.getStr('oauth.organization'))
         hrd.set('param.cfg.client_id', service.hrd.getStr('oauth.client_id'))
         hrd.set('param.cfg.client_secret', service.hrd.getStr('oauth.client_secret'))
-        hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/users/')
+        hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/api/users')
+        hrd.set('param.cfg.oauth.default_groups', ['admin', 'user'])
         hrd.set('param.cfg.client_logout_url', '')
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
 
