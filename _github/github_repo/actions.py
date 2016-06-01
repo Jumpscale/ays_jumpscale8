@@ -206,7 +206,7 @@ class Actions(ActionsBaseMgmt):
         self.processIssues(service=service, refresh=False)
 
     @action()
-    def recurring_process_issues_from_gituhb(self, service):
+    def recurring_process_issues_from_github(self, service):
         self.processIssues(service=service, refresh=True)
 
     def event_new_issue(self, service, event):
