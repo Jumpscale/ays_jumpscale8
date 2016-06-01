@@ -1,0 +1,3 @@
+recurring.recurring_process_issues = '1h'
+events.generic =
+    event_new_issue,

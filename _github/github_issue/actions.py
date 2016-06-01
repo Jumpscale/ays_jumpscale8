@@ -21,16 +21,7 @@ class Actions(ActionsBaseMgmt):
                 break
 
     @action()
-    def getIssueFromGithub(self,service):
-
-        repo=self.get_github_repo()
-
-        path=j.sal.fs.joinPaths(service.path,"issue.yaml")
-
-        j.sal.fs.writeFile(path,str(md))
-
-    @action()
-    def update_from_github(self,service, event):
+    def update_from_github(self, service, event):
         import datetime
         event = j.data.models.cockpit_event.Generic.from_json(event)
 
@@ -42,10 +33,18 @@ class Actions(ActionsBaseMgmt):
             return
 
         data = j.core.db.hget('webhooks', event.args['key'])
+        if data is None:
+            return
         event_type = event.args['event']
-        github_payload = j.data.serializer.json.loads(data)
+        github_payload = j.data.serializer.json.loads(data.decode())
 
-        action = github_payload['action']
+        action = github_payload.get('action', None)
+        if action is None:
+            return
+
+        if github_payload['issue']['id'] != service.model['id']:
+            # event not for this issue
+            return
 
         if event_type == 'issue_comment':
 
@@ -77,7 +76,6 @@ class Actions(ActionsBaseMgmt):
                 # update comment
                 if comment is not None:
                     dt = datetime.datetime.strptime(github_payload['comment']['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
-                    #@todo jumpscale has time function please use
                     new_comment = {
                         'body': github_payload['comment']['body'],
                         'id': github_payload['comment']['id'],
@@ -101,11 +99,10 @@ class Actions(ActionsBaseMgmt):
                 service.model = model
                 j.core.db.hdel('webhooks', event.args['key'])
             else:
-                print("not supported action")
-        elif event_type == 'issues':
-            import ipdb; ipdb.set_trace()
-            if github_payload['issue']['id'] != service.model['id']:
+                print('not supported action: %s' % action)
                 return
+
+        elif event_type == 'issues':
 
             if action == 'closed':
                 model = service.model.copy()
@@ -118,3 +115,11 @@ class Actions(ActionsBaseMgmt):
                 model['open'] = True
                 model['state'] = 'reopened'
                 service.model = model
+            else:
+                print('not supported action: %s' % action)
+                return
+
+        # service model has been updated. ask repo to re-process issues
+        repo_service = service.parent
+        repo_service.actions.get_issues_from_ays(repo_service, refresh=True)
+        repo_service.actions.processIssues(service=repo_service)
