@@ -202,8 +202,12 @@ class Actions(ActionsBaseMgmt):
         embed()
 
     @action()
-    def recurring_process_issues(self, service):
+    def recurring_process_issues_from_model(self, service):
         self.processIssues(service=service, refresh=False)
+
+    @action()
+    def recurring_process_issues_from_gituhb(self, service):
+        self.processIssues(service=service, refresh=True)
 
     def event_new_issue(self, service, event):
         event = j.data.models.cockpit_event.Generic.from_json(event)
