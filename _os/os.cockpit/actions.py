@@ -68,7 +68,7 @@ class Actions(ActionsBaseMgmt):
         if exists and host != ip:
             raise j.exceptions.Input("Domain %s is not available, please choose another one." % domain)
 
-        dns_client.setRecordA(domain, ip, ttl=120) # TODO, set real TTL
+        dns_client.setRecordA(domain, ip, ttl=120)  # TODO, set real TTL
 
     @action()
     def grafana(self, service):
@@ -103,7 +103,7 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_url', 'https://itsyou.online/v1/oauth/authorize')
         hrd.set('param.cfg.token_url', 'https://itsyou.online/v1/oauth/access_token')
         hrd.set('param.cfg.redirect_url', 'https://%s/restmachine/system/oauth/authorize' % service.hrd.getStr('dns.domain'))
-        hrd.set('param.cfg.client_scope', 'user:admin,user:memberof:%s' % service.hrd.getStr('oauth.organization'))
+        hrd.set('param.cfg.client_scope', 'user:email:main,user:memberof:%s' % service.hrd.getStr('oauth.organization'))
         hrd.set('param.cfg.client_id', service.hrd.getStr('oauth.client_id'))
         hrd.set('param.cfg.client_secret', service.hrd.getStr('oauth.client_secret'))
         hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/users/')
@@ -188,4 +188,15 @@ class Actions(ActionsBaseMgmt):
         token = service.hrd.getStr('telegram.token')
         jwt_key = service.hrd.getStr('oauth.jwt_key')
         organization = service.hrd.getStr('oauth.organization')
-        cuisine.apps.cockpit.start(token, jwt_key, organization)
+        client_id = service.hrd.getStr('oauth.client_id')
+        client_secret = service.hrd.getStr('oauth.client_secret')
+        domain = service.hrd.getStr('dns.domain')
+        redirect_uri = '%s/api/oauth/callback' % domain
+        cuisine.apps.cockpit.start(
+            bot_token=token,
+            jwt_key=jwt_key,
+            organization=organization,
+            client_secret=client_secret,
+            client_id=client_id,
+            redirect_uri=redirect_uri,
+            itsyouonlinehost='https://itsyou.online')

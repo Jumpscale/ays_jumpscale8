@@ -1,3 +1,5 @@
 os = type:str parent:'os'
 admin.passwd = @ASK default:admin
 admin.login = @ASK default:admin
+spaces = type:str list
+actors = type:str list

@@ -14,7 +14,7 @@ class Actions(ActionsBaseMgmt):
 #         self.bot.sendMessage(chat_id=chat_id, text=msg, parse_mode=telegram.ParseMode.MARKDOWN)
 
     @action()
-    def from_github_ticket(self,service, event):
+    def from_github_ticket(self, service, event):
         event = j.data.models.cockpit_event.Generic.from_json(event)
 
         if 'source' not in event.args or event.args['source'] != 'github':
@@ -47,7 +47,7 @@ class Actions(ActionsBaseMgmt):
                 # TODO, send email back to client to tell him
                 return
 
-            repo = repo_self.get_github_repo()
+            repo = repo_service.actions.get_github_repo(repo_service)
             issue = repo.getIssue(github_payload['issue']['number'])
             if issue.body.startswith('Ticket_'):
                 # already processed
@@ -109,7 +109,7 @@ class Actions(ActionsBaseMgmt):
             return
 
         Issue = j.clients.github.getIssueClass()
-        repo = repo_self.get_github_repo()
+        repo = repo_service.actions.get_github_repo(repo_service)
         # allocation of a unique ID to the Ticket
         guid = j.data.idgenerator.generateGUID()
         # Add ticket id in issue description
