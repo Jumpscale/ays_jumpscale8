@@ -203,7 +203,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def recurring_process_issues(self, service):
-        self.processIssues(service=service, refresh=True)
+        self.processIssues(service=service, refresh=False)
 
     def event_new_issue(self, service, event):
         event = j.data.models.cockpit_event.Generic.from_json(event)

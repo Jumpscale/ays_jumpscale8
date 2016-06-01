@@ -4,7 +4,7 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     @action()
-    def process(self,service):
+    def process(self, service):
         Issue = j.clients.github.getIssueClass()
         repo = service.parent.actions.get_github_repo(service=service.parent)
 
@@ -12,7 +12,6 @@ class Actions(ActionsBaseMgmt):
         print ("DEBUG NOW process issue")
         embed()
         sdasd
-
 
         # only process this specific issue.
         for issue in repo.issues:
@@ -131,8 +130,3 @@ class Actions(ActionsBaseMgmt):
             else:
                 print('not supported action: %s' % action)
                 return
-
-        # service model has been updated. ask repo to re-process issues
-        repo_service = service.parent
-        repo_service.actions.get_issues_from_ays(repo_service, refresh=True)
-        repo_service.actions.processIssues(service=repo_service)
