@@ -229,7 +229,6 @@ class Actions(ActionsBaseMgmt):
         repo = self.get_github_repo(service)
         # create issue object
         issue = repo.getIssue(github_payload['issue']['number'])
-        repo.process_issues(issues=[issue])
         # create service gitub_issue
         args = {'github.repo': service.instance}
         service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
