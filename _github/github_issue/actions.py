@@ -12,7 +12,7 @@ class Actions(ActionsBaseMgmt):
         print ("DEBUG NOW process issue")
         embed()
         sdasd
-        
+
 
         # only process this specific issue.
         for issue in repo.issues:
@@ -115,6 +115,19 @@ class Actions(ActionsBaseMgmt):
                 model['open'] = True
                 model['state'] = 'reopened'
                 service.model = model
+            elif action in ['assigned', 'unassigned']:
+                assignee = github_payload['issue']['assignee']
+                if assignee is None:
+                    service.model['assignee'] = ''
+                else:
+                    if j.data.types.list.check(assignee):
+                        service.model['assignee'] = [a['login'] for a in assignee]
+                    elif j.data.types.dict.check(assignee):
+                        service.model['assignee'] = assignee['login']
+            elif action in ['labeled', 'unlabeled']:
+                service.model['labels'] = [i['name'] for i in github_payload['issue']['labels']]
+            elif action == 'edited':
+                service.model['body'] = github_payload['issue']['body']
             else:
                 print('not supported action: %s' % action)
                 return
