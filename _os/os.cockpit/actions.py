@@ -33,6 +33,7 @@ class Actions(ActionsBaseMgmt):
         self.gid(service=service)
         self.cockpit(service=service)
 
+        cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
     @action()
     def dns(self, service):
         def get_dns_clients():
