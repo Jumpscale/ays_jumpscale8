@@ -8,10 +8,7 @@ class Actions(ActionsBaseMgmt):
         Issue = j.clients.github.getIssueClass()
         repo = service.parent.actions.get_github_repo(service=service.parent)
 
-        from IPython import embed
-        print ("DEBUG NOW process issue")
-        embed()
-        sdasd
+        raise NotImplementedError()
 
         # only process this specific issue.
         for issue in repo.issues:
@@ -28,7 +25,7 @@ class Actions(ActionsBaseMgmt):
             return
 
         if 'key' not in event.args:
-            print("bad format of event")
+            j.logger.log("bad format of event")
             return
 
         data = j.core.db.hget('webhooks', event.args['key'])
@@ -98,7 +95,7 @@ class Actions(ActionsBaseMgmt):
                 service.model = model
                 j.core.db.hdel('webhooks', event.args['key'])
             else:
-                print('not supported action: %s' % action)
+                j.logger.log('not supported action: %s' % action)
                 return
 
         elif event_type == 'issues':
@@ -128,7 +125,7 @@ class Actions(ActionsBaseMgmt):
             elif action == 'edited':
                 service.model['body'] = github_payload['issue']['body']
             else:
-                print('not supported action: %s' % action)
+                j.logger.log('not supported action: %s' % action)
                 return
 
         repo = service.parent.actions.get_github_repo(service=service.parent)

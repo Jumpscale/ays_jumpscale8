@@ -151,26 +151,6 @@ class Actions(ActionsBaseMgmt):
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
         return repo
-        #
-        # fromAys = True
-        # if service.state.get("get_issues_from_github")[0] != "OK":
-        #     # means have not been able to get the issues from github properly, so do again
-        #     fromAys = False
-        # if not repo.issues_loaded:
-        #     if fromAys:
-        #         print("LOAD ISSUES FROM AYS")
-        #         # service.state.set("get_issues_from_ays","DO")
-        #         self.get_issues_from_ays()
-        #         repo.issues_loaded = True
-        #     else:
-        #         from IPython import embed
-        #         print("DEBUG NOW issues loaded false,LOAD ISSUES FROM GITHUB")
-        #         embed()
-        #         print("LOAD ISSUES FROM GITHUB")
-        #         # service.state.set("get_issues_from_github","DO")
-        #         self.get_issues_from_github(service=service)
-        #         repo.issues_loaded = True
-        # return repo
 
     @action()
     def processIssues(self, service, refresh=False):
@@ -179,7 +159,7 @@ class Actions(ActionsBaseMgmt):
         """
         if service.state.get('processIssues', die=False) == 'RUNNING':
             # don't processIssue twice at the same time.
-            print('processIssue already running')
+            j.logger.log(('processIssue already running')
             return
 
         service.state.set('processIssues', 'RUNNING')
@@ -197,9 +177,7 @@ class Actions(ActionsBaseMgmt):
 
     def stories2pdf(self, service):
         repo = self.get_github_repo(service)
-        from IPython import embed
-        print("DEBUG NOW stories 2 pdf")
-        embed()
+        raise NotImplementedError()
 
     @action()
     def recurring_process_issues_from_model(self, service):
