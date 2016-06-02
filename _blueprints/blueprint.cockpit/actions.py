@@ -12,11 +12,20 @@ class Actions(ActionsBaseMgmt):
         g8_client = service.aysrepo.new('g8client', args=args, instance="main")
 
         args = {
-            'url': 'https://dns1.aydo.com/etcd',
-            'login': service.hrd.getStr('dns.login'),
-            'password': service.hrd.getStr('dns.password')
+            'key.path': service.hrd.getStr('dns.sshkey')
         }
-        dns_client = service.aysrepo.new('dns_client', args=args, instance="main")
+        sshkey_dns = service.aysrepo.new('sshkey', args=args, instance="dns")
+
+        dns_clients = []
+        for i in range(1, 4):
+            args = {
+                'addr': 'dns%d.aydo.com' % i,
+                'port': 32768,
+                'login': service.hrd.getStr('dns.login'),
+                'password': service.hrd.getStr('dns.password'),
+                'sshkey': sshkey_dns.instance
+            }
+            dns_clients.append(service.aysrepo.new('dns_client', args=args, instance="main%d" % i))
 
         sshkey = service.aysrepo.new('sshkey', instance="main")
 
@@ -29,7 +38,10 @@ class Actions(ActionsBaseMgmt):
         }
         vdc = service.aysrepo.new('vdc', args=args, instance=cockpit_name, parent=vdcfarm)
 
-        args = {'ports': '80:80, 443:443, 18384:18384'}
+        args = {
+            'ports': '80:80, 443:443, 18384:18384',
+            'sshkey': 'main'
+        }
         node_ovc = service.aysrepo.new('node.ovc', args=args, instance="cockpitvm", parent=vdc)
 
         args = {
@@ -41,7 +53,8 @@ class Actions(ActionsBaseMgmt):
             "image": "jumpscale/g8cockpit",
             'os': os.instance,
             'aysfs': False,
-            'ports': '80, 443, 18384'
+            'ports': '80, 443, 18384',
+            'sshkey': 'main'
         }
         docker = service.aysrepo.new('node.docker', args=args, instance="cockpit", parent=os)
 
@@ -52,7 +65,7 @@ class Actions(ActionsBaseMgmt):
             "portal.password": service.hrd.getStr('portal.password'),
             "dns.domain": service.hrd.getStr('dns.domain'),
             'node': docker.instance,
-            'dns_client': dns_client.instance,
+            'dns_client': [s.instance for s in dns_clients],
             'oauth.client_secret': service.hrd.getStr("oauth.client_secret"),
             'oauth.client_id': service.hrd.getStr("oauth.client_id"),
             'oauth.organization': service.hrd.getStr("oauth.organization"),
