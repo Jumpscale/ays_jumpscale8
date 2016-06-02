@@ -159,7 +159,7 @@ class Actions(ActionsBaseMgmt):
         """
         if service.state.get('processIssues', die=False) == 'RUNNING':
             # don't processIssue twice at the same time.
-            j.logger.log(('processIssue already running')
+            j.logger.log('processIssue already running')
             return
 
         service.state.set('processIssues', 'RUNNING')
