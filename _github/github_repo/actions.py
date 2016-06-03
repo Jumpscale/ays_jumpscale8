@@ -73,9 +73,9 @@ class Actions(ActionsBaseMgmt):
     @action()
     def setMilestonesOnGithub(self,service):
 
-        
+
         repo = self.get_github_repo(service=service)
-            
+
 
         if repo.type in ["proj", "org"]:
             milestonesSet = []
@@ -183,10 +183,8 @@ class Actions(ActionsBaseMgmt):
 
         service.logger.info("Have set labels in %s:%s" % (service, labelsprint))
 
-        issues = r.loadIssues()
-
-        if issues != []:
-            for issue in issues:
+        if r.issues != []:
+            for issue in r.issues:
                 args = {'github.repo': service.instance}
                 issue_service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
 
