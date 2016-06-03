@@ -33,42 +33,40 @@ class Actions(ActionsBaseMgmt):
         self.gid(service=service)
         self.cockpit(service=service)
 
+        cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
     @action()
     def dns(self, service):
-        def get_dns_client():
+        def get_dns_clients():
             if 'dns_client' not in service.producers:
                 raise j.exceptions.AYSNotFound("No dns client found in producers")
 
-            dns_client = service.producers['dns_client'][0]
-            client = None
-            url = dns_client.hrd.get('url')
-            login = dns_client.hrd.get('login')
-            passwd = dns_client.hrd.get('password')
+            clients = []
+            for s in service.producers['dns_client']:
+                clients.append(s.actions.get_client(s))
+            return clients
 
-            try:
-                client = j.clients.skydns.get(url, username=login, password=passwd)
-                cfg = client.getConfig()
-                if 'error' in cfg:
-                    client = None
-            except Exception as e:
-                client = None
-            if not client:
-                raise j.exceptions.RuntimeError("Can't connect to DNS cluster at %s" % url)
-            return client
-
-        dns_client = get_dns_client()
         ip = service.parent.hrd.getStr('node.addr')
         domain = service.hrd.getStr('dns.domain')
 
         if not domain.endswith('.barcelona.aydo.com'):  # TODO chagne DNS
             domain = '%s.barcelona.aydo.com' % domain
             service.hrd.set('dns.domain', domain)
-        # Test if domain name is available
-        exists, host = dns_client.exists(domain)
-        if exists and host != ip:
-            raise j.exceptions.Input("Domain %s is not available, please choose another one." % domain)
+        subdomain = '.'.join(domain.split('.', 2)[:2])
 
-        dns_client.setRecordA(domain, ip, ttl=120)  # TODO, set real TTL
+        # set domain to all dns servers
+        dns_clients = get_dns_clients()
+        for dns_client in dns_clients:
+            if domain not in dns_client.domains:
+                domain = dns_client.ensure_domain('aydo.com')
+            if subdomain in domain._a_records:
+                records = domain._a_records[subdomain]
+                ips = [r[0] for r in records if r]
+                if ip not in ips:
+                    raise j.exceptions.Input("Domain %s is not available, please choose another one." % domain)
+            else:
+                # TODO set config on 3 dns servers
+                domain.add_a_record(ip, subdomain)
+                domain.save()
 
     @action()
     def grafana(self, service):
@@ -82,11 +80,15 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.stop("grafana-server")
         cuisine.processmanager.start("grafana-server")
         # Add dashboard and datasource
-        from JumpScale.clients.cockpit import GrafanaData
+        repo_url = cuisine.args_replace('$codeDir/github/jumpscale/jscockpit')
+        if not repo_url:
+            j.tools.cuisine.local.git.pullRepo(url='https://github.com/Jumpscale/jscockpit.git')
+        dashboard = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/dashboard.json')
+        datasource = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/datasource.json')
         domain = service.hrd.getStr('dns.domain')
         cl = j.clients.grafana.get('https://%s/grafana/' % domain, username='admin', password='admin')
-        cl.updateDashboard(GrafanaData.dashboard['dashboard'])
-        cl.addDataSource(GrafanaData.datasource)
+        cl.updateDashboard(dashboard['dashboard'])
+        cl.addDataSource(datasource)
 
     @action()
     def portal(self, service):
@@ -95,7 +97,6 @@ class Actions(ActionsBaseMgmt):
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit", "$cfgDir/portals/main/base/Cockpit")
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/AYS", "$cfgDir/portals/main/base/AYS")
         cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__atyourservice", "$cfgDir/portals/main/base/system__atyourservice")
         content = cuisine.core.file_read("$cfgDir/portals/main/config.hrd")
         hrd = j.data.hrd.get(content=content, prefixWithName=False)
@@ -109,6 +110,7 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/api/users')
         hrd.set('param.cfg.oauth.default_groups', ['admin', 'user'])
         hrd.set('param.cfg.client_logout_url', '')
+        hrd.set('param.cfg.defaultspace', 'home')
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
 
         # restart portal to load new spaces
@@ -192,7 +194,7 @@ class Actions(ActionsBaseMgmt):
         client_id = service.hrd.getStr('oauth.client_id')
         client_secret = service.hrd.getStr('oauth.client_secret')
         domain = service.hrd.getStr('dns.domain')
-        redirect_uri = '%s/api/oauth/callback' % domain
+        redirect_uri = 'https://%s/api/oauth/callback' % domain
         cuisine.apps.cockpit.start(
             bot_token=token,
             jwt_key=jwt_key,
