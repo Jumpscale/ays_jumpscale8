@@ -34,6 +34,7 @@ class Actions(ActionsBaseMgmt):
         self.cockpit(service=service)
 
         cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
+
     @action()
     def dns(self, service):
         def get_dns_clients():
@@ -140,6 +141,10 @@ class Actions(ActionsBaseMgmt):
         import $varDir/cfg/caddy/proxies/*
         """
         caddy_proxy_cfg = """
+        proxy /$shellinbox_url 127.0.0.1:4200 {
+        without /$shellinbox_url
+        }
+
         proxy /0/0/hubble 127.0.0.1:8966 {
           without /0/0/hubble
           websocket
@@ -148,10 +153,6 @@ class Actions(ActionsBaseMgmt):
         proxy /controller 127.0.0.1:8966 {
            without /controller
            websocket
-        }
-
-        proxy /$shellinbox_url 127.0.0.1:4200 {
-           without /$shellinbox_url
         }
 
         proxy /grafana 127.0.0.1:3000 {
@@ -163,9 +164,11 @@ class Actions(ActionsBaseMgmt):
         }
         """
 
+        domain = service.hrd.getStr('dns.domain')
         caddy_portal_cfg = "proxy / 127.0.0.1:82"
         shellinbox_url = j.data.idgenerator.generateXCharID(15)
-        caddy_main_cfg = caddy_main_cfg.replace("$hostname", service.hrd.getStr('dns.domain'))
+        service.hrd.set('shellinabox.url', shellinbox_url)
+        caddy_main_cfg = caddy_main_cfg.replace("$hostname", domain)
         caddy_main_cfg = cuisine.core.args_replace(caddy_main_cfg)
         caddy_proxy_cfg = caddy_proxy_cfg.replace("$shellinbox_url", shellinbox_url)
         cuisine.core.dir_ensure('$varDir/cfg/caddy/log')
@@ -203,3 +206,40 @@ class Actions(ActionsBaseMgmt):
             client_id=client_id,
             redirect_uri=redirect_uri,
             itsyouonlinehost='https://itsyou.online')
+
+    def generate_home(self, service):
+        tmpl = """# Welcom in the Cockpit of {organization}
+
+## SSH access
+
+### Over  SSH
+Command to connect into the cockpit VM:
+`ssh root@{domain} -p {ssh_port}`
+
+Use the following ssh key to access the cockpit VM:
+```
+{private_key}
+```
+
+### Over http
+Address :
+[https://{domain}/{shellinbox_url}](https://{domain}/{shellinbox_url})
+
+## REST API
+Base URL :
+[https://{domain}/api](https://{domain}/api)
+Documentation URL :
+[https://{domain}/api/apidocs/index.html](https://{domain}/api/apidocs/index.html)
+"""
+        domain = service.hrd.getStr('dns.domain')
+        ssh_port = service.hrd.getStr('ssh.port')
+        organization = service.hrd.getStr('oauth.organization')
+        private_key = ''
+        for prod in service.producers['sshkey']:
+            if prod.instance == 'main':
+                private_key = prod.hrd.getStr('key.priv')
+        shellinbox_url = service.hrd.getStr('shellinabox.url')
+
+        content = tmpl.format(organization=organization, domain=domain, ssh_port=ssh_port, private_key=private_key, shellinbox_url=shellinbox_url)
+        cuisine = self.getExecutor(service).cuisine
+        cuisine.core.file_write("$cfgDir/portals/main/base/home/home.md", content)
