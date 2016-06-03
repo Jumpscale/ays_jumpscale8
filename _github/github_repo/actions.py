@@ -116,7 +116,7 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def get_issues_from_github(self, service):
-        print('start get_issues_from_github')
+        service.logger.info('start get_issues_from_github')
         config = service.getProducers('github_config')[0]
 
         projtype = service.hrd.get("repo.type")
