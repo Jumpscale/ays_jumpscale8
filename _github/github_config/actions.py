@@ -24,6 +24,7 @@ class Actions(ActionsBaseMgmt):
         github.label.type.question: [home, code, proj, ays, doc, cockpit, www,milestone,org]
         github.label.type.story: [home, proj, milestone,org]
         github.label.type.task: [home,milestone,proj,org]
+        github.label.task.no_estimation: [home,milestone,proj,org]
         github.label.type.ticket: [proj,org]
         github.label.type.lead: [proj,org]
         github.project.types: [home, proj, cockpit, doc, ays, code, www, milestone,org]

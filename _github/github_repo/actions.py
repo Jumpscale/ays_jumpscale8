@@ -3,7 +3,7 @@ from JumpScale import j
 
 class Actions(ActionsBaseMgmt):
 
-    def input(self, service,name, role, instance, args={}):
+    def input(self, service, name, role, instance, args={}):
 
         # if repo.name not filled in then same as instance
         if "repo.name" not in args or args["repo.name"].strip() == "":
@@ -41,7 +41,7 @@ class Actions(ActionsBaseMgmt):
         return args
 
     @action()
-    def init(self,service):
+    def init(self, service):
 
         # set url based on properties of parent
         url = service.parent.hrd.get("github.url").rstrip("/")
@@ -60,22 +60,18 @@ class Actions(ActionsBaseMgmt):
 
         return True
 
-    def install(self,service):
-        # self.pull()
-        self.getIssuesFromGithub(service=service)
+    def install(self, service):
         self.setMilestonesOnGithub(service=service)
+        self.get_issues_from_github(service=service)
 
     @action()
-    def pull(self,service):
+    def pull(self, service):
         j.do.pullGitRepo(url=service.hrd.get("repo.url"), dest=service.hrd.get("code.path"), login=None, passwd=None, depth=1,
                          ignorelocalchanges=False, reset=False, branch=None, revision=None, ssh=True, executor=None, codeDir=None)
 
     @action()
-    def setMilestonesOnGithub(self,service):
-
-
+    def setMilestonesOnGithub(self, service):
         repo = self.get_github_repo(service=service)
-
 
         if repo.type in ["proj", "org"]:
             milestonesSet = []
@@ -99,66 +95,28 @@ class Actions(ActionsBaseMgmt):
         #             # repo.deleteMilestone(name)
         #             print("DELETE MILESTONE:%s %s" % (repo, name))
 
-    def getIssuesFromAYS(self,service):
-        githubclientays=service.getProducers('github_client')[0]
+    def get_issues_from_ays(self, service, refresh=False):
+        githubclientays = service.getProducers('github_client')[0]
         client = githubclientays.actions.getGithubClient(service=githubclientays)
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
+        if refresh:
+            repo._issues = []
 
         Issue = j.clients.github.getIssueClass()
         for child in service.children:
             if child.role != 'github_issue':
                 continue
             issue = Issue(repo=repo, ddict=child.model)
-            repo.issues.append(issue)
+            repo._issues.append(issue)
 
         repo.issues_loaded = True
 
         return repo
 
-    def get_github_repo(self,service):
-        githubclientays=service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
-        repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
-        repo = client.getRepo(repokey)
-        fromAys = True
-        if service.state.get("getIssuesFromGithub")[0] != "OK":
-            # means have not been able to get the issues from github properly, so do again
-            fromAys = False
-        if not repo.issues_loaded:
-            if fromAys:
-                print("LOAD ISSUES FROM AYS")
-                # service.state.set("getIssuesFromAYS","DO")
-                self.getIssuesFromAYS()
-                repo.issues_loaded = True
-            else:
-                from IPython import embed
-                print("DEBUG NOW issues loaded false,LOAD ISSUES FROM GITHUB")
-                embed()
-                ppp
-                print("LOAD ISSUES FROM GITHUB")
-                # service.state.set("getIssuesFromGithub","DO")
-                self.getIssuesFromGithub(service=service)
-                repo.issues_loaded = True
-        return repo
-
     @action()
-    def processIssues(self,service):
-        repo = self.get_github_repo(service)
-        repo.process_issues()
-
-    def stories2pdf(self,service):
-        repo = self.get_github_repo(service)
-        from IPython import embed
-        print("DEBUG NOW stories 2 pdf")
-        embed()
-
-    @action()
-    def test(self,service):
-        print("TEST")
-
-    @action()
-    def getIssuesFromGithub(self,service):
+    def get_issues_from_github(self, service):
+        service.logger.info('start get_issues_from_github')
         config = service.getProducers('github_config')[0]
 
         projtype = service.hrd.get("repo.type")
@@ -170,27 +128,85 @@ class Actions(ActionsBaseMgmt):
             if projtype in value or "*" in value:
                 labels.append(label)
 
-        githubclientays=service.getProducers('github_client')[0]
+        githubclientays = service.getProducers('github_client')[0]
         client = githubclientays.actions.getGithubClient(service=githubclientays)
 
         reponame = "$(repo.account)/$(repo.name)"
         r = client.getRepo(reponame)
-
         # first make sure issues get right labels
-        r.labelsSet(labels,ignoreDelete=["p_"])
+        r.labelsSet(labels, ignoreDelete=["p_"])
 
         labelsprint = ",".join(labels)
 
         service.logger.info("Have set labels in %s:%s" % (service, labelsprint))
 
-        if r.issues != []:
-            for issue in r.issues:
-                args = {'github.repo': service.instance}
-                issue_service = service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
-
-        service.state.set("getIssuesFromGithub", "OK")
+        service.state.set("get_issues_from_github", "OK")
         service.state.save()
 
-        r.issues_loaded = True
-
         self.processIssues(service=service)
+
+    def get_github_repo(self, service):
+        githubclientays = service.getProducers('github_client')[0]
+        client = githubclientays.actions.getGithubClient(service=githubclientays)
+        repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
+        repo = client.getRepo(repokey)
+        return repo
+
+    @action()
+    def processIssues(self, service, refresh=False):
+        """
+        refresh: bool, force loading of issue from github
+        """
+        if service.state.get('processIssues', die=False) == 'RUNNING':
+            # don't processIssue twice at the same time.
+            j.logger.log('processIssue already running')
+            return
+
+        service.state.set('processIssues', 'RUNNING')
+        service.state.save()
+
+        repo = self.get_github_repo(service)
+        if refresh:
+            # force reload of services from github.
+            repo._issues = None
+        repo.process_issues()
+
+        for issue in repo.issues:
+            args = {'github.repo': service.instance}
+            service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
+
+    def stories2pdf(self, service):
+        repo = self.get_github_repo(service)
+        raise NotImplementedError()
+
+    @action()
+    def recurring_process_issues_from_model(self, service):
+        self.processIssues(service=service, refresh=False)
+
+    @action()
+    def recurring_process_issues_from_github(self, service):
+        self.processIssues(service=service, refresh=True)
+
+    def event_new_issue(self, service, event):
+        event = j.data.models.cockpit_event.Generic.from_json(event)
+
+        if event.args.get('source', None) != 'github' or \
+                'key' not in event.args or \
+                event.args.get('event', None) != 'issues':
+            return
+
+        data = j.core.db.hget('webhooks', event.args['key'])
+        if data is None:
+            return
+        github_payload = j.data.serializer.json.loads(data.decode())
+        action = github_payload.get('action', None)
+        if action != 'opened':
+            return
+
+        # at this point we know we are interested in the event.
+        repo = self.get_github_repo(service)
+        # create issue object
+        issue = repo.getIssue(github_payload['issue']['number'])
+        # create service gitub_issue
+        args = {'github.repo': service.instance}
+        service.aysrepo.new(name='github_issue', instance=str(issue.id), args=args, model=issue.ddict)
