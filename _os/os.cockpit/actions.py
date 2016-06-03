@@ -141,6 +141,8 @@ class Actions(ActionsBaseMgmt):
         import $varDir/cfg/caddy/proxies/*
         """
         caddy_proxy_cfg = """
+        redir /apidocs/api.raml /api/apidocs/api.raml 301
+
         proxy /$shellinbox_url 127.0.0.1:4200 {
         without /$shellinbox_url
         }
