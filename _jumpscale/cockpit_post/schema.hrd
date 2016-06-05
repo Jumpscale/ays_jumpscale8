@@ -1,0 +1,3 @@
+os = type:str parent:'blueprint.cockpit'
+repos = type:str list
+sshkey = type:str consume:'sshkey' auto

@@ -18,7 +18,7 @@ class Actions(ActionsBaseMgmt):
             'g8.url': service.hrd.getStr('g8.url'),
             'g8.client.name': g8_client.instance
         }
-        vdc = service.aysrepo.new('vdc', args=args, instance='js8', parent=vdcfarm)
+        vdc = service.aysrepo.new('vdc', args=args, instance='cockpit', parent=vdcfarm)
 
         args = {
             'ports': '80:80, 443:443, 18384:18384',
@@ -43,7 +43,18 @@ class Actions(ActionsBaseMgmt):
         }
         docker_devel = service.aysrepo.new('node.docker', args=args, instance="docker_devel", parent=os)
 
-        # docker_sandbox = service.aysrepo.new('node.docker', args=args, instance="docker_sandbox", parent=os)
+
+        args = {
+            "image": "jumpscale/ubuntu1604",
+            'build': True,
+            'build.url': 'https://github.com/Jumpscale/dockers',
+            'build.path': 'js8/x86_64/ubuntu1604/2_ubuntu1604/',
+            'os': os.instance,
+            'aysfs': True,
+            'ports': '80, 443, 18384'
+        }
+
+        docker_sandbox = service.aysrepo.new('node.docker', args=args, instance="docker_sandbox", parent=os)
 
         args = {
             'node': docker_devel.instance,
@@ -76,4 +87,4 @@ class Actions(ActionsBaseMgmt):
                        '/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__webhooks/',
                        '/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__gridmanager/'],
         }
-        #cockpit_portal = service.aysrepo.new('portal', args=args, instance=service.instance, parent=js8_devel)
+        cockpit_portal = service.aysrepo.new('portal', args=args, instance=service.instance, parent=js8_devel)
