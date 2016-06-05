@@ -4,15 +4,11 @@ from JumpScale import j
 class Actions(ActionsBaseMgmt):
 
     @action()
-    def process(self,service):
+    def process(self, service):
         Issue = j.clients.github.getIssueClass()
         repo = service.parent.actions.get_github_repo(service=service.parent)
 
-        from IPython import embed
-        print ("DEBUG NOW process issue")
-        embed()
-        sdasd
-        
+        raise NotImplementedError()
 
         # only process this specific issue.
         for issue in repo.issues:
@@ -21,16 +17,7 @@ class Actions(ActionsBaseMgmt):
                 break
 
     @action()
-    def getIssueFromGithub(self,service):
-
-        repo=self.get_github_repo()
-
-        path=j.sal.fs.joinPaths(service.path,"issue.yaml")
-
-        j.sal.fs.writeFile(path,str(md))
-
-    @action()
-    def update_from_github(self,service, event):
+    def update_from_github(self, service, event):
         import datetime
         event = j.data.models.cockpit_event.Generic.from_json(event)
 
@@ -38,14 +25,22 @@ class Actions(ActionsBaseMgmt):
             return
 
         if 'key' not in event.args:
-            print("bad format of event")
+            j.logger.log("bad format of event")
             return
 
         data = j.core.db.hget('webhooks', event.args['key'])
+        if data is None:
+            return
         event_type = event.args['event']
-        github_payload = j.data.serializer.json.loads(data)
+        github_payload = j.data.serializer.json.loads(data.decode())
 
-        action = github_payload['action']
+        action = github_payload.get('action', None)
+        if action is None:
+            return
+
+        if github_payload['issue']['id'] != service.model['id']:
+            # event not for this issue
+            return
 
         if event_type == 'issue_comment':
 
@@ -77,7 +72,6 @@ class Actions(ActionsBaseMgmt):
                 # update comment
                 if comment is not None:
                     dt = datetime.datetime.strptime(github_payload['comment']['updated_at'], "%Y-%m-%dT%H:%M:%SZ")
-                    #@todo jumpscale has time function please use
                     new_comment = {
                         'body': github_payload['comment']['body'],
                         'id': github_payload['comment']['id'],
@@ -101,11 +95,10 @@ class Actions(ActionsBaseMgmt):
                 service.model = model
                 j.core.db.hdel('webhooks', event.args['key'])
             else:
-                print("not supported action")
-        elif event_type == 'issues':
-            import ipdb; ipdb.set_trace()
-            if github_payload['issue']['id'] != service.model['id']:
+                j.logger.log('not supported action: %s' % action)
                 return
+
+        elif event_type == 'issues':
 
             if action == 'closed':
                 model = service.model.copy()
@@ -118,3 +111,23 @@ class Actions(ActionsBaseMgmt):
                 model['open'] = True
                 model['state'] = 'reopened'
                 service.model = model
+            elif action in ['assigned', 'unassigned']:
+                assignee = github_payload['issue']['assignee']
+                if assignee is None:
+                    service.model['assignee'] = ''
+                else:
+                    if j.data.types.list.check(assignee):
+                        service.model['assignee'] = [a['login'] for a in assignee]
+                    elif j.data.types.dict.check(assignee):
+                        service.model['assignee'] = assignee['login']
+            elif action in ['labeled', 'unlabeled']:
+                service.model['labels'] = [i['name'] for i in github_payload['issue']['labels']]
+            elif action == 'edited':
+                service.model['body'] = github_payload['issue']['body']
+            else:
+                j.logger.log('not supported action: %s' % action)
+                return
+
+        repo = service.parent.actions.get_github_repo(service=service.parent)
+        issue = repo.getIssue(github_payload['issue']['number'])
+        issue._ddict = service.model
