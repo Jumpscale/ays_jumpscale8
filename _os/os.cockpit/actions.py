@@ -148,7 +148,7 @@ class Actions(ActionsBaseMgmt):
         redir /apidocs/api.raml /api/apidocs/api.raml 301
 
         proxy /$shellinbox_url 127.0.0.1:4200 {
-        without /$shellinbox_url
+            without /$shellinbox_url
         }
 
         proxy /0/0/hubble 127.0.0.1:8966 {
