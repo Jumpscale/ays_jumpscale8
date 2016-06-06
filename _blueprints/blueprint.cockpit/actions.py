@@ -5,16 +5,6 @@ class Actions(ActionsBaseMgmt):
 
     def init(self, service):
 
-        args = {
-            'smtp.login': service.hrd.getStr('smtp.login'),
-            'smtp.passwd': service.hrd.getStr('smtp.passwd'),
-            'smtp.server': service.hrd.getStr('smtp.server'),
-            'smtp.port': service.hrd.getStr('smtp.port'),
-            'smtp.sender': service.hrd.getStr('smtp.sender'),
-
-        }
-        mail_client = service.aysrepo.new('mailclient', args=args, instance="main")
-
         cockpit_name = service.hrd.getStr('cockpit.name')
 
         args = {'g8.url': service.hrd.getStr('g8.url'),
@@ -84,5 +74,3 @@ class Actions(ActionsBaseMgmt):
 
         }
         cockpit = service.aysrepo.new('os.cockpit', args=args, instance=cockpit_name, parent=docker)
-
-
