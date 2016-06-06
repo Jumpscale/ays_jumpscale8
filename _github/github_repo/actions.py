@@ -114,6 +114,28 @@ class Actions(ActionsBaseMgmt):
 
         return repo
 
+    def get_github_repo(self,service):
+        githubclientays=service.getProducers('github_client')[0]
+        client = githubclientays.actions.getGithubClient(service=githubclientays)
+        repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
+        repo = client.getRepo(repokey)
+        fromAys = True
+        if service.state.get("getIssuesFromGithub") and service.state.get("getIssuesFromGithub")[0] != "OK":
+            # means have not been able to get the issues from github properly, so do again
+            fromAys = False
+        if not repo.issues_loaded:
+            if fromAys:
+                service.logger.info("LOAD ISSUES FROM AYS")
+                # service.state.set("getIssuesFromAYS","DO")
+                self.getIssuesFromAYS()
+                repo.issues_loaded = True
+            else:
+                service.logger.info("LOAD ISSUES FROM GITHUB")
+                # service.state.set("getIssuesFromGithub","DO")
+                self.getIssuesFromGithub(service=service)
+                repo.issues_loaded = True
+        return repo
+
     @action()
     def get_issues_from_github(self, service):
         service.logger.info('start get_issues_from_github')
@@ -145,12 +167,6 @@ class Actions(ActionsBaseMgmt):
 
         self.processIssues(service=service)
 
-    def get_github_repo(self, service):
-        githubclientays = service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
-        repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
-        repo = client.getRepo(repokey)
-        return repo
 
     @action()
     def processIssues(self, service, refresh=False):

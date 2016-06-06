@@ -23,7 +23,7 @@ class Actions(ActionsBaseMgmt):
         if 'key' not in event.args:
             print("bad format of event")
             return
-
+        key = event.args['key']
         data = j.core.db.hget('webhooks', event.args['key'])
         event_type = event.args['event']
         github_payload = j.data.serializer.json.loads(data)

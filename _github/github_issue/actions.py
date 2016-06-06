@@ -97,15 +97,37 @@ class Actions(ActionsBaseMgmt):
             else:
                 j.logger.log('not supported action: %s' % action)
                 return
-
         elif event_type == 'issues':
+            if github_payload['issue']['id'] != service.model['id']:
+                return
 
             if action == 'closed':
-                model = service.model.copy()
-                model['open'] = False
-                model['state'] = 'closed'
-                service.model = model
-
+                pattern = r"#(\d+)"
+                import re
+                service.model['open'] = False
+                service.model['state'] = 'closed'
+                repo = service.parent.actions.get_github_repo(service=service.parent)
+                if repo.type != "code":
+                    return
+                client_ays =service.parent.getProducers('github_client')[0]
+                client = client_ays.actions.getGithubClient(client_ays)
+                bug = repo.getIssue(service.model['number'])
+                if "type_bug" not in bug.labels:
+                    return
+                mail_service = service.getProducers('mailclient')[0]
+                email_sender = mail_service.actions.getSender(mail_service)
+                comments = bug.comments
+                for comment in comments:
+                    issues_nums = re.findall(pattern, comment['body'])
+                    for issue_num in issues_nums:
+                        issue = repo.getIssue(int(issue_num))
+                        if "type_ticket" in issue.labels:
+                            user = client.api.get_user(issue.assignee)
+                            email = user.email
+                            email_sender.send(email,
+                                              mail_service.hrd.getStr("smtp.sender"),
+                                              "Ticket %s" % bug.number,
+                                              "Hi %s, The the Issue %s is closed now" % (issue.assignee, bug.number))
             elif action == 'reopened':
                 model = service.model.copy()
                 model['open'] = True
