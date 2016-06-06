@@ -17,4 +17,4 @@ milestone.category = type:'str' list
 
 milestones = type:'str' list consume:'github_milestone'
 
-kds.name== type:'str' default:'ss'
+repo.emails = type:'str' list

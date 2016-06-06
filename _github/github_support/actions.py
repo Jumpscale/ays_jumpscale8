@@ -77,37 +77,24 @@ class Actions(ActionsBaseMgmt):
     @action()
     def from_email_ticket(self,service, event):
         email = j.data.models.cockpit_event.Email.from_json(event)
-
+        repos_ays = service.producers['github_repo']
+        for repo in repos_ays:
+            if email.sender in repo.hrd.getList("repo.emails", []):
+                repo_service = repo
+                service.logger.info('email from known emails')
+                break
+        else:
+            service.logger.info('can not identify email')
+            mail_service = service.getProducers('mailclient')[0]
+            email_sender = mail_service.actions.getSender(mail_service)
+            email_sender.send(email.sender,
+                              mail_service.hrd.getStr("smtp.sender"),
+                              "Your email is not linked",
+                              "Hi, We received your email (%s) but this email is not linked to any repo" % email.subject)
+            return
         if not email.subject.startswith('(Ticket)'):
             # this mail doesn't concerne us
             return
-
-        # find for which repo is targeted by this email
-        repo_name = ''
-        for l in email.body.splitlines():
-            if l.startswith("repository:"):
-                repo_name = l[len("repository:"):].strip()
-                break
-            elif l.startswith("repo:"):
-                repo_name = l[len("repo:"):].strip()
-                break
-
-        if repo_name == '':
-            print("can't identify targeted repository")
-            # TODO, send email back to client to tell him
-            return
-
-        repo_service = None
-        for s in service.producers['github_repo']:
-            if repo_name == s.hrd.getStr('repo.name'):
-                repo_service = s
-                break
-
-        if repo_service is None:
-            print("targeted repo is not monitored by this service.")
-            # TODO, send email back to client to tell him
-            return
-
         Issue = j.clients.github.getIssueClass()
         repo = repo_service.actions.get_github_repo(repo_service)
         # allocation of a unique ID to the Ticket

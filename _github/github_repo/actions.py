@@ -120,19 +120,19 @@ class Actions(ActionsBaseMgmt):
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
         repo = client.getRepo(repokey)
         fromAys = True
-        if service.state.get("getIssuesFromGithub") and service.state.get("getIssuesFromGithub")[0] != "OK":
+        if service.state.get("get_issues_from_github", None) and service.state.get("get_issues_from_github")[0] != "OK":
             # means have not been able to get the issues from github properly, so do again
             fromAys = False
         if not repo.issues_loaded:
             if fromAys:
                 service.logger.info("LOAD ISSUES FROM AYS")
                 # service.state.set("getIssuesFromAYS","DO")
-                self.getIssuesFromAYS()
+                self.get_issues_from_ays(service=service)
                 repo.issues_loaded = True
             else:
                 service.logger.info("LOAD ISSUES FROM GITHUB")
                 # service.state.set("getIssuesFromGithub","DO")
-                self.getIssuesFromGithub(service=service)
+                self.get_issues_from_github(service=service)
                 repo.issues_loaded = True
         return repo
 
