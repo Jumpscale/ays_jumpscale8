@@ -3,7 +3,6 @@
 # Issues per assignee
 - [xmonader](#xmonader) has 1 assigned
 - [rkhamis](#rkhamis) has 1 assigned
-- [zaibon](#zaibon) has 1 assigned
 
 
 
@@ -19,11 +18,4 @@
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
 |[#3](https://github.com/jumpscale/ays_jumpscale8/issues/3)|Re-write services compatible with revamped AYS8|:large_blue_circle: In Progress||
-
-
-## [zaibon](https://github.com/zaibon)
-
-|Issue|Title|State|Type|
-|-----|-----|-----|----|
-|[#14](https://github.com/jumpscale/ays_jumpscale8/issues/14)|Adds send email to owners of linked issues when ticket closed|:large_blue_circle: In Progress||
 
