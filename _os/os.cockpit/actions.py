@@ -21,6 +21,10 @@ class Actions(ActionsBaseMgmt):
 
         cuisine.core.file_write('/root/.ssh/id_rsa', sshkey_priv, mode='0600')
         cuisine.core.file_write('/root/.ssh/id_rsa.pub', sshkey_pub, mode='0600')
+        if cuisine.core.file_exists('/root/.ssh/authorized_keys'):
+            cuisine.core.file_append('/root/.ssh/authorized_keys', sshkey_pub)
+        else:
+            cuisine.core.file_write('/root/.ssh/authorized_keys', sshkey_pub)
 
         self.dns(service=service)
         self.caddy(service=service)
