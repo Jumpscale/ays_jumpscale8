@@ -2,8 +2,8 @@
 
 # Issues per assignee
 - [xmonader](#xmonader) has 1 assigned
-- [zaibon](#zaibon) has 1 assigned
 - [rkhamis](#rkhamis) has 1 assigned
+- [zaibon](#zaibon) has 1 assigned
 
 
 
@@ -14,16 +14,16 @@
 |[#11](https://github.com/jumpscale/ays_jumpscale8/issues/11)|node.docker portforwards are duplicated|:red_circle: Open||
 
 
-## [zaibon](https://github.com/zaibon)
-
-|Issue|Title|State|Type|
-|-----|-----|-----|----|
-|[#14](https://github.com/jumpscale/ays_jumpscale8/issues/14)|Adds send email to owners of linked issues when ticket closed|:large_blue_circle: In Progress||
-
-
 ## [rkhamis](https://github.com/rkhamis)
 
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
 |[#3](https://github.com/jumpscale/ays_jumpscale8/issues/3)|Re-write services compatible with revamped AYS8|:large_blue_circle: In Progress||
+
+
+## [zaibon](https://github.com/zaibon)
+
+|Issue|Title|State|Type|
+|-----|-----|-----|----|
+|[#14](https://github.com/jumpscale/ays_jumpscale8/issues/14)|Adds send email to owners of linked issues when ticket closed|:large_blue_circle: In Progress||
 
