@@ -192,7 +192,10 @@ class Actions(ActionsBaseMgmt):
     def gid(self, service):
         cuisine = self.getExecutor(service).cuisine
         content = "grid.id = %d\nnode.id = 0" % service.hrd.getInt('gid')
-        cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)
+        if not cuisine.core.file_exists("$hrdDir/system/system.hrd"):
+            cuisine.core.file_write(location="$hrdDir/system/system.hrd", content=content)
+        else:
+            cuisine.core.file_append(location="$hrdDir/system/system.hrd", content=content)
 
     @action()
     def cockpit(self, service):
