@@ -41,7 +41,7 @@ class Actions(ActionsBaseMgmt):
 
         args = {
             'ports': '80:80, 443:443, 18384:18384',
-            'sshkey': 'main'
+            'sshkey': 'main',
             'disk.size': 20,
             'os.size': 4,
         }
