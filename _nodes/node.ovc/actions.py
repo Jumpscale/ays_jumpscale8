@@ -18,8 +18,9 @@ class Actions(ActionsBaseMgmt):
             return space.machines[service.instance]
         else:
             machine = space.machine_create(name=service.instance,
-                                           image=service.hrd.get('os.image'),
-                                           memsize=int(service.hrd.get('os.size')))
+                                           image=service.hrd.getStr('os.image'),
+                                           memsize=service.hrd.getInt('os.size'),
+                                           disksize=service.hrd.getInt('disk.size'))
             return machine
 
     def open_port(self, service, requested_port, public_port=None):

@@ -3,13 +3,13 @@
 # Summary
 |Milestone|ETA|
 |---------|---|
-|[js8.2](#milestone-js82)|0 seconds|
+|[js8.0](#milestone-js80)|0 seconds|
 |[js8.0_beta](#milestone-js80_beta)|0 seconds|
 |[js8.1](#milestone-js81)|0 seconds|
-|[js8.0](#milestone-js80)|0 seconds|
+|[js8.2](#milestone-js82)|0 seconds|
 |[No milestone](#no-milestone)|0 seconds|
 
-## [Milestone js8.2](milestones/1:js8.2.md)
+## [Milestone js8.0](milestones/4:js8.0.md)
 
 
 |Issue|Title|State|Owner|ETA|
@@ -27,7 +27,7 @@
 |Issue|Title|State|Owner|ETA|
 |-----|-----|-----|-----|---|
 
-## [Milestone js8.0](milestones/4:js8.0.md)
+## [Milestone js8.2](milestones/1:js8.2.md)
 
 
 |Issue|Title|State|Owner|ETA|
