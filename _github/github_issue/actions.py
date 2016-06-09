@@ -146,6 +146,8 @@ class Actions(ActionsBaseMgmt):
                 service.model['labels'] = [i['name'] for i in github_payload['issue']['labels']]
             elif action == 'edited':
                 service.model['body'] = github_payload['issue']['body']
+                service.model['title'] = github_payload['issue']['title']
+                service.model['milestone'] = github_payload['issue']['milestone'] or ''
             else:
                 j.logger.log('not supported action: %s' % action)
                 return
