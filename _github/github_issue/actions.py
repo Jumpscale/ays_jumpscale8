@@ -152,6 +152,3 @@ class Actions(ActionsBaseMgmt):
                 j.logger.log('not supported action: %s' % action)
                 return
 
-        repo = service.parent.actions.get_github_repo(service=service.parent)
-        issue = repo.getIssue(github_payload['issue']['number'])
-        issue._ddict = service.model

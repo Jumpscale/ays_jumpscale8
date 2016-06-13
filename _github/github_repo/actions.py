@@ -62,7 +62,7 @@ class Actions(ActionsBaseMgmt):
 
     def install(self, service):
         self.setMilestonesOnGithub(service=service)
-        self.get_issues_from_github(service=service)
+        self.processIssues(service=service, refresh=True)
 
     @action()
     def pull(self, service):
@@ -86,59 +86,26 @@ class Actions(ActionsBaseMgmt):
 
                 milestonesSet.append(name)
 
-            # for name in repo.milestoneNames:
-            #     if name not in milestonesSet:
-            #         repo.deleteMilestone(name)
-        # else:
-        #     if repo.type not in ["code"]:
-        #         for name in repo.milestoneNames:
-        #             # repo.deleteMilestone(name)
-        #             print("DELETE MILESTONE:%s %s" % (repo, name))
-
-    def get_issues_from_ays(self, service, refresh=False):
-        githubclientays = service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
-        repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
-        repo = client.getRepo(repokey)
-        if refresh:
-            repo._issues = []
-
+    def get_issues_from_ays(self, service):
+        repo = self.get_github_repo(service)
+        issues = []
         Issue = j.clients.github.getIssueClass()
         for child in service.children:
             if child.role != 'github_issue':
                 continue
             issue = Issue(repo=repo, ddict=child.model)
-            repo._issues.append(issue)
+            issues.append(issue)
 
-        repo.issues_loaded = True
-
-        return repo
+        return issues
 
     def get_github_repo(self,service):
         githubclientays=service.getProducers('github_client')[0]
         client = githubclientays.actions.getGithubClient(service=githubclientays)
         repokey = service.hrd.get("repo.account") + "/" + service.hrd.get("repo.name")
-        repo = client.getRepo(repokey)
-        fromAys = True
-        if service.state.get("get_issues_from_github", None) and service.state.get("get_issues_from_github")[0] != "OK":
-            # means have not been able to get the issues from github properly, so do again
-            fromAys = False
-        if not repo.issues_loaded:
-            if fromAys:
-                service.logger.info("LOAD ISSUES FROM AYS")
-                # service.state.set("getIssuesFromAYS","DO")
-                self.get_issues_from_ays(service=service)
-                repo.issues_loaded = True
-            else:
-                service.logger.info("LOAD ISSUES FROM GITHUB")
-                # service.state.set("getIssuesFromGithub","DO")
-                self.get_issues_from_github(service=service)
-                repo.issues_loaded = True
-        return repo
+        return client.getRepo(repokey)
 
     @action()
-    def get_issues_from_github(self, service):
-        service.logger.info('start get_issues_from_github')
+    def set_labels(self, service):
         config = service.getProducers('github_config')[0]
 
         projtype = service.hrd.get("repo.type")
@@ -150,29 +117,17 @@ class Actions(ActionsBaseMgmt):
             if projtype in value or "*" in value:
                 labels.append(label)
 
-        githubclientays = service.getProducers('github_client')[0]
-        client = githubclientays.actions.getGithubClient(service=githubclientays)
-
-        reponame = "$(repo.account)/$(repo.name)"
-        r = client.getRepo(reponame)
+        r = self.get_github_repo(service)
         # first make sure issues get right labels
         r.labelsSet(labels, ignoreDelete=["p_"])
-
-        labelsprint = ",".join(labels)
-
-        service.logger.info("Have set labels in %s:%s" % (service, labelsprint))
-
-        service.state.set("get_issues_from_github", "OK")
-        service.state.save()
-
-        self.processIssues(service=service)
-
 
     @action()
     def processIssues(self, service, refresh=False):
         """
         refresh: bool, force loading of issue from github
         """
+        self.set_labels(service=service)
+
         if service.state.get('processIssues', die=False) == 'RUNNING':
             # don't processIssue twice at the same time.
             j.logger.log('processIssue already running')
@@ -181,10 +136,14 @@ class Actions(ActionsBaseMgmt):
         service.state.set('processIssues', 'RUNNING')
         service.state.save()
 
-        repo = self.get_github_repo(service)
+        repo = self.get_github_repo(service=service)
         if refresh:
             # force reload of services from github.
             repo._issues = None
+        else:
+            # load issues from ays.
+            repo._issues = self.get_issues_from_ays(service=service)
+
         j.tools.github.process_issues(repo)
 
         for issue in repo.issues:
