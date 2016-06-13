@@ -185,7 +185,7 @@ class Actions(ActionsBaseMgmt):
         if refresh:
             # force reload of services from github.
             repo._issues = None
-        repo.process_issues()
+        j.tools.github.process_issues(repo)
 
         for issue in repo.issues:
             args = {'github.repo': service.instance}
