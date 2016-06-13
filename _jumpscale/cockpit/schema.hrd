@@ -1,0 +1,14 @@
+os = type:str parent:os
+
+dns.domain = type:str
+dns.sshkey = type:str
+
+portal.password = type:str
+telegram.token = type:str
+
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.organization = type:str
+oauth.jwt_key = type:str multiline
+
+dind = type:bool default:False

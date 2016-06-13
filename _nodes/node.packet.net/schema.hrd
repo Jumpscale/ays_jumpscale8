@@ -1,4 +1,8 @@
 
-description = type:multiline
-type = type:str
+sshkey = type:str consume:sshkey auto
+packet.client = type:str consume:packetclient:1:1
+packet.project.name = type:str @ASK
+packet.plan.type = type:str default:'Type 0'
+packet.device.name = type:str @ASk
+packet.device.os = type:str default:'Ubuntu 14.04 LTS'
 

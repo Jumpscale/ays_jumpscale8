@@ -1,5 +1,5 @@
 os = type:str parent:'os'
-admin.passwd = @ASK default:admin
-admin.login = @ASK default:admin
+admin.passwd = type:str default:admin
+admin.login = type:str default:admin
 spaces = type:str list
 actors = type:str list
