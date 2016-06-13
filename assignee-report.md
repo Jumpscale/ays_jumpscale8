@@ -3,7 +3,6 @@
 # Issues per assignee
 - [rkhamis](#rkhamis) has 1 assigned
 - [xmonader](#xmonader) has 1 assigned
-- [zaibon](#zaibon) has 1 assigned
 
 
 
@@ -19,11 +18,4 @@
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
 |[#11](https://github.com/jumpscale/ays_jumpscale8/issues/11)|node.docker portforwards are duplicated|:red_circle: Open||
-
-
-## [zaibon](https://github.com/zaibon)
-
-|Issue|Title|State|Type|
-|-----|-----|-----|----|
-|[#22](https://github.com/jumpscale/ays_jumpscale8/issues/22)|Adds notification to on-call engineer and escalation|:large_blue_circle: In Progress||
 
