@@ -21,11 +21,11 @@ class Actions(ActionsBaseMgmt):
         def _pf_map(docker_ports):
             pf_creation = []
             for docker_port in docker_ports:
-                p = get_host_port(docker_port)
-                if p is None:
-                    pf_creation.append("%s:%s" % (docker_port, docker_port))
-                else:
+                if ":" in docker_port:
+                    p, docker_port = docker_port.split(":")
                     pf_creation.append("%s:%s" % (p, docker_port))
+                else:
+                    pf_creation.append("%s" % (docker_port))
             return pf_creation
 
         def get_host_port(docker_port):
@@ -58,7 +58,7 @@ class Actions(ActionsBaseMgmt):
         else:
             # js not available
             pfs = ' -p '.join(pf_creation)
-            out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance)
+            out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
                     dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
@@ -70,13 +70,30 @@ class Actions(ActionsBaseMgmt):
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
 
-            vm_port = service.executor.cuisine.core.run("docker port %s 22" % service.instance).split(':')[1]
-            public_port = host_node.actions.open_port(host_node, vm_port)
+            #get all portforward from container to host 
+            pf_creation = []
+            pf_lines = service.executor.cuisine.core.run("docker port %s" % service.instance).splitlines()
+            for portf in pf_lines:
+                tmp = portf.split('/')
+                if tmp[0] == "22":
+                    vm_port = tmp[0]
+                    continue
+                pf_creation.append("%s:%s" % (tmp[0], tmp[1].split(":")[1]))
+
+
+            spaceport = []
+            for item in pf_creation:
+                docker_port, host_port = item.split(":")
+                if not get_host_port(host_port):
+                    spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port), docker_port))
+
+                public_port = host_node.actions.open_port(host_node, vm_port)
+
 
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))
 
         # service.executor.cuisine.docker.enableSSH(connection_str)
-
+        service.hrd.set('public.ports', spaceport)
         service.hrd.set('docker.sshport', public_port)
         service.hrd.set('node.addr', service.executor.addr)
         service.hrd.set('portforwards', pf_creation)
