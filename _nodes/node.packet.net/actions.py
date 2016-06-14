@@ -46,7 +46,7 @@ class Actions(ActionsBaseMgmt):
 
         timeout_start = time.time()
         timeout = 900
-        while time.time() < timeout_start + timeout and device.state == 'provisioning':
+        while time.time() < timeout_start + timeout and device.state != 'active':
             time.sleep(5)
             device = client.get_device(device.id)
 
