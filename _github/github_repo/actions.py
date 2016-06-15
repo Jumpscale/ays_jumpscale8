@@ -81,7 +81,7 @@ class Actions(ActionsBaseMgmt):
                 deadline = service.hrd.getStr("milestone.deadline")
                 owner = service.hrd.getStr("milestone.owner")
                 name = service.instance
-                
+
                 repo.createMilestone(name, title, description, deadline, owner)
 
                 milestonesSet.append(name)
