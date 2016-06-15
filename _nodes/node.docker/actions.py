@@ -21,11 +21,11 @@ class Actions(ActionsBaseMgmt):
         def _pf_map(docker_ports):
             pf_creation = []
             for docker_port in docker_ports:
-                p = get_host_port(docker_port)
-                if p is None:
-                    pf_creation.append("%s:%s" % (docker_port, docker_port))
-                else:
+                if ":" in docker_port:
+                    p, docker_port = docker_port.split(":")
                     pf_creation.append("%s:%s" % (p, docker_port))
+                else:
+                    pf_creation.append("%s" % (docker_port))
             return pf_creation
 
         def get_host_port(docker_port):
@@ -48,44 +48,73 @@ class Actions(ActionsBaseMgmt):
         docker_ports = service.hrd.getList('ports')
         pf_creation = _pf_map(docker_ports)
 
+        dind = service.hrd.getBool('dind', False)
+        volumes = None if not dind else '/var/run/docker.sock:/var/run/docker.sock'
+
         if service.parent.hrd.getBool('aysfs'): #@todo (*1*) not right !
             aysfs = service.hrd.getBool('aysfs')
             pfs = ' '.join(pf_creation)
+
             connection_str = service.executor.cuisine.docker.ubuntu(name=service.instance, image=image,
-                                                        pubkey=pubkey, aydofs=aysfs, ports=pfs)
+                                                        pubkey=pubkey, aydofs=aysfs, ports=pfs, volumes=volumes)
             local_port = connection_str.split(':')[1]
             public_port = host_node.actions.open_port(host_node, local_port)
         else:
             # js not available
-            pfs = ' -p '.join(pf_creation)
-            out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance)
+            pfs = '-p %s' % (' -p '.join(pf_creation)) if pf_creation else ''
+            pfs = ' -p 22 %s ' % pfs
+            out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
                     dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
                     service.executor.cuisine.git.pullRepo(service.hrd.get('build.url'), dest)
                     service.executor.cuisine.core.run('cd %s; docker build  --tag="%s"  %s' % (dest, image, service.hrd.get('build.path')))
-                service.executor.cuisine.core.run("docker run -d -t -p %s -p 22 --name %s --privileged=true %s " % (pfs, service.instance, image))
+                volumes = '-v %s' % volumes if volumes else ''
+                service.executor.cuisine.core.run("docker run -d -t %s --name %s --privileged=true %s %s " % (pfs, service.instance, volumes, image))
             # add sshkey
             service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
 
-            vm_port = service.executor.cuisine.core.run("docker port %s 22" % service.instance).split(':')[1]
-            public_port = host_node.actions.open_port(host_node, vm_port)
+            #get all portforward from container to host 
+            pf_creation = []
+            pf_lines = service.executor.cuisine.core.run("docker port %s" % service.instance).splitlines()
+            for portf in pf_lines:
+                tmp = portf.split('/')
+                if tmp[0] == "22":
+                    vm_port = tmp[0]
+                    continue
+                pf_creation.append("%s:%s" % (tmp[0], tmp[1].split(":")[1]))
+
+
+            spaceport = []
+            for item in pf_creation:
+                docker_port, host_port = item.split(":")
+                if not get_host_port(host_port):
+                    spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port), docker_port))
+
+                public_port = host_node.actions.open_port(host_node, vm_port)
+
 
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))
 
         # service.executor.cuisine.docker.enableSSH(connection_str)
+        addr = 0
+        if service.hrd.getBool('docker.local', False):
+            public_port = 22
+            addr = service.executor.cuisine.core.run("docker inspect --format '{{ .NetworkSettings.IPAddress }}' %s" % service.instance)
 
         service.hrd.set('docker.sshport', public_port)
-        service.hrd.set('node.addr', service.executor.addr)
+
+        addr = addr or service.executor.addr
+        service.hrd.set('node.addr', addr)
         service.hrd.set('portforwards', pf_creation)
 
         for child in service.children:
-            child.hrd.set("ssh.addr", service.executor.addr)
+            child.hrd.set("ssh.addr", addr)
             child.hrd.set("ssh.port", public_port)
 
         # use proper logger
         print("OUT: Docker %s deployed." % service.instance)
-        print("OUT: IP %s" % service.executor.addr)
+        print("OUT: IP %s" % addr)
         print("OUT: SSH port %s" % public_port)

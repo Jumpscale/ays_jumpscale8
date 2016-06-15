@@ -1,12 +1,10 @@
 from JumpScale import j
 
-ActionsBase = service.aysrepo.getActionsBaseClassMgmt()
 
-
-class Actions(ActionsBase):
+class Actions(ActionsBaseMgmt):
 
     def install(self, service):
-        nodes = service.getProducers('docker')
+        nodes = service.getProducers('node')
         cluster = {'shard': [], 'config': [], 'mongos': []}
         clusterconfig = service.hrd.get('clusterconfig')
         for node in nodes:
@@ -29,7 +27,7 @@ class Actions(ActionsBase):
         cuisine.apps.mongodb.mongoCluster(cluster['shard'], cluster['config'], cluster['mongos'])
 
     def load(self, service):
-        nodes = service.getProducers('docker')
+        nodes = service.getProducers('node')
         cluster = {'shard': 'ourmongod', 'config': 'ourmongod_cfg', 'mongos': 'ourmongos'}
         clusterconfig = service.hrd.get('clusterconfig')
         for node in nodes:

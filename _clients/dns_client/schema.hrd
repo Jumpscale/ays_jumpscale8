@@ -1,5 +1,5 @@
 addr = type:str default:'dns1.aydo.com'
 port = type:int default:22
-login = type:str
+login = type:str default:'root'
 password = type:str default:''
 sshkey = type:str consume:sshkey:1:1
