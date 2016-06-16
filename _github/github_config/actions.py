@@ -15,6 +15,7 @@ class Actions(ActionsBaseMgmt):
         github.label.process.duplicate: ['*']
         github.label.process.wontfix: ['*']
         github.label.state.inprogress: ['*']
+        github.label.state.planned: ['*']
         github.label.state.question: ['*']
         github.label.state.verification: ['*']
         github.label.type.bug: [code, ays, cockpit, doc, www]

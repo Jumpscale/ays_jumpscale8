@@ -76,10 +76,10 @@ class Actions(ActionsBaseMgmt):
         if repo.type in ["proj", "org"]:
             milestonesSet = []
             for service in service.getProducers("github_milestone"):
-                title = service.hrd.get("milestone.title")
-                description = service.hrd.get("milestone.description")
-                deadline = service.hrd.get("milestone.deadline")
-                owner = service.hrd.get("milestone.owner")
+                title = service.hrd.getStr("milestone.title")
+                description = service.hrd.getStr("milestone.description")
+                deadline = service.hrd.getStr("milestone.deadline")
+                owner = service.hrd.getStr("milestone.owner")
                 name = service.instance
 
                 repo.createMilestone(name, title, description, deadline, owner)
