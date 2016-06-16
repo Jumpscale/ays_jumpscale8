@@ -3,11 +3,11 @@
 # Summary
 |Milestone|ETA|
 |---------|---|
-|[js8.0](#milestone-js80)|0 seconds|
-|[js8.0_beta](#milestone-js80_beta)|0 seconds|
-|[js8.1](#milestone-js81)|0 seconds|
-|[js8.2](#milestone-js82)|0 seconds|
-|[No milestone](#no-milestone)|0 seconds|
+|[js8.0](#milestone-js80)|N/A|
+|[js8.0_beta](#milestone-js80_beta)|N/A|
+|[js8.1](#milestone-js81)|N/A|
+|[js8.2](#milestone-js82)|N/A|
+|[No milestone](#no-milestone)|N/A|
 
 ## [Milestone js8.0](milestones/4:js8.0.md)
 
