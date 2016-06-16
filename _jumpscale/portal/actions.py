@@ -11,7 +11,7 @@ class Actions(ActionsBaseMgmt):
                 return True
 
         cmd = 'jsuser add -d $(admin.login):$(admin.passwd):admin:admin@fake_email.com:fake_domain.com'
-        service.executor.cuisine.run(cmd, profile=True)
+        service.executor.cuisine.core.run(cmd, profile=True)
 
     def install(self, service):
 
