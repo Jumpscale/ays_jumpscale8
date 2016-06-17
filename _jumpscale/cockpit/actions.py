@@ -5,9 +5,8 @@ class Actions(ActionsBaseMgmt):
 
     def init(self, service):
         os = service.parent
-        args = {
-            'key.path': service.hrd.getStr('dns.sshkey')
-        }
+
+        args = {'key.path': service.hrd.getStr('dns.sshkey')}
         sshkey_dns = service.aysrepo.new('sshkey', args=args, instance="dns")
 
         dns_clients = []
@@ -41,6 +40,6 @@ class Actions(ActionsBaseMgmt):
             'oauth.client_id': service.hrd.getStr("oauth.client_id"),
             'oauth.organization': service.hrd.getStr("oauth.organization"),
             'oauth.jwt_key': service.hrd.getStr("oauth.jwt_key"),
-
+            'ays.repo.url': service.hrd.getStr("ays.repo.url"),
         }
         cockpit = service.aysrepo.new('os.cockpit', args=args, instance=service.instance, parent=docker)

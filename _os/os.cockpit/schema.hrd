@@ -6,6 +6,8 @@ dns.domain = type:str @ASK descr:'dns domain of the G8 Cockpit'
 telegram.token = type:str @ASK descr:'token for the ays robot'
 gid = type:int descr:"Grid ID"
 
+ays.repo.url = type:str
+
 oauth.client_id = type:str
 oauth.client_secret = type:str
 oauth.organization = type:str

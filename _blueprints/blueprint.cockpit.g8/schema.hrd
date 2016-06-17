@@ -8,6 +8,8 @@ aysfs = type:bool default:True
 dns.domain = type:str
 dns.sshkey = type:str
 
+ays.repo.url = type:str
+
 oauth.client_id = type:str
 oauth.client_secret = type:str
 oauth.organization = type:str

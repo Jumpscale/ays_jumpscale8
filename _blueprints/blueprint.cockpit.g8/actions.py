@@ -35,6 +35,7 @@ class Actions(ActionsBaseMgmt):
             'dind': service.hrd.getBool('dind', False),
             "dns.domain": service.hrd.get('dns.domain'),
             "dns.sshkey": service.hrd.get("dns.sshkey"),
+            "ays.repo.url": service.hrd.get("ays.repo.url"),
         }
 
         cockpit = service.aysrepo.new('cockpit', args=args, instance=cockpit_name, parent=os)
