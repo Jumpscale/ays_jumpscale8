@@ -63,7 +63,7 @@ class Actions(ActionsBaseMgmt):
             # js not available
             pfs = '-p %s' % (' -p '.join(pf_creation)) if pf_creation else ''
             pfs = ' -p 22 %s ' % pfs
-            out = service.executor.cuisine.core.run('docker ps -f name=%s -q' % service.instance, profile=True)
+            out = service.executor.cuisine.core.run('docker ps -a -f name=%s -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
                     dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
@@ -71,6 +71,8 @@ class Actions(ActionsBaseMgmt):
                     service.executor.cuisine.core.run('cd %s; docker build  --tag="%s"  %s' % (dest, image, service.hrd.get('build.path')))
                 volumes = '-v %s' % volumes if volumes else ''
                 service.executor.cuisine.core.run("docker run -d -t %s --name %s --privileged=true %s %s " % (pfs, service.instance, volumes, image))
+            else:
+                service.executor.cuisine.core.run("docker start %s" % out)
             # add sshkey
             service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
