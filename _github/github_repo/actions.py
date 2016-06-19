@@ -9,35 +9,6 @@ class Actions(ActionsBaseMgmt):
         if "repo.name" not in args or args["repo.name"].strip() == "":
             args["repo.name"] = instance
 
-        cats = {}
-        # check milestone membership
-        for aysi in service.aysrepo.findServices(role="github_milestone"):
-            categories = aysi.hrd.getList("milestone.category")
-            for cat in categories:
-                if cat not in cats:
-                    cats[cat] = []
-                if aysi not in cats[cat]:
-                    cats[cat].append(aysi)
-
-        if 'milestone.category' in args:
-
-            args["milestones"] = []
-
-            catsToFillIn = args['milestone.category']
-            if not j.data.types.list.check(catsToFillIn):
-                if catsToFillIn.find(",") != -1:
-                    catsToFillIn = [item for item in catsToFillIn.split(",") if item.strip() != ""]
-                else:
-                    catsToFillIn = [catsToFillIn]
-
-            for catToFillIn in catsToFillIn:
-                if catToFillIn in cats:
-                    for ays_repo in cats[catToFillIn]:
-                        args["milestones"].append(ays_repo.instance)
-
-        if "milestones" in args:
-            args["milestones"].sort()
-
         return args
 
     @action()
@@ -61,8 +32,7 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def install(self, service):
-        self.setMilestonesOnGithub(service=service)
-        self.processIssues(service=service, refresh=True)
+        self.process_issues(service=service, refresh=True)
 
     @action()
     def pull(self, service):
@@ -70,21 +40,17 @@ class Actions(ActionsBaseMgmt):
                          ignorelocalchanges=False, reset=False, branch=None, revision=None, ssh=True, executor=None, codeDir=None)
 
     @action()
-    def setMilestonesOnGithub(self, service):
+    def sync_milestones(self, service):
         repo = self.get_github_repo(service=service)
 
-        if repo.type in ["proj", "org"]:
-            milestonesSet = []
-            for service in service.getProducers("github_milestone"):
-                title = service.hrd.getStr("milestone.title")
-                description = service.hrd.getStr("milestone.description")
-                deadline = service.hrd.getStr("milestone.deadline")
-                owner = service.hrd.getStr("milestone.owner")
-                name = service.instance
-
-                repo.createMilestone(name, title, description, deadline, owner)
-
-                milestonesSet.append(name)
+        for milestone in repo.milestones:
+            args = {
+                'github.repo': service.instance,
+                'milestone.title': milestone.title,
+                'milestone.description': milestone.description,
+                'milestone.deadline': milestone.deadline
+            }
+            service.aysrepo.new(name='github_milestone', instance=str(milestone.title), args=args, model=milestone.ddict)
 
     def get_issues_from_ays(self, service):
         repo = self.get_github_repo(service)
@@ -122,18 +88,19 @@ class Actions(ActionsBaseMgmt):
         r.labelsSet(labels, ignoreDelete=["p_"])
 
     @action()
-    def processIssues(self, service, refresh=False):
+    def process_issues(self, service, refresh=False):
         """
         refresh: bool, force loading of issue from github
         """
+        self.sync_milestones(service=service)
         self.set_labels(service=service)
 
-        if service.state.get('processIssues', die=False) == 'RUNNING':
+        if service.state.get('process_issues', die=False) == 'RUNNING':
             # don't processIssue twice at the same time.
-            j.logger.log('processIssue already running')
+            j.logger.log('process_issues already running')
             return
 
-        service.state.set('processIssues', 'RUNNING')
+        service.state.set('process_issues', 'RUNNING')
         service.state.save()
 
         repo = self.get_github_repo(service=service)
@@ -156,11 +123,11 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def recurring_process_issues_from_model(self, service):
-        self.processIssues(service=service, refresh=False)
+        self.process_issues(service=service, refresh=False)
 
     @action()
     def recurring_process_issues_from_github(self, service):
-        self.processIssues(service=service, refresh=True)
+        self.process_issues(service=service, refresh=True)
 
     def event_new_issue(self, service, event):
         event = j.data.models.cockpit_event.Generic.from_json(event)

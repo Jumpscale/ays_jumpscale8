@@ -36,6 +36,7 @@ class Actions(ActionsBaseMgmt):
         self.grafana(service=service)
         self.gid(service=service)
         self.cockpit(service=service)
+        self.ays_repo(service=service)
 
         cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
 
@@ -218,39 +219,9 @@ class Actions(ActionsBaseMgmt):
             redirect_uri=redirect_uri,
             itsyouonlinehost='https://itsyou.online')
 
-    def generate_home(self, service):
-        tmpl = """# Welcom in the Cockpit of {organization}
-
-## SSH access
-
-### Over  SSH
-Command to connect into the cockpit VM:
-`ssh root@{domain} -p {ssh_port}`
-
-Use the following ssh key to access the cockpit VM:
-```
-{private_key}
-```
-
-### Over http
-Address :
-[https://{domain}/{shellinbox_url}](https://{domain}/{shellinbox_url})
-
-## REST API
-Base URL :
-[https://{domain}/api](https://{domain}/api)
-Documentation URL :
-[https://{domain}/api/apidocs/index.html](https://{domain}/api/apidocs/index.html)
-"""
-        domain = service.hrd.getStr('dns.domain')
-        ssh_port = service.hrd.getStr('ssh.port')
-        organization = service.hrd.getStr('oauth.organization')
-        private_key = ''
-        for prod in service.producers['sshkey']:
-            if prod.instance == 'main':
-                private_key = prod.hrd.getStr('key.priv')
-        shellinbox_url = service.hrd.getStr('shellinabox.url')
-
-        content = tmpl.format(organization=organization, domain=domain, ssh_port=ssh_port, private_key=private_key, shellinbox_url=shellinbox_url)
+    @action():
+    def ays_repo(self, service=service):
         cuisine = self.getExecutor(service).cuisine
-        cuisine.core.file_write("$cfgDir/portals/main/base/home/home.md", content)
+        url = service.hrd.getStr('ays.repo.url')
+        cuisine.core.dir_ensure('/opt/code/cockpit')
+        cuisine.core.run('cd /opt/code/cockpit;git remote add origin %s' % url)
