@@ -3,6 +3,8 @@ os = type:str parent:os
 dns.domain = type:str
 dns.sshkey = type:str
 
+ays.repo.url = type:str
+
 portal.password = type:str
 telegram.token = type:str
 
