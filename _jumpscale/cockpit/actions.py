@@ -18,12 +18,15 @@ class Actions(ActionsBaseMgmt):
             }
             dns_clients.append(service.aysrepo.new('dns_client', args=args, instance="main%d" % i))
 
+        app_docker = service.aysrepo.new('app_docker', args={'os': os.instance}, instance=service.instance, parent=os)
+
         args = {
             "image": "jumpscale/g8cockpit",
+            'docker': app_docker.instance,
             'os': os.instance,
             'dind': service.hrd.getBool('dind', False),
             'aysfs': False,
-            'ports': '80, 443, 18384',
+            'ports': '80:80, 443:443, 18384',
             'sshkey': 'main'
         }
         docker = service.aysrepo.new('node.docker', args=args, instance="cockpit", parent=os)
