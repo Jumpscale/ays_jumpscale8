@@ -219,8 +219,8 @@ class Actions(ActionsBaseMgmt):
             redirect_uri=redirect_uri,
             itsyouonlinehost='https://itsyou.online')
 
-    @action():
-    def ays_repo(self, service=service):
+    @action()
+    def ays_repo(self, service):
         cuisine = self.getExecutor(service).cuisine
         url = service.hrd.getStr('ays.repo.url')
         cuisine.core.dir_ensure('/opt/code/cockpit')
