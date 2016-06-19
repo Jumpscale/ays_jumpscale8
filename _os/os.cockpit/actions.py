@@ -221,7 +221,9 @@ class Actions(ActionsBaseMgmt):
 
     @action()
     def ays_repo(self, service):
+        url = service.hrd.getStr('ays.repo.url', None)
+        if not url:
+            return
         cuisine = self.getExecutor(service).cuisine
-        url = service.hrd.getStr('ays.repo.url')
         cuisine.core.dir_ensure('/opt/code/cockpit')
         cuisine.core.run('cd /opt/code/cockpit;git remote add origin %s' % url)
