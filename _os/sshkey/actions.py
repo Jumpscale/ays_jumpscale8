@@ -59,7 +59,7 @@ class Actions(ActionsBaseMgmt):
         ###### TEMPORARY WORKAROUND #####
         rc, _ = service.executor.cuisine.core.run('ssh-add', die=False)
         if rc:
-            service.executor.cuisine.core.run("eval $(ssh-agent -s)")
+            service.executor.cuisine.core.run("eval `ssh-agent -s`")
         #################################
         self.start(service=service)
 
