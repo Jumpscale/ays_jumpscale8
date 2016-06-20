@@ -2,6 +2,10 @@ from JumpScale import j
 
 
 class Actions(ActionsBaseMgmt):
+    def getExecutor(self, service):
+        os = service.producers['os'][0]
+        return os.executor
+
     def install(self, service):
         service.executor.cuisine.docker.install()
 

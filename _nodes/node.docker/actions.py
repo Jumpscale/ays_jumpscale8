@@ -63,7 +63,7 @@ class Actions(ActionsBaseMgmt):
             # js not available
             pfs = '-p %s' % (' -p '.join(pf_creation)) if pf_creation else ''
             pfs = ' -p 22 %s ' % pfs
-            out = service.executor.cuisine.core.run('docker ps -a -f name=%s -q' % service.instance, profile=True)
+            out = service.executor.cuisine.core.run('docker ps -a -f name="\\b%s\\b" -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
                     dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
@@ -84,10 +84,9 @@ class Actions(ActionsBaseMgmt):
             for portf in pf_lines:
                 tmp = portf.split('/')
                 if tmp[0] == "22":
-                    vm_port = tmp[0]
+                    vm_port = tmp[1].split(":")[1]
                     continue
                 pf_creation.append("%s:%s" % (tmp[0], tmp[1].split(":")[1]))
-
 
             spaceport = []
             for item in pf_creation:
@@ -95,8 +94,7 @@ class Actions(ActionsBaseMgmt):
                 if not get_host_port(host_port):
                     spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port), docker_port))
 
-                public_port = host_node.actions.open_port(host_node, vm_port)
-
+            public_port = host_node.actions.open_port(host_node, vm_port)
 
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))
 
@@ -120,3 +118,9 @@ class Actions(ActionsBaseMgmt):
         print("OUT: Docker %s deployed." % service.instance)
         print("OUT: IP %s" % addr)
         print("OUT: SSH port %s" % public_port)
+
+    def open_port(self, service, requested_port, public_port=None):
+        if 'node' in service.parent.producers:
+            host_node = service.parent.producers['node'][0]
+            return host_node.actions.open_port(host_node, requested_port, public_port)
+        return requested_port
