@@ -1,4 +1,0 @@
-
-github_repo = type:'str' consume:github_repo
-mail.client = type:'str' consume:'mailclient:0' auto
-service_key_path = type:'str'
