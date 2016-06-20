@@ -33,14 +33,14 @@ class Actions(ActionsBaseMgmt):
 
         args = {
             'dind': service.hrd.getBool('dind', False),
-            "dns.domain": service.hrd.get('dns.domain'),
-            "dns.sshkey": service.hrd.get("dns.sshkey"),
-            "ays.repo.url": service.hrd.get("ays.repo.url"),
-            "telegram.token": service.hrd.get("telegram.token"),
-            "oauth.client_id": service.hrd.get("oauth.client_id"),
-            "oauth.client_secret": service.hrd.get("oauth.client_secret"),
-            "oauth.organization": service.hrd.get("oauth.organization"),
-            "oauth.jwt_key": service.hrd.get("oauth.jwt_key")
+            "dns.domain": service.hrd.getStr('dns.domain'),
+            "dns.sshkey": service.hrd.getStr("dns.sshkey"),
+            "ays.repo.url": service.hrd.getStr("ays.repo.url"),
+            "telegram.token": service.hrd.getStr("telegram.token"),
+            "oauth.client_id": service.hrd.getStr("oauth.client_id"),
+            "oauth.client_secret": service.hrd.getStr("oauth.client_secret"),
+            "oauth.organization": service.hrd.getStr("oauth.organization"),
+            "oauth.jwt_key": service.hrd.getStr("oauth.jwt_key")
         }
 
         cockpit = service.aysrepo.new('cockpit', args=args, instance=cockpit_name, parent=os)
