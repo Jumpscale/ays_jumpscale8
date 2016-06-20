@@ -102,9 +102,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.apps.portal.start(force=True)
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit", "$cfgDir/portals/main/base/Cockpit")
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__atyourservice", "$cfgDir/portals/main/base/system__atyourservice")
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__oauthtoken", "$cfgDir/portals/main/base/system__oauthtoken")
+        cuisine.core.file_link("/opt/code/github/jumpscale/jscockpit/apps/Cockpit", "$cfgDir/portals/main/base/Cockpit")
         content = cuisine.core.file_read("$cfgDir/portals/main/config.hrd")
         hrd = j.data.hrd.get(content=content, prefixWithName=False)
         hrd.set('param.cfg.force_oauth_instance', 'itsyou.online')
