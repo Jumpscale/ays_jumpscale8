@@ -53,24 +53,25 @@ class Actions(ActionsBaseMgmt):
 
         ip = service.parent.hrd.getStr('node.addr')
         domain = service.hrd.getStr('dns.domain')
+        domain_root = '.' + service.hrd.getStr('dns.root')
+        split_count = domain_root.count('.') - 1
 
-        if not domain.endswith('.barcelona.aydo.com'):  # TODO chagne DNS
-            domain = '%s.barcelona.aydo.com' % domain
+        if not domain.endswith(domain_root):
+            domain = domain + domain_root
             service.hrd.set('dns.domain', domain)
-        subdomain = '.'.join(domain.split('.', 2)[:2])
+        subdomain = '.'.join(domain.split('.', split_count)[:split_count])
 
         # set domain to all dns servers
         dns_clients = get_dns_clients()
         for dns_client in dns_clients:
             if domain not in dns_client.domains:
-                domain = dns_client.ensure_domain('aydo.com')
+                domain = dns_client.ensure_domain('.'.join(domain_root.split('.')[-2:]))
             if subdomain in domain._a_records:
                 records = domain._a_records[subdomain]
                 ips = [r[0] for r in records if r]
                 if ip not in ips:
                     raise j.exceptions.Input("Domain %s is not available, please choose another one." % domain)
             else:
-                # TODO set config on 3 dns servers
                 domain.add_a_record(ip, subdomain)
                 domain.save()
 
