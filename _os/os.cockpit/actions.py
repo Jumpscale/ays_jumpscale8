@@ -118,7 +118,7 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_logout_url', '')
         hrd.set('param.cfg.defaultspace', 'home')
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
-
+        self.generate_home(service)
         # restart portal to load new spaces
         cuisine.processmanager.stop('portal')
         cuisine.processmanager.start('portal')
@@ -225,3 +225,18 @@ class Actions(ActionsBaseMgmt):
         cuisine = self.getExecutor(service).cuisine
         cuisine.core.dir_ensure('/opt/code/cockpit')
         cuisine.core.run('cd /opt/code/cockpit;git remote add origin %s' % url)
+
+    def generate_home(self, service):
+        tmpl = """# Welcom in the Cockpit of {organization}
+
+To have access to all the functionalities of the cockpit please sign in by using the login button in the top right corner.
+
+
+Usefull links to start using the cockpit:
+* [cockpit information](/cockpit/information)
+* [API documentation](/api/apidocs/index.html?raml=api.raml)
+"""
+        organization = service.hrd.getStr('oauth.organization')
+        content = tmpl.format(organization=organization)
+        cuisine = self.getExecutor(service).cuisine
+        cuisine.core.file_write("$cfgDir/portals/main/base/home/home.md", content)
