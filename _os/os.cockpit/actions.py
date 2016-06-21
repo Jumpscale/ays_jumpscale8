@@ -116,7 +116,8 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/api/users')
         hrd.set('param.cfg.oauth.default_groups', ['admin', 'user'])
         hrd.set('param.cfg.client_logout_url', '')
-        hrd.set('param.cfg.defaultspace', 'home')
+        hrd.set('param.cfg.defaultspace', 'home'),
+        hrd.set('param.cfg.cockpit', {'host': 'localhost', 'port': 5000}),
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
         self.generate_home(service)
         # restart portal to load new spaces
