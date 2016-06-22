@@ -226,7 +226,7 @@ class Actions(ActionsBaseMgmt):
             return
         cuisine = self.getExecutor(service).cuisine
         cuisine.core.dir_ensure('/opt/code/cockpit')
-        cuisine.core.run('cd /opt/code/cockpit;git remote add origin %s' % url)
+        cuisine.core.run('cd /opt/code/cockpit;git init; git remote add origin %s' % url)
 
     def generate_home(self, service):
         tmpl = """# Welcom in the Cockpit of {organization}
