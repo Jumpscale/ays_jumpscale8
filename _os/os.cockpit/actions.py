@@ -58,7 +58,7 @@ class Actions(ActionsBaseMgmt):
 
         if not domain.endswith(domain_root):
             domain = domain + domain_root
-            service.hrd.set('dns.domain', domain)r
+            service.hrd.set('dns.domain', domain)
         subdomain = '.'.join(domain.split('.', split_count)[:split_count])
 
         # set domain to all dns servers
@@ -227,6 +227,7 @@ class Actions(ActionsBaseMgmt):
         cuisine = self.getExecutor(service).cuisine
         cuisine.core.dir_ensure('/opt/code/cockpit')
         cuisine.core.run('cd /opt/code/cockpit;git init; git remote add origin %s' % url)
+        cuisine.executor.upload(service.aysrepo.basepath, '/opt/code/cockpit/ays_cockpit')
 
     def generate_home(self, service):
         tmpl = """# Welcom in the Cockpit of {organization}
