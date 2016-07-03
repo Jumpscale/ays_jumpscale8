@@ -11,8 +11,8 @@ class Actions(ActionsBaseMgmt):
     def install(self, service):
         if 'sshkey' in service.producers:
             sshkey = service.producers['sshkey'][0]
-            sshkey_priv = sshkey.hrd.get('key.priv')
-            sshkey_pub = sshkey.hrd.get('key.pub')
+            sshkey_priv = sshkey.hrd.getStr('key.priv')
+            sshkey_pub = sshkey.hrd.getStr('key.pub')
         else:
             raise j.exceptions.NotFound("No sshkey found. please consume an sshkey service")
 
@@ -93,7 +93,7 @@ class Actions(ActionsBaseMgmt):
         dashboard = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/dashboard.json')
         datasource = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/datasource.json')
         domain = service.hrd.getStr('dns.domain')
-        cl = j.clients.grafana.get('https://%s/grafana/' % domain, username='admin', password='admin')
+        cl = j.clients.grafana.get('https://%s/grafana/' % domain, username='admin', password='admin', verify_ssl=False)
         cl.updateDashboard(dashboard['dashboard'])
         cl.addDataSource(datasource)
 
@@ -187,8 +187,9 @@ class Actions(ActionsBaseMgmt):
         cuisine.core.file_write('$varDir/cfg/caddy/proxies/99_portal', caddy_portal_cfg)
 
         cmd = '$binDir/caddy -conf $varDir/cfg/caddy/caddyfile -email mail@fake.com -http2=false'
-        # enable stating environment, remove for prodction
-        # cmd += ' -ca https://acme-staging.api.letsencrypt.org/directory'
+        if service.hrd.getBool('staging', False):
+            # enable stating environment, remove for prodction
+            cmd += ' -ca https://acme-staging.api.letsencrypt.org/directory'
         cuisine.processmanager.ensure('caddy', cmd)
 
     @action()
