@@ -3,6 +3,8 @@ ssh.key = type:str consume:sshkey:1  auto
 dns_client = type:str consume:dns_client:1 auto
 
 dns.domain = type:str @ASK descr:'dns domain of the G8 Cockpit'
+dns.root = type:str default:'aydo2.com'
+
 telegram.token = type:str @ASK descr:'token for the ays robot'
 gid = type:int descr:"Grid ID"
 

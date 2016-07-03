@@ -53,24 +53,25 @@ class Actions(ActionsBaseMgmt):
 
         ip = service.parent.hrd.getStr('node.addr')
         domain = service.hrd.getStr('dns.domain')
+        domain_root = '.' + service.hrd.getStr('dns.root')
+        split_count = domain_root.count('.') - 1
 
-        if not domain.endswith('.barcelona.aydo.com'):  # TODO chagne DNS
-            domain = '%s.barcelona.aydo.com' % domain
+        if not domain.endswith(domain_root):
+            domain = domain + domain_root
             service.hrd.set('dns.domain', domain)
-        subdomain = '.'.join(domain.split('.', 2)[:2])
+        subdomain = '.'.join(domain.split('.', split_count)[:split_count])
 
         # set domain to all dns servers
         dns_clients = get_dns_clients()
         for dns_client in dns_clients:
             if domain not in dns_client.domains:
-                domain = dns_client.ensure_domain('aydo.com')
+                domain = dns_client.ensure_domain('.'.join(domain_root.split('.')[-2:]))
             if subdomain in domain._a_records:
                 records = domain._a_records[subdomain]
                 ips = [r[0] for r in records if r]
                 if ip not in ips:
                     raise j.exceptions.Input("Domain %s is not available, please choose another one." % domain)
             else:
-                # TODO set config on 3 dns servers
                 domain.add_a_record(ip, subdomain)
                 domain.save()
 
@@ -102,9 +103,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.apps.portal.start(force=True)
         # link required cockpit spaces
         cuisine.core.dir_ensure('$cfgDir/portals/main/base/')
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/Cockpit", "$cfgDir/portals/main/base/Cockpit")
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__atyourservice", "$cfgDir/portals/main/base/system__atyourservice")
-        cuisine.core.file_link("/opt/code/github/jumpscale/jumpscale_portal8/apps/gridportal/base/system__oauthtoken", "$cfgDir/portals/main/base/system__oauthtoken")
+        cuisine.core.file_link("$codeDir/github/jumpscale/jscockpit/apps/Cockpit", "$cfgDir/portals/main/base/Cockpit")
         content = cuisine.core.file_read("$cfgDir/portals/main/config.hrd")
         hrd = j.data.hrd.get(content=content, prefixWithName=False)
         hrd.set('param.cfg.force_oauth_instance', 'itsyou.online')
@@ -118,9 +117,10 @@ class Actions(ActionsBaseMgmt):
         hrd.set('param.cfg.client_user_info_url', 'https://itsyou.online/api/users')
         hrd.set('param.cfg.oauth.default_groups', ['admin', 'user'])
         hrd.set('param.cfg.client_logout_url', '')
-        hrd.set('param.cfg.defaultspace', 'home')
+        hrd.set('param.cfg.defaultspace', 'home'),
+        hrd.set('param.cfg.cockpit', {'host': 'localhost', 'port': 5000}),
         content = cuisine.core.file_write("$cfgDir/portals/main/config.hrd", str(hrd))
-
+        self.generate_home(service)
         # restart portal to load new spaces
         cuisine.processmanager.stop('portal')
         cuisine.processmanager.start('portal')
@@ -226,4 +226,20 @@ class Actions(ActionsBaseMgmt):
             return
         cuisine = self.getExecutor(service).cuisine
         cuisine.core.dir_ensure('/opt/code/cockpit')
-        cuisine.core.run('cd /opt/code/cockpit;git remote add origin %s' % url)
+        cuisine.core.run('cd /opt/code/cockpit;git init; git remote add origin %s' % url)
+        cuisine.executor.upload(service.aysrepo.basepath, '/opt/code/cockpit/ays_cockpit')
+
+    def generate_home(self, service):
+        tmpl = """# Welcom in the Cockpit of {organization}
+
+To have access to all the functionalities of the cockpit please sign in by using the login button in the top right corner.
+
+
+Usefull links to start using the cockpit:
+* [cockpit information](/cockpit/information)
+* [API documentation](/api/apidocs/index.html?raml=api.raml)
+"""
+        organization = service.hrd.getStr('oauth.organization')
+        content = tmpl.format(organization=organization)
+        cuisine = self.getExecutor(service).cuisine
+        cuisine.core.file_write("$cfgDir/portals/main/base/home/home.md", content)
