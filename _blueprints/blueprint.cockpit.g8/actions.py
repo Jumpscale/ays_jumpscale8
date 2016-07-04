@@ -40,7 +40,8 @@ class Actions(ActionsBaseMgmt):
             "oauth.client_id": service.hrd.getStr("oauth.client_id"),
             "oauth.client_secret": service.hrd.getStr("oauth.client_secret"),
             "oauth.organization": service.hrd.getStr("oauth.organization"),
-            "oauth.jwt_key": service.hrd.getStr("oauth.jwt_key")
+            "oauth.jwt_key": service.hrd.getStr("oauth.jwt_key"),
+            "staging": service.hrd.getBool("staging", False),
         }
 
         cockpit = service.aysrepo.new('cockpit', args=args, instance=cockpit_name, parent=os)

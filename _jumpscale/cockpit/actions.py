@@ -44,5 +44,7 @@ class Actions(ActionsBaseMgmt):
             'oauth.organization': service.hrd.getStr("oauth.organization"),
             'oauth.jwt_key': service.hrd.getStr("oauth.jwt_key"),
             'ays.repo.url': service.hrd.getStr("ays.repo.url"),
+            'sshkey': 'main',
+            'staging': service.hrd.getBool('staging', False),
         }
         cockpit = service.aysrepo.new('os.cockpit', args=args, instance=service.instance, parent=docker)
