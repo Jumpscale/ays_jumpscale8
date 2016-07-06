@@ -88,7 +88,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.processmanager.start("grafana-server")
         # Add dashboard and datasource
         repo_url = cuisine.core.args_replace('$codeDir/github/jumpscale/jscockpit')
-        if not repo_url:
+        if not j.sal.fs.exists(repo_url):
             j.tools.cuisine.local.git.pullRepo(url='https://github.com/Jumpscale/jscockpit.git')
         dashboard = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/dashboard.json')
         datasource = j.data.serializer.json.load(repo_url + '/deployer_bot/templates/datasource.json')
