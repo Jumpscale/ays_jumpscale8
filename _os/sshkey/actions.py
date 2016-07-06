@@ -9,10 +9,6 @@ class Actions(ActionsBaseMgmt):
         pubkey = j.sal.fs.fileGetContents(keydest + ".pub")
         return privkey, pubkey
 
-    def _startAgent(self, service):
-        # FIXME
-        j.do.execute("ssh-agent", die=False, showout=False, outputStderr=False)
-
     def init(self, service):
         """
         create key
@@ -56,11 +52,6 @@ class Actions(ActionsBaseMgmt):
 
     def install(self, service):
         j.do.loadSSHAgent()
-        ###### TEMPORARY WORKAROUND #####
-        rc, _ = service.executor.cuisine.core.run('ssh-add', die=False)
-        if rc:
-            service.executor.cuisine.core.run("eval `ssh-agent -s`")
-        #################################
         self.start(service=service)
 
 
