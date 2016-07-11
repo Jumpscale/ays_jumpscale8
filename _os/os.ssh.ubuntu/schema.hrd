@@ -8,3 +8,5 @@ node                           = type:str parent:node
 ssh.key                        = type:str consume:sshkey:1  auto
 ssh.addr                       = type:str
 ssh.port                       = type:int
+
+authorized_sshkeys = type:str list default:''
