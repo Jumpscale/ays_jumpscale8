@@ -38,4 +38,7 @@ class Actions(ActionsBaseMgmt):
         executor = self.getExecutor(service)
         cuisine = executor.cuisine
 
+        for ssh in  service.hrd.getList('authorized_sshkeys', []):
+            cuisine.ssh.authorize('root', ssh)
+
         cuisine.ssh.authorize('root', sshkey_pub)
