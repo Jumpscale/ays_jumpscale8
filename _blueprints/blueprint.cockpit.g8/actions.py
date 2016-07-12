@@ -20,7 +20,7 @@ class Actions(ActionsBaseMgmt):
         vdc = service.aysrepo.new('vdc', args=args, instance=cockpit_name, parent=vdcfarm)
 
         args = {
-            'ports': '80:80, 443:443, 18384:18384',
+            'ports': '80:80, 443:443, 18384:18384, 25:25',
             'sshkey': 'main',
             'os.image': 'Ubuntu 16.04 x64'
         }
