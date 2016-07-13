@@ -92,7 +92,7 @@ class Actions(ActionsBaseMgmt):
             for item in pf_creation:
                 docker_port, host_port = item.split(":")
                 if not get_host_port(host_port):
-                    spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port), docker_port))
+                    spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port, docker_port), docker_port))
 
             public_port = host_node.actions.open_port(host_node, vm_port)
 

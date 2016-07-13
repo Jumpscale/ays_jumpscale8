@@ -17,11 +17,12 @@ class Actions(ActionsBaseMgmt):
         if service.instance in space.machines:
             return space.machines[service.instance]
         else:
+            datadisks = [int(j.data.tags.getObject(disk).tagGet('size')) for disk in service.hrd.getList('datadisks')]
             machine = space.machine_create(name=service.instance,
                                            image=service.hrd.getStr('os.image'),
                                            memsize=service.hrd.getInt('os.size'),
                                            disksize=service.hrd.getInt('disk.size'),
-                                           datadisks=service.hrd.getList('datadisks', []))
+                                           datadisks=datadisks)
             return machine
 
     def open_port(self, service, requested_port, public_port=None):
