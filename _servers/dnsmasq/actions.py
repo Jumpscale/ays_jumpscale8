@@ -10,7 +10,7 @@ class Actions(ActionsBaseMgmt):
         cmd = cuisine.bash.cmdGetPath('dnsmasq')
 
         main_ips = service.executor.cuisine.net.ips
-        cuisine.ns.hostfile_set(service.instance, main_ips[0])
+        cuisine.ns.hostfile_set(service.parent.instance, main_ips[0])
 
         for node in service.producers.get('os'):
             cuisine.ns.hostfile_set(node.instance, node.executor.cuisine.net.ips[0])
