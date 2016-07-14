@@ -13,7 +13,8 @@ class Actions(ActionsBaseMgmt):
 
         spacename = service.parent.instance
 
-        space = account.space_get(spacename, location=client.locations[0]['name'])
+        location = client.locations[0]['name'] if not vdcobj.hrd.get('g8.location', None) else vdcobj.hrd.get('g8.location')
+        space = account.space_get(spacename, location=location)
         if service.instance in space.machines:
             return space.machines[service.instance]
         else:
