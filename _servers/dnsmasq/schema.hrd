@@ -1,0 +1,2 @@
+os = type:str parent:'os'
+hosts = type:str list descr:'known hosts' consume:os
