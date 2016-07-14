@@ -1,1 +1,1 @@
-container = type:str parent:'container.docker'
+container = type:str parent:'node'
