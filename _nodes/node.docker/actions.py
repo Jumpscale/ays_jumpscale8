@@ -63,7 +63,7 @@ class Actions(ActionsBaseMgmt):
             # js not available
             pfs = '-p %s' % (' -p '.join(pf_creation)) if pf_creation else ''
             pfs = ' -p 22 %s ' % pfs
-            out = service.executor.cuisine.core.run('docker ps -a -f name="\\b%s\\b" -q' % service.instance, profile=True)
+            _, out, _ = service.executor.cuisine.core.run('docker ps -a -f name="\\b%s\\b" -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
                     dest = j.sal.fs.joinPaths(service.executor.cuisine.core.dir_paths['varDir'], j.sal.fs.getBaseName(service.hrd.get('build.url')))
@@ -78,9 +78,9 @@ class Actions(ActionsBaseMgmt):
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
             service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
 
-            #get all portforward from container to host 
+            #get all portforward from container to host
             pf_creation = []
-            pf_lines = service.executor.cuisine.core.run("docker port %s" % service.instance).splitlines()
+            pf_lines = service.executor.cuisine.core.run("docker port %s" % service.instance)[1].splitlines()
             for portf in pf_lines:
                 tmp = portf.split('/')
                 if tmp[0] == "22":
@@ -102,7 +102,7 @@ class Actions(ActionsBaseMgmt):
         addr = 0
         if service.hrd.getBool('docker.local', False):
             public_port = 22
-            addr = service.executor.cuisine.core.run("docker inspect --format '{{ .NetworkSettings.IPAddress }}' %s" % service.instance)
+            _, addr, _ = service.executor.cuisine.core.run("docker inspect --format '{{ .NetworkSettings.IPAddress }}' %s" % service.instance)
 
         service.hrd.set('docker.sshport', public_port)
 

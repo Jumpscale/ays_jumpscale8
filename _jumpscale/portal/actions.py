@@ -5,7 +5,7 @@ class Actions(ActionsBaseMgmt):
 
     def add_user(self, service):
         cmd = 'jsuser list'
-        res = service.executor.cuisine.core.run(cmd, profile=True)
+        _, res, _ = service.executor.cuisine.core.run(cmd, profile=True)
         for line in res.splitlines():
             admin_login = service.hrd.get('admin.login')
             admin_passwd = service.hrd.get('admin.passwd')
