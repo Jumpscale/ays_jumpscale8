@@ -40,7 +40,8 @@ class Actions(ActionsBaseMgmt):
                 else:
                     candidate += 1
         machine = self.getMachine(service)
-        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
+        sshkey = service.producers.get('sshkey')[0]
+        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root', pushkey=sshkey.hrd.get('key.path'))
 
         # check if already open, if yes return public port
         spaceport = None

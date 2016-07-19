@@ -6,7 +6,8 @@ class Actions(ActionsBaseMgmt):
     def getExecutor(self, service):
         addr = service.parent.producers['os'][0].hrd.getStr('ssh.addr')
         port = service.parent.hrd.get('docker.sshport')
-        return j.tools.executor.getSSHBased(addr, port, 'root')
+        sshkey = service.producers.get('sshkey')[0]
+        return j.tools.executor.getSSHBased(addr, port, 'root', pushkey=sshkey.hrd.get('ssh.keypath'))
 
     def install(self, service):
         if 'sshkey' in service.producers:
