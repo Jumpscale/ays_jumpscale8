@@ -70,13 +70,13 @@ class Actions(ActionsBaseMgmt):
                     service.executor.cuisine.git.pullRepo(service.hrd.get('build.url'), dest)
                     service.executor.cuisine.core.run('cd %s; docker build  --tag="%s"  %s' % (dest, image, service.hrd.get('build.path')))
                 volumes = '-v %s' % volumes if volumes else ''
-                service.executor.cuisine.core.run("docker run -d -t %s --name %s --privileged=true %s %s " % (pfs, service.instance, volumes, image))
+                service.executor.cuisine.core.run("docker run -d -t %s --name %s --privileged=true %s %s " % (pfs, service.instance, volumes, image), profile=True)
             else:
-                service.executor.cuisine.core.run("docker start %s" % out)
+                service.executor.cuisine.core.run("docker start %s" % out, profile=True)
             # add sshkey
-            service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance))
-            service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance))
-            service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey))
+            service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance), profile=True)
+            service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance), profile=True)
+            service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey), profile=True)
 
             #get all portforward from container to host 
             pf_creation = []

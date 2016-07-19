@@ -232,7 +232,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.executor.upload(service.aysrepo.basepath, '/opt/code/cockpit/ays_cockpit')
 
     def generate_home(self, service):
-        tmpl = """# Welcom in the Cockpit of {organization}
+        tmpl = """# Welcome to the Cockpit of {organization}
 
 To have access to all the functionalities of the cockpit please sign in by using the login button in the top right corner.
 

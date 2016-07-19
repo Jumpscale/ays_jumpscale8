@@ -5,9 +5,9 @@ class Actions(ActionsBaseMgmt):
         ips = list()
         services = service.aysrepo.findServices(role='os')
         for candidate in services:
-            if not candidate.hrd.exists('publicip') or not candidate.hrd.get('weave', False):
+            if not candidate.parent == service.parent and not candidate.parent.hrd.exists('publicip') or not candidate.hrd.getBool('weave', False):
                 continue
-            ip = candidate.hrd.getStr('publicip')
+            ip = candidate.parent.hrd.getStr('publicip')
             if ip:
                 ips.append(ip)
         return ' '.join(ips) or None
