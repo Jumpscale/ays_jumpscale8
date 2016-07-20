@@ -41,6 +41,28 @@ class Actions(ActionsBaseMgmt):
 
         cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
 
+    def update(self, service):
+        repos = [
+            'https://github.com/Jumpscale/ays_jumpscale8.git',
+            'https://github.com/Jumpscale/jumpscale_core8.git',
+            'https://github.com/JumpScale/jscockpit.git',
+            'https://github.com/Jumpscale/jumpscale_portal8.git'
+        ]
+        if j.sal.nettools.tcpPortConnectionTest(service.hrd.getStr('ssh.addr'), service.hrd.getInt('ssh.port'), timeout=2):
+            executor = service.executor
+        else:
+            executor = j.tools.executor.getLocal()
+        for url in repos:
+            j.do.pullGitRepo(url=url, executor=executor, ssh='auto')
+
+        apps = [
+            'portal',
+            'cockpit'
+        ]
+        for app in apps:
+            executor.cuisine.processmanager.stop(app)
+            executor.cuisine.processmanager.start(app)
+
     @action()
     def dns(self, service):
         def get_dns_clients():
