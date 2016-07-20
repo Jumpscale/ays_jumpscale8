@@ -81,7 +81,7 @@ class Actions(ActionsBaseMgmt):
 
         if not domain.endswith(domain_root):
             domain = domain + domain_root
-            service.hrd.set('dns.domain', domain)
+        service.hrd.set('dns.domain', domain)
         subdomain = '.'.join(domain.split('.', split_count)[:split_count])
 
         # set domain to all dns servers
