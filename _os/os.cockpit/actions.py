@@ -52,7 +52,7 @@ class Actions(ActionsBaseMgmt):
         else:
             executor = j.tools.executor.getLocal()
         for url in repos:
-            j.do.pullGitRepo(url=url, executor=executor, ssh=False)
+            j.do.pullGitRepo(url=url, executor=executor, ssh='auto')
 
         apps = [
             'portal',
