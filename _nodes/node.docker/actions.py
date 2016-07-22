@@ -63,6 +63,11 @@ class Actions(ActionsBaseMgmt):
             # js not available
             pfs = '-p %s' % (' -p '.join(pf_creation)) if pf_creation else ''
             pfs = ' -p 22 %s ' % pfs
+            restart = service.hrd.getBool('restart', False)
+            if not restart:
+                restart = ''
+            else:
+                restart = '--restart=always'
             _, out, _ = service.executor.cuisine.core.run('docker ps -a -f name="\\b%s\\b" -q' % service.instance, profile=True)
             if not out:
                 if service.hrd.getBool('build'):
@@ -70,7 +75,7 @@ class Actions(ActionsBaseMgmt):
                     service.executor.cuisine.git.pullRepo(service.hrd.get('build.url'), dest)
                     service.executor.cuisine.core.run('cd %s; docker build  --tag="%s"  %s' % (dest, image, service.hrd.get('build.path')))
                 volumes = '-v %s' % volumes if volumes else ''
-                service.executor.cuisine.core.run("docker run -d -t %s --name %s --privileged=true %s %s " % (pfs, service.instance, volumes, image), profile=True)
+                service.executor.cuisine.core.run("docker run -d %s -t %s --name %s --privileged=true %s %s " % (restart, pfs, service.instance, volumes, image), profile=True)
             else:
                 service.executor.cuisine.core.run("docker start %s" % out, profile=True)
             # add sshkey
