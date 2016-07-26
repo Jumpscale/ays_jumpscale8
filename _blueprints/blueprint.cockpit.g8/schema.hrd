@@ -5,6 +5,7 @@ cockpit.name =  type:str  default:'cockpit'
 portal.password = type:str
 aysfs = type:bool default:True
 
+dns.root = type:str default:'aydo2.com'
 dns.domain = type:str
 dns.sshkey = type:str
 
