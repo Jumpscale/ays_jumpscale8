@@ -37,6 +37,7 @@ class Actions(ActionsBaseMgmt):
             "gid": 1,
             "portal.password": service.hrd.getStr('portal.password'),
             "dns.domain": service.hrd.getStr('dns.domain'),
+            "dns.root": service.hrd.getStr('dns.root'),
             'node': docker.instance,
             'dns_client': [s.instance for s in dns_clients],
             'oauth.client_secret': service.hrd.getStr("oauth.client_secret"),
