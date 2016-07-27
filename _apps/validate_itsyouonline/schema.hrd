@@ -1,0 +1,2 @@
+oauth.client_id = type:str
+oauth.client_secret = type:str
