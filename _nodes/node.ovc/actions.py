@@ -72,6 +72,7 @@ class Actions(ActionsBaseMgmt):
         executor = machine.get_ssh_connection()
         if not service.hrd.get('publicip', ''):
             service.hrd.set('publicip', machine.space.model['publicipaddress'])
+            service.hrd.set('privateip', machine.get_machine_ip()[0])
             service.hrd.set('sshport', executor.port)
             if len(service.producers['sshkey']) >= 1:
                 sshkey = service.producers['sshkey'][0]
@@ -80,6 +81,7 @@ class Actions(ActionsBaseMgmt):
 
         for child in service.children:
             child.hrd.set("ssh.addr", service.hrd.get("publicip"))
+            child.hrd.set("private.addr", service.hrd.get("privateip"))
             child.hrd.set("ssh.port", service.hrd.get("sshport"))
 
         for port in service.hrd.getList('ports'):

@@ -24,14 +24,27 @@ class Actions(ActionsBaseMgmt):
         return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root', pushkey=path)
 
     def monitor(self, service):
-        j.sal.nettools.tcpPortConnectionTest(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), timeout=5)
         sshkey = service.producers.get('sshkey')[0]
-        key_filename = sshkey.hrd.get('key.path')
-        passphrase = sshkey.hrd.get('key.passphrase')
-        j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"),
-                          login='root', passwd=None, stdout=True, forward_agent=False, allow_agent=True,
-                          look_for_keys=True, timeout=5, testConnection=True, key_filename=key_filename,
-                          passphrase=passphrase, die=True)
+        ssh_path = sshkey.service.hrd.get('key.path')
+        sshkey_passphrase = sshkey.service.hrd.get('key.passphrase')
+
+        addr = None
+        if service.parent.templatename == 'node.ovc':
+            # OVC natting doesn't allow a node to connect to itself
+            if service.hrd.exists('private.addr'):
+                addr = service.hrd.get('private.addr')
+            else:
+                return True
+        addr = addr or service.hrd.get("ssh.addr")
+        j.sal.nettools.tcpPortConnectionTest(addr, service.hrd.getInt("ssh.port"), timeout=5)
+        client = j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True,
+                                   forward_agent=False, allow_agent=False, look_for_keys=False, key_filename=ssh_path, passphrase=sshkey_passphrase,
+                                   timeout=5, die=True)
+        try:
+            client.execute('hostname')  # just to make sure connection is valid
+            return True
+        except Exception as e:
+            return False
 
     def install(self, service):
         if 'sshkey' in service.producers:
