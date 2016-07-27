@@ -69,7 +69,16 @@ class Actions(ActionsBaseMgmt):
         machine = self.getMachine(service)
         service.hrd.set('machineid', machine.id)
 
-        executor = machine.get_ssh_connection()
+        portforwards = dict()
+        for port in service.hrd.getList('ports'):
+            ss = port.split(':')
+            if len(ss) == 2:
+                portforwards[ss[1]] = ss[0]
+            else:
+                portforwards[ss] = None
+
+        sshport = portforwards.get('22', None)
+        executor = machine.get_ssh_connection(sshport)
         if not service.hrd.get('publicip', ''):
             service.hrd.set('publicip', machine.space.model['publicipaddress'])
             service.hrd.set('privateip', machine.get_machine_ip()[0])
@@ -84,13 +93,8 @@ class Actions(ActionsBaseMgmt):
             child.hrd.set("private.addr", service.hrd.get("privateip"))
             child.hrd.set("ssh.port", service.hrd.get("sshport"))
 
-        for port in service.hrd.getList('ports'):
-            ss = port.split(':')
-            if len(ss) == 2:
-                self.open_port(service, requested_port=ss[1], public_port=ss[0])
-            else:
-                self.open_port(service, requested_port=port)
-
+        for requested_port, public_port in portforwards.items():
+            self.open_port(service, requested_port=requested_port, public_port=public_port)
 
     def uninstall(self, service):
         if service.hrd.get('machineid', ''):
