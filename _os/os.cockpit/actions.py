@@ -151,7 +151,7 @@ class Actions(ActionsBaseMgmt):
     @action()
     def shellinaboxd(self, service):
         cuisine = self.getExecutor(service).cuisine
-        # TODO: authorize local sshkey to auto login
+        #TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
         cmd = 'shellinaboxd --disable-ssl --port 4200 %s ' % config
         cuisine.processmanager.ensure('shellinabox_cockpit', cmd=cmd)

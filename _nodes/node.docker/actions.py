@@ -51,7 +51,7 @@ class Actions(ActionsBaseMgmt):
         dind = service.hrd.getBool('dind', False)
         volumes = None if not dind else '/var/run/docker.sock:/var/run/docker.sock'
 
-        if service.parent.hrd.getBool('aysfs'): #@todo (*1*) not right !
+        if service.parent.hrd.getBool('aysfs'): # TODO: *1 not right !
             aysfs = service.hrd.getBool('aysfs')
             pfs = ' '.join(pf_creation)
 
