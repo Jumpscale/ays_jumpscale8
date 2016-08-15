@@ -13,15 +13,17 @@ class Actions(ActionsBaseMgmt):
 
         spacename = service.parent.instance
 
-        space = account.space_get(spacename, location=client.locations[0]['name'])
+        location = client.locations[0]['name'] if not vdcobj.hrd.get('g8.location', None) else vdcobj.hrd.get('g8.location')
+        space = account.space_get(spacename, location=location)
         if service.instance in space.machines:
             return space.machines[service.instance]
         else:
+            datadisks = [int(j.data.tags.getObject(disk).tagGet('size')) for disk in service.hrd.getList('datadisks')]
             machine = space.machine_create(name=service.instance,
                                            image=service.hrd.getStr('os.image'),
                                            memsize=service.hrd.getInt('os.size'),
                                            disksize=service.hrd.getInt('disk.size'),
-                                           datadisks=service.hrd.getList('datadisks', []))
+                                           datadisks=datadisks)
             return machine
 
     def open_port(self, service, requested_port, public_port=None):
@@ -38,7 +40,8 @@ class Actions(ActionsBaseMgmt):
                 else:
                     candidate += 1
         machine = self.getMachine(service)
-        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
+        sshkey = service.producers.get('sshkey')[0]
+        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root', pushkey=sshkey.hrd.get('key.path'))
 
         # check if already open, if yes return public port
         spaceport = None
@@ -66,9 +69,19 @@ class Actions(ActionsBaseMgmt):
         machine = self.getMachine(service)
         service.hrd.set('machineid', machine.id)
 
-        executor = machine.get_ssh_connection()
+        portforwards = dict()
+        for port in service.hrd.getList('ports'):
+            ss = port.split(':')
+            if len(ss) == 2:
+                portforwards[ss[1]] = ss[0]
+            else:
+                portforwards[ss] = None
+
+        sshport = portforwards.get('22', None)
+        executor = machine.get_ssh_connection(sshport)
         if not service.hrd.get('publicip', ''):
             service.hrd.set('publicip', machine.space.model['publicipaddress'])
+            service.hrd.set('privateip', machine.get_machine_ip()[0])
             service.hrd.set('sshport', executor.port)
             if len(service.producers['sshkey']) >= 1:
                 sshkey = service.producers['sshkey'][0]
@@ -77,15 +90,11 @@ class Actions(ActionsBaseMgmt):
 
         for child in service.children:
             child.hrd.set("ssh.addr", service.hrd.get("publicip"))
+            child.hrd.set("private.addr", service.hrd.get("privateip"))
             child.hrd.set("ssh.port", service.hrd.get("sshport"))
 
-        for port in service.hrd.getList('ports'):
-            ss = port.split(':')
-            if len(ss) == 2:
-                self.open_port(service, requested_port=ss[1], public_port=ss[0])
-            else:
-                self.open_port(service, requested_port=port)
-
+        for requested_port, public_port in portforwards.items():
+            self.open_port(service, requested_port=requested_port, public_port=public_port)
 
     def uninstall(self, service):
         if service.hrd.get('machineid', ''):

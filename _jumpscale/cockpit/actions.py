@@ -26,7 +26,7 @@ class Actions(ActionsBaseMgmt):
             'os': os.instance,
             'dind': service.hrd.getBool('dind', False),
             'aysfs': False,
-            'ports': '80:80, 443:443, 18384',
+            'ports': '80:80, 443:443, 25:25, 18384',
             'sshkey': 'main'
         }
         docker = service.aysrepo.new('node.docker', args=args, instance="cockpit", parent=os)
@@ -37,6 +37,7 @@ class Actions(ActionsBaseMgmt):
             "gid": 1,
             "portal.password": service.hrd.getStr('portal.password'),
             "dns.domain": service.hrd.getStr('dns.domain'),
+            "dns.root": service.hrd.getStr('dns.root'),
             'node': docker.instance,
             'dns_client': [s.instance for s in dns_clients],
             'oauth.client_secret': service.hrd.getStr("oauth.client_secret"),

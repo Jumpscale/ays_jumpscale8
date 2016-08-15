@@ -5,8 +5,10 @@ class Actions(ActionsBaseMgmt):
 
     def getExecutor(self, service):
         addr = service.parent.producers['os'][0].hrd.getStr('ssh.addr')
-        port = service.parent.hrd.get('docker.sshport')#this is not ok, we should not rely on eg. docker, the executor can be all
-        return j.tools.executor.getSSHBased(addr, port, 'root')
+        port = service.parent.hrd.get('docker.sshport')
+        #TODO: this is not ok, we should not rely on eg. docker, the executor can be all
+        sshkey = service.producers.get('sshkey')[0]
+        return j.tools.executor.getSSHBased(addr, port, 'root', pushkey=sshkey.hrd.get('key.path'))
 
     def install(self, service):
         """
@@ -44,6 +46,28 @@ class Actions(ActionsBaseMgmt):
 
         cuisine.user.passwd("root", j.data.idgenerator.generateGUID())
 
+    def update(self, service):
+        repos = [
+            'https://github.com/Jumpscale/ays_jumpscale8.git',
+            'https://github.com/Jumpscale/jumpscale_core8.git',
+            'https://github.com/JumpScale/jscockpit.git',
+            'https://github.com/Jumpscale/jumpscale_portal8.git'
+        ]
+        if j.sal.nettools.tcpPortConnectionTest(service.hrd.getStr('ssh.addr'), service.hrd.getInt('ssh.port'), timeout=2):
+            executor = service.executor
+        else:
+            executor = j.tools.executor.getLocal()
+        for url in repos:
+            j.do.pullGitRepo(url=url, executor=executor, ssh='auto')
+
+        apps = [
+            'portal',
+            'cockpit'
+        ]
+        for app in apps:
+            executor.cuisine.processmanager.stop(app)
+            executor.cuisine.processmanager.start(app)
+
     @action()
     def dns(self, service):
         def get_dns_clients():
@@ -62,7 +86,7 @@ class Actions(ActionsBaseMgmt):
 
         if not domain.endswith(domain_root):
             domain = domain + domain_root
-            service.hrd.set('dns.domain', domain)
+        service.hrd.set('dns.domain', domain)
         subdomain = '.'.join(domain.split('.', split_count)[:split_count])
 
         # set domain to all dns servers
@@ -132,7 +156,7 @@ class Actions(ActionsBaseMgmt):
     @action()
     def shellinaboxd(self, service):
         cuisine = self.getExecutor(service).cuisine
-        # TODO: authorize local sshkey to auto login
+        #TODO: authorize local sshkey to auto login
         config = "-s '/:root:root:/:ssh root@localhost'"
         cmd = 'shellinaboxd --disable-ssl --port 4200 %s ' % config
         cuisine.processmanager.ensure('shellinabox_cockpit', cmd=cmd)
@@ -235,7 +259,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.executor.upload(service.aysrepo.basepath, '/opt/code/cockpit/ays_cockpit')
 
     def generate_home(self, service):
-        tmpl = """# Welcom in the Cockpit of {organization}
+        tmpl = """# Welcome to the Cockpit of {organization}
 
 To have access to all the functionalities of the cockpit please sign in by using the login button in the top right corner.
 

@@ -1,6 +1,7 @@
 os = type:str parent:os
 
 dns.domain = type:str
+dns.root = type:str
 dns.sshkey = type:str
 
 ays.repo.url = type:str

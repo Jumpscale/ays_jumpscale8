@@ -1,4 +1,0 @@
-
-nodes = type:list descr:'mongo cluster nodes' consume:node:1
-clusterconfig = type:dict dict
- 

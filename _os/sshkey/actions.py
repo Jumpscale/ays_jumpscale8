@@ -20,6 +20,9 @@ class Actions(ActionsBaseMgmt):
 
         tmpdir=j.sal.fs.getTmpDirPath()
 
+        if not j.do.checkSSHAgentAvailable():
+            j.do.loadSSHAgent()
+
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
             keyfile = j.do.getSSHKeyPathFromAgent(name)
         elif service.hrd.get("key.path") != "":

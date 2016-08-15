@@ -34,6 +34,7 @@ class Actions(ActionsBaseMgmt):
         args = {
             'dind': service.hrd.getBool('dind', False),
             "dns.domain": service.hrd.getStr('dns.domain'),
+            "dns.root": service.hrd.getStr('dns.root'),
             "dns.sshkey": service.hrd.getStr("dns.sshkey"),
             "ays.repo.url": service.hrd.getStr("ays.repo.url"),
             "telegram.token": service.hrd.getStr("telegram.token"),

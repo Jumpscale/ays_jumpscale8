@@ -6,8 +6,8 @@ class Actions(ActionsBaseMgmt):
         if service.hrd.getBool('aysfs', False):
             service.aysrepo.new('aysfs', args={'os': service.instance}, parent=service)
 
-        # if weave:
-        #     instantiate weave
+        if service.hrd.getBool('weave'):
+            weave = service.aysrepo.new('weave', instance=service.instance, parent=service.parent)            
         # if agent:
         #     instantiate agent
         # sshkey = service.aysrepo.getService(role='sshkey', instance=service.hrd.getStr('sshkey'))
@@ -19,12 +19,32 @@ class Actions(ActionsBaseMgmt):
         return True
 
     def getExecutor(self, service):
-        return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root')
+        sshkey = service.producers['sshkey'][0]
+        pubkey = sshkey.hrd.get('key.pub')
+        return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root', pubkey=pubkey)
 
     def monitor(self, service):
-        j.sal.nettools.tcpPortConnectionTest(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), timeout=5)
-        j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True, forward_agent=False, allow_agent=True, look_for_keys=True, timeout=5, testConnection=True, die=True)
+        sshkey = service.producers.get('sshkey')[0]
+        ssh_path = sshkey.service.hrd.get('key.path')
+        sshkey_passphrase = sshkey.service.hrd.get('key.passphrase')
 
+        addr = None
+        if service.parent.templatename == 'node.ovc':
+            # OVC natting doesn't allow a node to connect to itself
+            if service.hrd.exists('private.addr'):
+                addr = service.hrd.get('private.addr')
+            else:
+                return True
+        addr = addr or service.hrd.get("ssh.addr")
+        j.sal.nettools.tcpPortConnectionTest(addr, service.hrd.getInt("ssh.port"), timeout=5)
+        client = j.clients.ssh.get(service.hrd.get("ssh.addr"), port=service.hrd.getInt("ssh.port"), login='root', passwd=None, stdout=True,
+                                   forward_agent=False, allow_agent=False, look_for_keys=False, key_filename=ssh_path, passphrase=sshkey_passphrase,
+                                   timeout=5, die=True)
+        try:
+            client.execute('hostname')  # just to make sure connection is valid
+            return True
+        except Exception as e:
+            return False
 
     def install(self, service):
         if 'sshkey' in service.producers:
