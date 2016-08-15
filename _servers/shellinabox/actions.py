@@ -12,7 +12,7 @@ class Actions(ActionsBase):
             raise RuntimeError("Can't find docker in producers. please comsume a docker service")
         docker = service.producers['docker'][0]
 
-        dockerip = docker.parent.hrd.get('machine.publicip').strip()
+        dockerip = docker.parent.hrd.get('machine.publicip').strip() #@todo not well done, actions should not be specific to implementations
 
         port = 4200
         while j.sal.nettools.tcpPortConnectionTest("localhost", port):

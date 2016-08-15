@@ -5,10 +5,14 @@ class Actions(ActionsBaseMgmt):
 
     def getExecutor(self, service):
         addr = service.parent.producers['os'][0].hrd.getStr('ssh.addr')
-        port = service.parent.hrd.get('docker.sshport')
+        port = service.parent.hrd.get('docker.sshport')#this is not ok, we should not rely on eg. docker, the executor can be all
         return j.tools.executor.getSSHBased(addr, port, 'root')
 
     def install(self, service):
+        """
+        @todo not well made, this service is not an os
+        its not even an action file anymore
+        """
         if 'sshkey' in service.producers:
             sshkey = service.producers['sshkey'][0]
             sshkey_priv = sshkey.hrd.getStr('key.priv')

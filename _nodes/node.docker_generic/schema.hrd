@@ -10,5 +10,5 @@ sshkey = descr:'authorized sshkey' consume:sshkey:1:1
 vdc = type:str parent:'vdc'
 
 aysfs = type:bool descr:'install JS in AYSFS mounted mode' default:True
-agent = type:bool descr:'start agent by on installation' default:True
+agent = type:bool descr:'start g8core on installation' default:True
 weave = type:bool descr:'install weave' default:False
