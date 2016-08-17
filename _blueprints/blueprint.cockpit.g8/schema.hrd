@@ -18,3 +18,4 @@ oauth.jwt_key = type:str multiline
 
 dind = type:bool default:False
 staging = type:bool default:False
+g8.location = type:str

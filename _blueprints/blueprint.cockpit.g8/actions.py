@@ -15,6 +15,7 @@ class Actions(ActionsBaseMgmt):
         args = {
             'g8.account': g8_client.hrd.getStr('g8.account'),
             'g8.url': g8_client.hrd.getStr('g8.url'),
+            'g8.location': service.hrd.getStr('g8.location'),
             'g8.client.name': g8_client.instance
         }
         vdc = service.aysrepo.new('vdc', args=args, instance=cockpit_name, parent=vdcfarm)
