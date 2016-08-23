@@ -35,6 +35,6 @@ class Actions(ActionsBaseMgmt):
         domain = self._registerDomain(service)
         path = cuisine.bash.cmdGetPath('caddy', die=False)
         if not path:
-            cuisine.apps.caddy.build(start=True, ssl=True, dns=domain)
+            cuisine.apps.caddy.install(start=True, ssl=True, dns=domain)
         else:
             cuisine.apps.caddy.start(ssl=True)
