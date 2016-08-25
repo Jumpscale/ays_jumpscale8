@@ -239,6 +239,12 @@ class Actions(ActionsBaseMgmt):
         client_secret = service.hrd.getStr('oauth.client_secret')
         domain = service.hrd.getStr('dns.domain')
         redirect_uri = 'https://%s/api/oauth/callback' % domain
+        api_url = 'https://%s/api' % domain
+
+        content = cuisine.core.file_read('$codeDir/github/jumpscale/jscockpit/jscockpit/ays_api/apidocs/api.raml')
+        _, out = j.data.text.replaceTemplateVars(content, {'baseuri': api_url})
+        cuisine.core.file_write('$codeDir/github/jumpscale/jscockpit/jscockpit/ays_api/apidocs/api.raml', out)
+
         cuisine.apps.cockpit.start(
             bot_token=token,
             jwt_key=jwt_key,
