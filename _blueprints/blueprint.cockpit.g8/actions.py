@@ -23,7 +23,8 @@ class Actions(ActionsBaseMgmt):
         args = {
             'ports': '80:80, 443:443, 18384:18384, 25:25',
             'sshkey': 'main',
-            'os.image': 'Ubuntu 16.04 x64'
+            'os.image': 'Ubuntu 16.04 x64',
+            'disk.size': '20'
         }
         node_ovc = service.aysrepo.new('node.ovc', args=args, instance="cockpitvm", parent=vdc)
 
