@@ -21,7 +21,7 @@ class Actions(ActionsBaseMgmt):
         tmpdir = j.sal.fs.getTmpDirPath()
 
         if not j.do.checkSSHAgentAvailable():
-            j.do.loadSSHAgent()
+            j.do._loadSSHAgent()
 
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
             keyfile = j.do.getSSHKeyPathFromAgent(name)
@@ -54,7 +54,7 @@ class Actions(ActionsBaseMgmt):
         j.sal.fs.removeDirTree(tmpdir)
 
     def install(self, service):
-        j.do.loadSSHAgent()
+        j.do._loadSSHAgent()
         self.start(service=service)
 
     def start(self, service):
