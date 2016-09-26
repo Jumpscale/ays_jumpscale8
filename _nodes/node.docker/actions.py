@@ -40,8 +40,8 @@ class Actions(ActionsBaseMgmt):
             """
             host_pf = host_node.hrd.getList("portforwards", [])
             for pf in host_pf:
-                public, private = pf.split(":")
-                if docker_port == public:
+                private, public = pf.split(":")
+                if docker_port == private:
                     return private
             return None
 
@@ -96,9 +96,8 @@ class Actions(ActionsBaseMgmt):
             spaceport = []
             for item in pf_creation:
                 docker_port, host_port = item.split(":")
-                if not get_host_port(host_port):
+                if not get_host_port(docker_port):
                     spaceport.append("%s:%s" % (host_node.actions.open_port(host_node, host_port, docker_port), docker_port))
-
             public_port = host_node.actions.open_port(host_node, vm_port)
 
             # service.executor.cuisine.core.run('docker exec %s /bin/bash -c "cat >> /root/.ssh/authorized_keys <<EOF\n%s\nEOF"' % (service.instance, pubkey))

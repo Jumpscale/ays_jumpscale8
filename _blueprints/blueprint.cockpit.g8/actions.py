@@ -48,3 +48,5 @@ class Actions(ActionsBaseMgmt):
         }
 
         cockpit = service.aysrepo.new('cockpit', args=args, instance=cockpit_name, parent=os)
+        cuisine = j.tools.cuisine.local
+        cuisine.core.run("ssh-add -D")

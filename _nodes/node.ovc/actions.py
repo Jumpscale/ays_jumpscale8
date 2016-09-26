@@ -41,7 +41,10 @@ class Actions(ActionsBaseMgmt):
                     candidate += 1
         machine = self.getMachine(service)
         sshkey = service.producers.get('sshkey')[0]
-        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root', pushkey=sshkey.hrd.get('key.path'))
+        executor = j.tools.executor.getSSHBased(service.hrd.get("publicip"), service.hrd.getInt("sshport"), 'root')
+        key = j.sal.fs.fileGetContents(sshkey.hrd.get('key.path'))
+        executor.authorizeKey(pubkey=key)
+
 
         # check if already open, if yes return public port
         spaceport = None
@@ -56,7 +59,6 @@ class Actions(ActionsBaseMgmt):
                 spaceport = _get_free_port([int(portinfo['publicPort']) for portinfo in machine.space.portforwardings])
             else:
                 spaceport = public_port
-
             machine.create_portforwarding(spaceport, requested_port)
 
         pf = service.hrd.getList('portforwards', [])
