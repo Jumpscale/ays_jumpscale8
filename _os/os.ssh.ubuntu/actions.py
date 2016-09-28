@@ -21,7 +21,9 @@ class Actions(ActionsBaseMgmt):
     def getExecutor(self, service):
         sshkey = service.producers['sshkey'][0]
         pubkey = sshkey.hrd.get('key.pub')
-        return j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root', pubkey=pubkey)
+        executor = j.tools.executor.getSSHBased(service.hrd.get("ssh.addr"), service.hrd.getInt("ssh.port"), 'root')
+        executor.authorizeKey(pubkey=pubkey)
+        return executor
 
     def monitor(self, service):
         sshkey = service.producers.get('sshkey')[0]

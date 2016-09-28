@@ -7,7 +7,7 @@ class Actions(ActionsBaseMgmt):
         return os.executor
 
     def install(self, service):
-        service.executor.cuisine.docker.install()
+        service.executor.cuisine.systemservices.docker.install()
 
     def start(self, service):
         pass

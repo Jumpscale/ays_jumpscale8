@@ -87,8 +87,8 @@ class Actions(ActionsBaseMgmt):
             service.hrd.set('sshport', executor.port)
             if len(service.producers['sshkey']) >= 1:
                 sshkey = service.producers['sshkey'][0]
-                executor.cuisine.core.hostname = service.instance
                 executor.cuisine.ssh.authorize('root', sshkey.hrd.get('key.pub'))
+                executor.cuisine.core.hostname = service.instance
 
         for child in service.children:
             child.hrd.set("ssh.addr", service.hrd.get("publicip"))

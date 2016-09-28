@@ -17,6 +17,7 @@ class Actions(ActionsBaseMgmt):
             sshkey_service = sshkey_producers[0]
             # make sure key is loaded in ssh-agent
             sshkey_service.actions.start(service=sshkey_service)
-            pubkey = sshkey_service.hrd.getStr('key.path').strip(' "') 
-        cuisine = j.tools.executor.getSSHBased(addr=addr, port=port, passwd=password, login=login, pubkey=pubkey  ).cuisine
+            pubkey = sshkey_service.hrd.getStr('key.path').strip(' "')
+        cuisine = j.tools.executor.getSSHBased(addr=addr, port=port, passwd=password, login=login).cuisine
+        cuisine._executor.authorizeKey(pubkey=pubkey)
         return cuisine.geodns

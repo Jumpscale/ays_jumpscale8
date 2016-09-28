@@ -81,7 +81,7 @@ class Actions(ActionsBaseMgmt):
             # add sshkey
             service.executor.cuisine.core.run('docker exec %s mkdir -p /root/.ssh' % (service.instance), profile=True)
             service.executor.cuisine.core.run('docker exec %s touch /root/.ssh/authorized_keys' % (service.instance), profile=True)
-            service.executor.cuisine.core.run('docker exec %s /bin/bash -c "echo \'%s\' >> /root/.ssh/authorized_keys"' % (service.instance, pubkey), profile=True)
+            service.executor.cuisine.core.run('docker exec %s /bin/bash -c \'"\'echo \"\'\"%s\"\'\" >> /root/.ssh/authorized_keys\'"\'' % (service.instance, pubkey), profile=True)
 
             #get all portforward from container to host
             pf_creation = []
