@@ -7,6 +7,6 @@ os.size = default:2 type:int
 os.image =  descr:'image as used in ms1' default:'Ubuntu 15.10' type:str
 ports = type:str list
 
-sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
+sshkey = type:str descr:'authorized sshkey' consume:sshkey:1:1 auto
 
 vdc = type:str parent:'vdc' auto
