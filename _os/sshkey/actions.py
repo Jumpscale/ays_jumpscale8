@@ -16,12 +16,12 @@ class Actions(ActionsBaseMgmt):
         if service.hrd.get("key.name") == "":
             service.hrd.set("key.name", service.instance)
 
-        name=service.hrd.get("key.name")
+        name = service.hrd.get("key.name")
 
-        tmpdir=j.sal.fs.getTmpDirPath()
+        tmpdir = j.sal.fs.getTmpDirPath()
 
         if not j.do.checkSSHAgentAvailable():
-            j.do._loadSSHAgent()
+            j.do.loadSSHAgent()
 
         if j.do.getSSHKeyPathFromAgent(name, die=False)!=None:
             keyfile = j.do.getSSHKeyPathFromAgent(name)
@@ -54,19 +54,18 @@ class Actions(ActionsBaseMgmt):
         j.sal.fs.removeDirTree(tmpdir)
 
     def install(self, service):
-        j.do._loadSSHAgent()
+        j.do.loadSSHAgent()
         self.start(service=service)
-
 
     def start(self, service):
         """
         Add key to SSH Agent if not already loaded
         """
-        keypath=j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
+        keypath = j.sal.fs.joinPaths(service.path, "sshkey_%s"%service.instance)
         j.do.loadSSHKeys(keypath)
 
 
-    #not sure we can remove, key can be used for something else
+    # not sure we can remove, key can be used for something else
     # def stop(self, service):
     #     """
     #     Remove key from SSH Agent
