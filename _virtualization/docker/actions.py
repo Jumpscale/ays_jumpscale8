@@ -19,9 +19,9 @@ class Actions(ActionsBase):
         sshkey = service.getProducers('sshkey')[0]
         keypath = j.sal.fs.joinPaths(sshkey.path, 'key_%s.pub' % sshkey.hrd.get('key.name'))
         addr = getattr(self.dockerhost.action_methods_mgmt.cuisine.executor, 'addr', 'localhost')
-        return j.tools.executor.getSSHBased(addr=addr,
-                                            port=service.hrd.getInt('sshport'),
-                                            pushkey=keypath)
+        return j.tools.executor.getSSHBased(addr=addr, port=service.hrd.getInt('sshport'))
+        executor.authorizeKey(keyname=keypath)
+        return executor
 
     @property
     def portmap(self, service):

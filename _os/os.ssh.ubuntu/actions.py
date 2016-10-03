@@ -7,7 +7,7 @@ class Actions(ActionsBaseMgmt):
             service.aysrepo.new('aysfs', args={'os': service.instance}, parent=service)
 
         if service.hrd.getBool('weave'):
-            weave = service.aysrepo.new('weave', instance=service.instance, parent=service.parent)            
+            weave = service.aysrepo.new('weave', instance=service.instance, parent=service.parent)
         # if agent:
         #     instantiate agent
         # sshkey = service.aysrepo.getService(role='sshkey', instance=service.hrd.getStr('sshkey'))

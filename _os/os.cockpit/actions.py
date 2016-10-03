@@ -8,7 +8,9 @@ class Actions(ActionsBaseMgmt):
         port = service.parent.hrd.get('docker.sshport')
         #TODO: this is not ok, we should not rely on eg. docker, the executor can be all
         sshkey = service.producers.get('sshkey')[0]
-        return j.tools.executor.getSSHBased(addr, port, 'root', pushkey=sshkey.hrd.get('key.path'))
+        executor = j.tools.executor.getSSHBased(addr, port, 'root')
+        executor.authorizeKey(keyname=sshkey.hrd.get('key.path'))
+        return executor
 
     def install(self, service):
         """
@@ -39,7 +41,7 @@ class Actions(ActionsBaseMgmt):
         cuisine.apps.controller.start()
         self.portal(service=service)
         self.shellinaboxd(service=service)
-        self.grafana(service=service)
+        #self.grafana(service=service)
         self.gid(service=service)
         self.cockpit(service=service)
         self.ays_repo(service=service)

@@ -20,4 +20,4 @@ class Actions(ActionsBaseMgmt):
             pubkey = sshkey_service.hrd.getStr('key.path').strip(' "')
         cuisine = j.tools.executor.getSSHBased(addr=addr, port=port, passwd=password, login=login).cuisine
         cuisine._executor.authorizeKey(pubkey=pubkey)
-        return cuisine.geodns
+        return cuisine.apps.geodns
