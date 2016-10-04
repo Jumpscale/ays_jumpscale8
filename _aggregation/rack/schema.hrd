@@ -1,8 +1,4 @@
-
 location = type:str  @ask
-description = type:multiline  
+description = type:multiline
 
-parent = type:str parent:datacenter
-
-
-
+datacenter = type:str parent:datacenter
