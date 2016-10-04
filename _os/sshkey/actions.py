@@ -52,18 +52,18 @@ def init(service):
     j.sal.fs.removeDirTree(tmpdir)
 
 
-def install(service):
+def install(job):
     from JumpScale import j
 
-    def start(service):
+    def start(job):
         """
         Add key to SSH Agent if not already loaded
         """
         from JumpScale import j
-        keypath = j.sal.fs.joinPaths(service.path, "sshkey_%s" % service.instance)
+        keypath = j.sal.fs.joinPaths(job.path, "sshkey_%s" % job.instance)
         j.do.loadSSHKeys(keypath)
     j.do._loadSSHAgent()
-    start(service=service)
+    start(service=job)
 
 
 def start(service):
