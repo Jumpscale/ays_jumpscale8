@@ -1,5 +1,0 @@
-os = type:str parent:'os'
-admin.passwd = type:str default:admin
-admin.login = type:str default:admin
-spaces = type:str list
-actors = type:str list

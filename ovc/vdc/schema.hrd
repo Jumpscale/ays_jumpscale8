@@ -1,0 +1,6 @@
+description = type:multiline
+vdcfarm = type:str parent:'vdcfarm' auto
+
+g8client = type:str consume:'g8client' auto
+account = type:str default:''
+location = type:str default:''

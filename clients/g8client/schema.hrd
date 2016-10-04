@@ -1,0 +1,4 @@
+url = type:str
+login = type:str
+password= type:str
+account= type:str

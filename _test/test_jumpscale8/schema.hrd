@@ -1,7 +1,0 @@
-g8.url = type:str default:'http://www.mothership1.com'
-g8.login = type:str @ASK
-g8.password = type:str @ASK
-g8.account = type:str @ASK
-telegram.token = type:str @ASK
-jwt.key = type:str @ASK
-organization = type:str @ASK

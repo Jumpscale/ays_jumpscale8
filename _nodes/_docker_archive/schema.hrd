@@ -1,8 +1,0 @@
-sshkey = descr:'authorized sshkey' consume:sshkey:1:1
-
-host = type:str parent:'dockerhost'
-ports = type:str list default:''
-image = type:str descr:'docker image' default:'jumpscale/ubuntu1510'
-
-caddyproxy = type:bool default:True
-shellinabox = type:bool default:True
