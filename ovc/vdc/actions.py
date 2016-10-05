@@ -2,7 +2,7 @@
 def init(job):
     service = job.service
     if 'g8client' not in service.producers:
-        raise j.exceptions.RuntimeError("no producer g8client found. cannot continue init of %s" % service)
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
 
     if service.model.data.location == "":
         raise j.exceptions.Input("location argument cannot be empty, cannot continue init of %s" % service)
@@ -15,7 +15,7 @@ def init(job):
 def install(job):
     service = job.service
     if 'g8client' not in service.producers:
-        raise j.exceptions.RuntimeError("no producer g8client found. cannot continue init of %s" % service)
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
 
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
@@ -27,7 +27,7 @@ def install(job):
 def uninstall(job):
     service = job.service
     if 'g8client' not in service.producers:
-        raise j.exceptions.RuntimeError("no producer g8client found. cannot continue init of %s" % service)
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
 
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)

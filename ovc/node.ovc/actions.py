@@ -3,7 +3,7 @@ def install(job):
     vdc = service.parent
 
     if 'g8client' not in vdc.producers:
-        raise j.exceptions.RuntimeError("no producer g8client found. cannot continue init of %s" % service)
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
 
     g8client = vdc.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
