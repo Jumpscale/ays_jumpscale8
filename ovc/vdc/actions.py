@@ -20,6 +20,7 @@ def install(job):
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
     acc = cl.account_get(service.model.data.account)
+    #if space does not exist, it will create it
     space = acc.space_get(service.model.dbobj.name, service.model.data.location)
 
 
