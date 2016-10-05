@@ -9,6 +9,9 @@ machine.id = type:int
 ip.public = type:string
 ip.private = type:string
 
+ssh.login = type:string
+ssh.password = type:string
+
 sshkey = type:str descr:'authorized sshkey' consume:sshkey:1:1 auto
 
 vdc = type:str parent:'vdc' auto

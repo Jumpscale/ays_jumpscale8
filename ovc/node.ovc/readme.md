@@ -18,4 +18,7 @@ e.g: to expose port 22 of the VM to the port 9000 on the public port of the vdc 
 - ip.public: public IP of the VM once installed. **fill automaticlly, don't specify it in Blueprint**
 - ip.private: private IP of the VM inside the VDC. **fill automaticlly, don't specify it in Blueprint**
 
+- ssh.login: login used to create ssh connection to the VM. **fill automaticlly, don't specify it in Blueprint**
+- ssh.password: password used to create ssh connection to the vm. **fill automaticlly, don't specify it in Blueprint**
+
 - vdc: service name of the vdc service where to deploy the VM. This is the parent service. **required**

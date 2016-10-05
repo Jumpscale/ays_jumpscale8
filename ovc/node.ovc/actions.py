@@ -27,7 +27,10 @@ def install(job):
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress']
-    service.model.data.ipPrivate = machine.get_machine_ip()[0]
+    ip, vm_info = machine.get_machine_ip()
+    service.model.data.ipPrivate = ip
+    service.model.data.sshLogin = vm_info['accounts'][0]['login']
+    service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
     for i, port in enumerate(service.model.data.ports):
         ss = port.split(':')
@@ -38,6 +41,8 @@ def install(job):
 
         public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
         service.model.data.ports[i] = "%s:%s" % (local, public)
+
+    service.save()
 
 
 def uninstall(job):
@@ -55,4 +60,4 @@ def uninstall(job):
     if service.name not in space.machines:
         return
     machine = space.machines[service.name]
-    machine.delete
+    machine.delete()
