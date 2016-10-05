@@ -32,7 +32,8 @@ def input(job):
 
     if 'key.priv' not in args or args['key.priv'].strip() == "":
         print("lets generate private key")
-        path = j.sal.fs.joinPaths(j.dirs.tmpDir, "privatekey")
+        path = j.sal.fs.joinPaths(job.service.path, "id_rsa")
+        j.sal.fs.createDir(job.service.path)
         j.sal.fs.remove(path)
         cmd = "ssh-keygen -q -t rsa -f %s -N ''" % (path)
         rc, out = j.sal.process.execute(cmd, die=True, outputToStdout=False, ignoreErrorOutput=False)
