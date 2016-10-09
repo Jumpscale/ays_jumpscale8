@@ -1,6 +1,5 @@
 
 def init(job):
-    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
@@ -14,7 +13,6 @@ def init(job):
 
 
 def install(job):
-    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
@@ -26,7 +24,6 @@ def install(job):
 
 
 def uninstall(job):
-    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
