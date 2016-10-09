@@ -32,4 +32,4 @@ flists.extra =
  - ro: read-only
  - rw: read-write
  - ol: overlay mode
- - store_url: full URL of the store you want to use for that flist.
+- store_url: full URL of the store you want to use for that flist.
