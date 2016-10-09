@@ -1,4 +1,5 @@
 def install(job):
+    """Authorize user to given space"""
     from JumpScale import j
     service = job.service
 
