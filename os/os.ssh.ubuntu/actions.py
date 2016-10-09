@@ -12,8 +12,7 @@ def install(job):
         ss = ports.split(':')
         pf[int(ss[0])] = int(ss[1])
 
-    # used the login/password information from the node to first connect to the node and then authorize the sshkey
-    # for root user
+    # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=pf[22],
                                             login=node.model.data.sshLogin, passwd=node.model.data.sshPassword,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
@@ -30,14 +29,6 @@ def getExecutor(job):
     node = service.parent
     key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
 
-    # here we need to check if the sshkey consumed by this service is loaded, if not we load it
-    # and then we create the executor
-    if not j.do.checkSSHAgentAvailable():
-        j.do._loadSSHAgent()
-
-    if key_path not in j.do.listSSHKeyFromAgent():
-        j.do.loadSSHKeys(key_path)
-
     # search wich port expose ssh
     pf = {}
     for ports in node.model.data.ports:
@@ -49,5 +40,5 @@ def getExecutor(job):
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=pf[22],
                                             login='root', passwd=None,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
-                                            passphrase=None)
+                                            passphrase=None, key_filename=key_path)
     return executor
