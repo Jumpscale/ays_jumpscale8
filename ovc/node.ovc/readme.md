@@ -1,7 +1,7 @@
 # template: node.ovc
 
 ## Description:
-This actor template is reponsible to create a virtual machine on any openVCloud environment.
+This actor template is responsible to create a virtual machine on any openVCloud environment.
 
 ## Schema:
 
