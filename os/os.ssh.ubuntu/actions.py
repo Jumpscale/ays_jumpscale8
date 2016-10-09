@@ -22,6 +22,7 @@ def install(job):
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
     service.saveAll()
 
+
 def getExecutor(job):
     service = job.service
     if 'sshkey' not in service.producers:
