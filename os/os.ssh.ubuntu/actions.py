@@ -12,13 +12,15 @@ def install(job):
         ss = ports.split(':')
         pf[int(ss[0])] = int(ss[1])
 
+    service.model.data.sshPort = pf[22]
+
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
-    executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=pf[22],
+    executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
                                             login=node.model.data.sshLogin, passwd=node.model.data.sshPassword,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
                                             passphrase=None)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
-
+    service.saveAll()
 
 def getExecutor(job):
     service = job.service
