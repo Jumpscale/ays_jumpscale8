@@ -1,6 +1,5 @@
 def install(job):
     """Authorize user to given space"""
-    from JumpScale import j
     service = job.service
 
     # Get space id from the parent (vdc)
