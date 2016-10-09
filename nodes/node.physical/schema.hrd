@@ -1,7 +1,0 @@
-rack = type:str parent:rack
-description = type:multiline
-type = type:str
-ports = type:str list
-ip.public = type:str
-ssh.login = type:str
-ssh.password = type:str
