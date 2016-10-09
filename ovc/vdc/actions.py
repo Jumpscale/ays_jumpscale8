@@ -1,5 +1,6 @@
 
 def init(job):
+    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
@@ -13,18 +14,19 @@ def init(job):
 
 
 def install(job):
+    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
-
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
     acc = cl.account_get(service.model.data.account)
-    #if space does not exist, it will create it
-    space = acc.space_get(service.model.dbobj.name, service.model.data.location)
+    # if space does not exist, it will create it
+    acc.space_get(service.model.dbobj.name, service.model.data.location)
 
 
 def uninstall(job):
+    from JumpScale import j
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)

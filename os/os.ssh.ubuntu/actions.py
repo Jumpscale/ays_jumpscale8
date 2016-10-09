@@ -27,7 +27,6 @@ def install(job):
     args["addr"] = node.model.data.ipPublic if node.model.data.ipPublic else "localhost"
     args["login"] = node.model.data.sshLogin if node.model.data.sshLogin else "root"
     args["passwd"] = node.model.data.sshPassword if node.model.data.sshPassword else None
-
     executor = j.tools.executor.getSSHBased(**args)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
 
