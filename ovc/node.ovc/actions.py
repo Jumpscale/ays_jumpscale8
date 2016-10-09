@@ -42,7 +42,7 @@ def install(job):
         public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
         service.model.data.ports[i] = "%s:%s" % (local, public)
 
-    service.save()
+    service.saveAll()
 
 
 def uninstall(job):
