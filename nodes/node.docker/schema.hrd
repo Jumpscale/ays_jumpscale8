@@ -1,0 +1,9 @@
+os = type:str parent:'os'
+
+image = type:str default:'ubuntu'
+ports = type:str list
+volumes = type:str list
+sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
+
+currentIPAddress = type:str
+currentForwards = type:str list
