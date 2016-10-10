@@ -1,5 +1,5 @@
 vdc = type:str parent:vdc
-startDate = type:str default:''
-endDate = type:str default:''
-snapshotInterval = type:str default:'2h'
-retention = type:str default:'5d'
+startDate = type:str
+endDate = type:str
+snapshotInterval = type:str
+retention = type:str
