@@ -10,9 +10,9 @@ This actor template is responsible to create a virtual machine on any openVCloud
 - datadisks: list of extra data disks size in GB. **optional**
 - os.size: Type of VM, this size impact the number of CPU and memory available for the vm. **required**
 - os.image: OS image to use for the VM. **required**
-- ports: List of port forward to create. Format is `VM_port:Public_port` or `VM_port`.
+- ports: List of port forward to create. Format is `Public_port:VM_port` or `VM_port`.
 if the public port is not specified, it will be choose automaticlly in the available port of the vdc.  
-e.g: to expose port 22 of the VM to the port 9000 on the public port of the vdc use :`22:9000`. **optional**
+e.g: to expose port 22 of the VM to the port 9000 on the public port of the vdc use :`9000:22`. **optional**
 
 - machine.id: once the VM is created, holds the ID return by openvcloud for that VM. **fill automaticlly, don't specify it in Blueprint**
 - ip.public: public IP of the VM once installed. **fill automaticlly, don't specify it in Blueprint**

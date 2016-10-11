@@ -10,7 +10,7 @@ def install(job):
     pf = {}
     for ports in node.model.data.ports:
         ss = ports.split(':')
-        pf[int(ss[0])] = int(ss[1])
+        pf[int(ss[1])] = int(ss[0])
 
     service.model.data.sshPort = pf[22]
 
@@ -38,7 +38,7 @@ def getExecutor(job):
         ss = ports.split(':')
         if len(ss) != 2:
             continue
-        pf[int(ss[0])] = int(ss[1])
+        pf[int(ss[1])] = int(ss[0])
 
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=pf[22],
                                             login='root', passwd=None,

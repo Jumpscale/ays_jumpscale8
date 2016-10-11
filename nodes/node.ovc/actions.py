@@ -35,14 +35,72 @@ def install(job):
     for i, port in enumerate(service.model.data.ports):
         ss = port.split(':')
         if len(ss) == 2:
-            local_port, public_port = ss
+            public_port, local_port = ss
         else:
-            local_port, public_port = port, None
+            local_port = port
+            public_port = None
 
         public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
-        service.model.data.ports[i] = "%s:%s" % (local, public)
+        service.model.data.ports[i] = "%s:%s" % (public, local)
 
     service.saveAll()
+
+
+def open_port(job):
+    """
+    Open port in the firewall by creating port forward
+    if public_port is None, auto select available port
+    Return the public port assigned
+    """
+
+    requested_port = job.model.args['requested_port']
+    public_port = job.model.args.get('public_port')
+
+    def _get_free_port(unavailable_ports):
+        candidate = 2200
+        while True:
+            if candidate not in unavailable_ports:
+                return candidate
+            else:
+                candidate += 1
+
+    service = job.service
+    vdc = service.parent
+
+    if 'g8client' not in vdc.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    acc = cl.account_get(vdc.model.data.account)
+    space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+
+    if service.name in space.machines:
+        # machine already exists
+        machine = space.machines[service.name]
+    else:
+        raise RuntimeError('machine not found')
+
+    # check if already open, if yes return public port
+    spaceport = None
+    for pf in machine.portforwardings:
+        if pf['localPort'] == requested_port:
+            spaceport = pf['publicPort']
+            break
+
+    if spaceport is None:
+        if public_port is None:
+            # reach that point, the port is not forwarded yet
+            spaceport = _get_free_port([int(portinfo['publicPort']) for portinfo in machine.space.portforwardings])
+        else:
+            spaceport = public_port
+
+        machine.create_portforwarding(spaceport, requested_port)
+
+    service.model.ports.append("%s:%s" % (spaceport, requested_port))
+    service.saveAll()
+
+    return spaceport
 
 
 def uninstall(job):
