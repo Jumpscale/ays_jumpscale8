@@ -24,6 +24,10 @@ def start(job):
         args['namespace'] = flist.namespace
         args['store_url'] = flist.storeUrl
 
+        # make sure nonthing is already mounted there
+        cmd = 'umount -fl %s' % args['mountpoint']
+        cuisine.core.run(cmd, die=False)
+
         cuisine.core.dir_ensure(args['mountpoint'])
 
         config = """
@@ -97,6 +101,10 @@ def start_flist(job):
     flist_name = j.sal.fs.getBaseName(args['flist'])
     args['flist_path'] = cuisine.core.args_replace('$cfgDir/fs/flists/%s' % flist_name)
     cuisine.core.file_write(args['flist_path'], flist_content)
+
+    # make sure nonthing is already mounted there
+    cmd = 'umount -fl %s' % args['mountpoint']
+    cuisine.core.run(cmd, die=False)
 
     cuisine.core.dir_ensure(args['mount_path'])
 
