@@ -1,11 +1,12 @@
 def install(job):
     cuisine = job.service.executor.cuisine
 
-    # For now we download FS from there. when we have proper VM image it will be installed already
-    if not cuisine.core.command_check('fs'):
-        cuisine.core.dir_ensure('$binDir')
-        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', '$binDir/fs')
-        cuisine.core.file_attribs('$binDir/fs', '0550')
+    bin_location = cuisine.core.command_location('fs')
+    if bin_location is None or bin_location == '':
+        # If we don't have fs pre-install, download it and install it
+        cuisine.core.dir_ensure('/usr/local/bin')
+        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', '/usr/local/bin/fs')
+        cuisine.core.file_attribs('/usr/local/bin/fs', '0550')
 
 
 def start(job):
@@ -22,6 +23,10 @@ def start(job):
         args['mode'] = flist.mode.__str__().upper()
         args['namespace'] = flist.namespace
         args['store_url'] = flist.storeUrl
+
+        # make sure nonthing is already mounted there
+        cmd = 'umount -fl %s' % args['mountpoint']
+        cuisine.core.run(cmd, die=False)
 
         cuisine.core.dir_ensure(args['mountpoint'])
 
@@ -55,7 +60,8 @@ def start(job):
         cuisine.core.file_write(config_path, config)
 
         pm = cuisine.processmanager.get('tmux')
-        cmd = '$binDir/fs -config %s' % config_path
+        bin_location = cuisine.core.command_location('fs')
+        cmd = '%s -config %s' % (bin_location, config_path)
         pm.ensure("fs_%s" % flist.name, cmd=cmd, env={}, path='$cfgDir/fs', descr='G8OS FS')
 
 
@@ -96,6 +102,10 @@ def start_flist(job):
     args['flist_path'] = cuisine.core.args_replace('$cfgDir/fs/flists/%s' % flist_name)
     cuisine.core.file_write(args['flist_path'], flist_content)
 
+    # make sure nonthing is already mounted there
+    cmd = 'umount -fl %s' % args['mountpoint']
+    cuisine.core.run(cmd, die=False)
+
     cuisine.core.dir_ensure(args['mount_path'])
 
     config = """
@@ -128,7 +138,8 @@ def start_flist(job):
     cuisine.core.file_write(config_path, config)
 
     pm = cuisine.processmanager.get('tmux')
-    cmd = '$binDir/fs -config %s' % config_path
+    bin_location = cuisine.core.command_location('fs')
+    cmd = '%s -config %s' % (bin_location, config_path)
     pm.ensure("fs_%s" % flist_name, cmd=cmd, env={}, path='$cfgDir/fs', descr='G8OS FS')
 
 
