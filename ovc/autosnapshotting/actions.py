@@ -65,4 +65,3 @@ def cleanup(job):
             delta = int(time.time()) - snapshot['epoch']
             if delta > RETENTION:
                 machine.delete_snapshot(snapshot['epoch'])
-
