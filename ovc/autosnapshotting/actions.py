@@ -1,25 +1,3 @@
-def input(job):
-    args = job.model.args
-
-    # Validating startDate argument
-    if "startDate" not in args:
-        args["startDate"] = ""
-
-    # Validating endDate argument
-    if "endDate" not in args:
-        args["endDate"] = ""
-
-    # Add default value to snapshotInterval argument if empty or None
-    if "snapshotInterval" not in args or args["snapshotInterval"].strip() == "":
-        args["snapshotInterval"] = "2h"
-
-    # Add default value to retention argument if empty or None
-    if "retention" not in args or args["retention"].strip() == "":
-        args["retention"] = "5d"
-
-    return args
-
-
 def install(job):
     """Configure recurring actions"""
 
