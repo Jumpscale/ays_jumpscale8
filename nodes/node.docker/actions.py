@@ -3,6 +3,9 @@ def install(job):
     # create the docker container based on the data
     os = service.parent
     ports = '-p '.join(service.model.data.ports)
+    if ports != '':
+        ports = '-p %s' % ports
+
     volumes = '-v '.join(service.model.data.volumes)
 
     # TODO: We will make sure docker is installed on the machine here. But later on
@@ -50,7 +53,6 @@ def install(job):
         raise RuntimeError('cannot find parent node')
 
     docker_ports = []
-    public_ports = []
 
     for dst_port_spec, host_port_info in ports.items():
         dst_port, _, dst_proto = dst_port_spec.partition('/')
@@ -60,17 +62,7 @@ def install(job):
         host_port = host_port_info[0]['HostPort']
         docker_ports.append('{src}:{dst}'.format(src=host_port, dst=dst_port))
 
-        # We need to make sure there is a port forward to this host_port on the node
-        node.runAction('open_port', {'requested_port': host_port})
-        mapped = filter(lambda p: p[1] == host_port, map(lambda p: p.split(":"), node.model.data.ports))
-        mapped = list(mapped)
-        if not mapped:
-            raise RuntimeError('failed to open port-forward to %s' % host_port)
-        public_port, _ = mapped[0]
-        public_ports.append('{src}:{dst}'.format(src=public_port, dst=dst_port))
-
-    service.model.data.currentIPAddress = ipaddress
-    service.model.data.currentForwards = docker_ports
-    service.model.data.currentPublicForwards = public_ports
+    service.model.data.ipaddress = ipaddress
+    service.model.data.ports = docker_ports
 
     service.saveAll()
