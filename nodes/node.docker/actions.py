@@ -10,7 +10,7 @@ def install(job):
     service.executor.cuisine.systemservices.docker.install()
 
     cmd = ''
-    
+
     code, out, err = os.executor.cuisine.core.run('docker ps -a --filter name="%(name)s" --format {{.Names}}' % {'name': service.name})
     if code != 0:
         raise RuntimeError('failed to check docker exists: %s' % err)
@@ -40,18 +40,37 @@ def install(job):
     ipaddress = info['NetworkSettings']['IPAddress']
     ports = info['NetworkSettings']['Ports']
 
+    # find parent node.
+    node = None
+    for parent in service.parents:
+        if parent.model.role == 'node':
+            node = parent
+
+    if node is None:
+        raise RuntimeError('cannot find parent node')
+
     docker_ports = []
-    for dstPortSpec, hostPortInfo in ports.items():
-        dstPort, _, dstProto = dstPortSpec.partition('/')
-        if hostPortInfo is None:
+    public_ports = []
+
+    for dst_port_spec, host_port_info in ports.items():
+        dst_port, _, dst_proto = dst_port_spec.partition('/')
+        if host_port_info is None:
             # no bindings
             continue
-        hostPort = hostPortInfo[0]['HostPort']
-        docker_ports.append('{dst}:{src}'.format(dst=dstPort, src=hostPort))
+        host_port = host_port_info[0]['HostPort']
+        docker_ports.append('{src}:{dst}'.format(src=host_port, dst=dst_port))
 
-        # We need to make sure there is a port forward to this hostPort on the node
+        # We need to make sure there is a port forward to this host_port on the node
+        node.runAction('open_port', {'requested_port': host_port})
+        mapped = filter(lambda p: p[1] == host_port, map(lambda p: p.split(":"), node.model.data.ports))
+        mapped = list(mapped)
+        if not mapped:
+            raise RuntimeError('failed to open port-forward to %s' % host_port)
+        public_port, _ = mapped[0]
+        public_ports.append('{src}:{dst}'.format(src=public_port, dst=dst_port))
 
     service.model.data.currentIPAddress = ipaddress
     service.model.data.currentForwards = docker_ports
+    service.model.data.currentPublicForwards = public_ports
 
     service.saveAll()
