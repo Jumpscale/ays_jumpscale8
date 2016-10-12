@@ -1,8 +1,10 @@
 os = type:str parent:'os'
+vfs = list type:str consume:vfs2
 
 image = type:str default:'ubuntu'
 ports = type:str list
 volumes = type:str list
+cmd = type:str
 sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
 
 ipaddress = type:str
