@@ -6,11 +6,14 @@ def install(job):
     if ports != '':
         ports = '-p %s' % ports
 
-    volumes = '-v '.join(service.model.data.volumes)
+    volumes = ' -v '.join(service.model.data.volumes)
+    if volumes != '':
+        volumes = '-v %s' % volumes
 
-    # TODO: We will make sure docker is installed on the machine here. But later on
-    # we should depend that the machine has docker pre installed
-    service.executor.cuisine.systemservices.docker.install()
+    docker_bin = service.executor.cuisine.core.command_location('docker')
+    if docker_bin is None or docker_bin == '':
+        # install docker if not pre-install
+        service.executor.cuisine.systemservices.docker.install()
 
     cmd = ''
 
@@ -20,11 +23,12 @@ def install(job):
 
     if out.strip() == "":  # I am wondering why u inject stuff in stdout.
         # docker doesn't exist
-        cmd = 'docker run -d -t --name {name} {ports} {volumes} {image}'.format(
+        cmd = 'docker run -d -t --name {name} {ports} {volumes} {image} {cmd}'.format(
             name=service.name,
             ports=ports,
             volumes=volumes,
             image=service.model.data.image,
+            cmd=service.model.data.cmd,
         )
     else:
         # docker exist, just start it
