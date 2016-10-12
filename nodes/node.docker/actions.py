@@ -2,7 +2,7 @@ def install(job):
     service = job.service
     # create the docker container based on the data
     os = service.parent
-    ports = '-p '.join(service.model.data.ports)
+    ports = ' -p '.join(service.model.data.ports)
     if ports != '':
         ports = '-p %s' % ports
 
