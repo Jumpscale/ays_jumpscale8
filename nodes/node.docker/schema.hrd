@@ -7,4 +7,8 @@ volumes = type:str list
 cmd = type:str
 sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
 
-ipaddress = type:str
+ip.public = type:string
+ip.private = type:string
+
+ssh.login = type:string
+ssh.password = type:string

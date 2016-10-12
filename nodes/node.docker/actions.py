@@ -66,7 +66,11 @@ def install(job):
         host_port = host_port_info[0]['HostPort']
         docker_ports.append('{src}:{dst}'.format(src=host_port, dst=dst_port))
 
-    service.model.data.ipaddress = ipaddress
+    service.model.data.ipPrivate = ipaddress
+    service.model.data.ipPublic = node.model.data.ipPublic
+    service.model.data.sshLogin = 'root'
+    service.model.data.sshPassword = 'gig1234'
+
     service.model.data.ports = docker_ports
 
     service.saveAll()
