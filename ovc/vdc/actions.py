@@ -43,8 +43,10 @@ def processChange(job):
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
     acc = cl.account_get(service.model.data.account)
-    # if space does not exist, it will create it
-    space = acc.space_get(service.model.dbobj.name, service.model.data.location)
+    # Get given space, raise error if not found
+    space = acc.space_get(name=service.model.dbobj.name,
+                          location=service.model.data.location,
+                          create=False)
 
     authorized_users = space.authorized_users
     users = service.model.data.vdcUsers  # Users to be authorized_users
