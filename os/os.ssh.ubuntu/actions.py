@@ -7,12 +7,17 @@ def install(job):
     service.logger.info("authorize ssh key to machine")
     node = service.parent
 
-    pf = {}
-    for ports in node.model.data.ports:
-        ss = ports.split(':')
-        pf[int(ss[1])] = int(ss[0])
-
-    service.model.data.sshPort = pf[22]
+    ssh_port = '22'
+    for parent in service.parents:
+        if parent.model.role != 'node':
+            continue
+        for port in parent.model.data.ports:
+            src, _, dst = port.partition(':')
+            if ssh_port == dst:
+                ssh_port = src
+                break
+                
+    service.model.data.sshPort = int(ssh_port)
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
