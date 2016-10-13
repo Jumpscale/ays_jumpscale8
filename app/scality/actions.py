@@ -6,12 +6,12 @@ def install(job):
     service = job.service
 
     cuisine = service.executor.cuisine
-    cuisine.core.dir_ensure(service.data.model.storageData)
-    cuisine.core.dir_ensure(service.data.model.storageMeta)
+    cuisine.core.dir_ensure(service.model.data.storageData)
+    cuisine.core.dir_ensure(service.model.data.storageMeta)
 
     env = {
-        'S3DATAPATH': service.data.model.storageData,
-        'S3METADATAPATH': service.data.model.storageMeta,
+        'S3DATAPATH': service.model.data.storageData,
+        'S3METADATAPATH': service.model.data.storageMeta,
     }
 
     cuisine.processmanager.ensure(
