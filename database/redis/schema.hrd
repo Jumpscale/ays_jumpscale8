@@ -1,0 +1,7 @@
+os = type:str parent:os
+
+host = type:str default:'127.0.0.1'
+port = type:int default:6379
+unixsocket = type:str default:''
+maxram = type:int default:200
+appendonly = type:bool default:True
