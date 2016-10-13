@@ -52,17 +52,8 @@ def open_port(job):
     if public_port is None, auto select available port
     Return the public port assigned
     """
-
     requested_port = job.model.args['requested_port']
-    public_port = job.model.args.get('public_port')
-
-    def _get_free_port(unavailable_ports):
-        candidate = 2200
-        while True:
-            if candidate not in unavailable_ports:
-                return candidate
-            else:
-                candidate += 1
+    public_port = job.model.args.get('public_port', None)
 
     service = job.service
     vdc = service.parent
@@ -88,16 +79,26 @@ def open_port(job):
             spaceport = pf['publicPort']
             break
 
+    ports = set(service.model.data.ports)
+
     if spaceport is None:
         if public_port is None:
             # reach that point, the port is not forwarded yet
-            spaceport = _get_free_port([int(portinfo['publicPort']) for portinfo in machine.space.portforwardings])
+            unavailable_ports = [int(portinfo['publicPort']) for portinfo in machine.space.portforwardings]
+            spaceport = 2200
+            while True:
+                if spaceport not in unavailable_ports:
+                    break
+                else:
+                    spaceport += 1
         else:
             spaceport = public_port
 
         machine.create_portforwarding(spaceport, requested_port)
 
-    service.model.ports.append("%s:%s" % (spaceport, requested_port))
+    ports.add("%s:%s" % (spaceport, requested_port))
+    service.model.data.ports = list(ports)
+
     service.saveAll()
 
     return spaceport

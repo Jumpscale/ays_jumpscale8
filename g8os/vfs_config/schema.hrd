@@ -1,0 +1,19 @@
+mount.namespace = type:str
+mount.mountpoint = type:str
+mount.mode = type:str default:'ro'
+mount.trimbase = type:bool
+mount.flist = type:str
+
+backend.path = type:str
+backend.namespace = type:str
+backend.upload = type:bool default:False
+backend.encrypted = type:bool default:False
+backend.user.rsa = type:str
+backend.store.rsa = type:str
+backend.push = type:str
+backend.cleanup.cron = type:str
+backend.cleanup.old = type:int
+
+store.url = type:str
+store.login = type:str
+store.password = type:str
