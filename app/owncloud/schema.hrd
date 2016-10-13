@@ -1,1 +1,4 @@
 sitename = type:str
+tidb = type:str consume:tidb
+owncloudAdminUser = type:str default:'admin'
+owncloudAdminPassword = type:str default:'admin'
