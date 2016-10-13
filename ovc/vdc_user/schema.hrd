@@ -1,2 +1,0 @@
-vdc = type:str parent:'vdc' auto
-userid = type:str default:''
