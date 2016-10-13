@@ -7,6 +7,8 @@ def install(job):
     service.logger.info("authorize ssh key to machine")
     node = service.parent
 
+    # Looking in the parents chain is needed when we have nested nodes (like a docker node on top of an ovc node)
+    # we need to find all the ports forwarding chain to reach the inner most node.
     ssh_port = '22'
     for parent in service.parents:
         if parent.model.role != 'node':
@@ -16,7 +18,7 @@ def install(job):
             if ssh_port == dst:
                 ssh_port = src
                 break
-                
+
     service.model.data.sshPort = int(ssh_port)
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
