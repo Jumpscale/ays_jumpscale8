@@ -38,8 +38,15 @@ def install(job):
 
 def processChange(job):
     service = job.service
+
+    args = job.model.args
+    for key, value in args.items():
+        if key != "changeCategory":
+            setattr(service.model.data, key, value)
+
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
     acc = cl.account_get(service.model.data.account)
@@ -60,6 +67,8 @@ def processChange(job):
     for user in authorized_users:
         if user not in users:
             space.unauthorize_user(username=user)
+
+    service.save()
 
 
 def uninstall(job):
