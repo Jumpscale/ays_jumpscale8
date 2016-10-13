@@ -3,6 +3,7 @@ mount.mountpoint = type:str
 mount.mode = type:str default:'ro'
 mount.trimbase = type:bool
 mount.flist = type:str
+mount.trim = type:str
 
 backend.path = type:str
 backend.namespace = type:str

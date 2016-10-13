@@ -29,6 +29,7 @@ def install(job):
             'backend': config.name,
             'mode': config.model.data.mountMode,
             'trim_base': config.model.data.mountTrimbase,
+            'trim': config.model.data.trim,
         }
 
         cuisine.core.dir_ensure(config.model.data.backendPath)
