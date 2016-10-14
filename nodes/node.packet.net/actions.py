@@ -70,6 +70,7 @@ def install(job):
 
 def uninstall(job):
     import packet
+    service = job.service
     packetclient = service.producers.get('packetnet_client')[0]
     client = packet.Manager(packetclient.model.data.token)
 
