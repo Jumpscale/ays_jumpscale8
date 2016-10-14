@@ -48,13 +48,13 @@ def install(job):
     ports = info['NetworkSettings']['Ports']
 
     # find parent node.
-    # node = None
-    # for parent in service.parents:
-    #     if parent.model.role == 'node':
-    #         node = parent
-    #
-    # if node is None:
-    #     raise RuntimeError('cannot find parent node')
+    node = None
+    for parent in service.parents:
+        if parent.model.role == 'node':
+            node = parent
+
+    if node is None:
+        raise RuntimeError('cannot find parent node')
 
     docker_ports = []
 
