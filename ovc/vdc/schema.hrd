@@ -4,4 +4,4 @@ vdcfarm = type:str parent:'vdcfarm' auto
 g8client = type:str consume:'g8client' auto
 account = type:str default:''
 location = type:str default:''
-vdcUsers = type:str list consume:'vdc_user':0
+vdcUsers = type:str list consume:'vdc_user' auto
