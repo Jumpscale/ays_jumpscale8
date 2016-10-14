@@ -1,5 +1,5 @@
 os = type:str parent:'os'
-vfs = list type:str consume:g8osfs
+vfs = list type:str consume:g8osfs:0
 
 image = type:str default:'ubuntu'
 ports = type:str list
