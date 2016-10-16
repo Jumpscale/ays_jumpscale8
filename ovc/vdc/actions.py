@@ -54,8 +54,8 @@ def processChange(job):
         acc = cl.account_get(service.model.data.account)
         # Get given space, raise error if not found
         space = acc.space_get(name=service.model.dbobj.name,
-                            location=service.model.data.location,
-                            create=False)
+                              location=service.model.data.location,
+                              create=False)
 
         authorized_users = space.authorized_users
         users = service.model.data.vdcUsers  # Users to be authorized_users
