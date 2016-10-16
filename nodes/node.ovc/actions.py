@@ -21,7 +21,7 @@ def install(job):
         datadisks = list(service.model.data.datadisks)
         machine = space.machine_create(name=service.name,
                                        image=service.model.data.osImage,
-                                       memsize=service.model.data.osSize,
+                                       memsize=service.model.data.memory,
                                        disksize=service.model.data.bootdiskSize,
                                        datadisks=datadisks)
 
@@ -120,3 +120,7 @@ def uninstall(job):
         return
     machine = space.machines[service.name]
     machine.delete()
+
+
+def mail(job):
+    print('hello world')

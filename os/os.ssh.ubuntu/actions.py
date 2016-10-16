@@ -21,11 +21,15 @@ def install(job):
 
     service.model.data.sshPort = int(ssh_port)
 
+    sshkey = service.producers['sshkey'][0]
+    key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
+    password = node.model.data.sshPassword if node.model.data.sshPassword != '' else None
+
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
-                                            login=node.model.data.sshLogin, passwd=node.model.data.sshPassword,
+                                            login=node.model.data.sshLogin, passwd=password,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
-                                            passphrase=None)
+                                            passphrase=None, key_filename=key_path)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
     service.saveAll()
 

@@ -1,0 +1,8 @@
+os = type:str parent:os
+
+hostname = type:str
+gzip = type:bool default:True
+email = type:str
+stagging = type:bool
+
+caddy_proxy = list type:str consume:caddy_proxy
