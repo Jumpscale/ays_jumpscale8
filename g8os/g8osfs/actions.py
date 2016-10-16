@@ -1,11 +1,12 @@
 def install(job):
     cuisine = job.service.executor.cuisine
 
-    bin_location = cuisine.core.command_location('fs')
-    if bin_location is None or bin_location == '':
-        # If we don't have fs pre-install, download it and install it
+    try:
+        bin_location = cuisine.core.command_location('fs')
+    except:
+        bin_location = '/usr/local/bin/fs'
         cuisine.core.dir_ensure('/usr/local/bin')
-        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', '/usr/local/bin/fs')
+        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', bin_location)
         cuisine.core.file_attribs('/usr/local/bin/fs', '0550')
 
     service = job.service
@@ -28,6 +29,7 @@ def install(job):
             'backend': config.name,
             'mode': config.model.data.mountMode,
             'trim_base': config.model.data.mountTrimbase,
+            'trim': config.model.data.mountTrim,
         }
 
         cuisine.core.dir_ensure(config.model.data.backendPath)

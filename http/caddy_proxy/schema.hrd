@@ -1,0 +1,7 @@
+src = type:str
+dst = list type:str
+fail_timeout = type:str default:10s
+max_fails = type:int default:1
+without = type:str
+header_upstream = list type:str
+header_downstream = list type:str
