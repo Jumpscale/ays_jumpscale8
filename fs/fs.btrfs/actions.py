@@ -27,14 +27,14 @@ def install(job):
 
     if master['mountpoint'] == None:
         service.executor.cuisine.core.dir_ensure(service.model.data.mount)
-        cmd = 'mount %s %s' % (master['name'], service.model.data.mount)
+        cmd = 'mount /dev/%s %s' % (master['name'], service.model.data.mount)
         code, out, err = service.executor.cuisine.core.run(cmd)
         if code != 0:
             raise RuntimeError('failed to mount device: %s' % err)
 
     # Last thing is to check that all devices are part of the filesystem
     # in case we support hot plugging of disks in the future.
-    code, out, err = service.executor.cuisine.core.run('btrfs filesystem show %s' % master['name'])
+    code, out, err = service.executor.cuisine.core.run('btrfs filesystem show /dev/%s' % master['name'])
     if code != 0:
         raise RuntimeError('failed to inspect filesystem on device: %s' % err)
 

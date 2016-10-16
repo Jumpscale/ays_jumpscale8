@@ -1,5 +1,5 @@
 os = type:str parent:'os'
-vfs = list type:str consume:fs:0
+fs = list type:str consume:fs:0
 docker = type:str consume:app_docker:0
 
 image = type:str default:'ubuntu'
