@@ -97,7 +97,7 @@ def install(job):
     for target in targets:
         trials = 12
         while trials > 0:
-            code, _, _ = cuisine.core.run('mount | grep -P "on {}\s"'.format(target))
+            code, _, _ = cuisine.core.run('mount | grep -P "on {}\s"'.format(target), die=False)
             if code != 0:
                 # not found yet. We sleep for 5 seconds
                 time.sleep(5)
