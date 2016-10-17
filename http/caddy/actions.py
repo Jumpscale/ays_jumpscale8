@@ -2,8 +2,6 @@ def install(job):
     service = job.service
     cuisine = job.service.executor.cuisine
 
-    cuisine.core.run('touch $binDir/caddy')
-
     name = "caddy_%s" % service.name
     proxies_dir = cuisine.core.args_replace('$cfgDir/caddy/%s/proxies' % name)
     cuisine.core.dir_ensure(proxies_dir)

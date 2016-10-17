@@ -3,8 +3,6 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    cuisine.core.run('touch $binDir/jspython')
-
     cfg = cuisine.core.file_read('$appDir/portals/main/config.hrd')
     cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
     cuisine.core.file_write('$appDir/portals/main/config.hrd', str(cfg))

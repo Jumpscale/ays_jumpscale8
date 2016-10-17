@@ -2,8 +2,6 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    cuisine.core.run('touch $binDir/jspython')
-
     if 'redis' not in service.producers:
         raise j.exceptions.AYSNotFound("Can't find redis service in producers.")
 
