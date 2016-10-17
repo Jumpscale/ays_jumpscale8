@@ -2,6 +2,7 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
+    cuisine.core.run('touch $binDir/redis-server')
     cuisine.apps.redis.install()
     cuisine.apps.redis.start(
         name=service.name,

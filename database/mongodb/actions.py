@@ -1,6 +1,7 @@
 def install(job):
     cuisine = job.service.executor.cuisine
     name = 'mongod_%s' % job.service.name
+    cuisine.core.run('touch $binDir/mongod')
     cuisine.apps.mongodb.install(start=True, name=name)
 
 
