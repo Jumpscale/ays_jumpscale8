@@ -1,2 +1,2 @@
-os = type:string parent:os
+os = type:str parent:os
 fs = type:string consume:fs:0

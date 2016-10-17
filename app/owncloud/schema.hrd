@@ -1,1 +1,8 @@
+os = type:str parent:os
 sitename = type:str
+tidb = type:str consume:tidb
+tidbhost = type:str default:'127.0.0.1'
+tidbuser = type:str default:'root'
+tidbpassword = type:str default:''
+owncloudAdminUser = type:str default:'admin'
+owncloudAdminPassword = type:str default:'admin'
