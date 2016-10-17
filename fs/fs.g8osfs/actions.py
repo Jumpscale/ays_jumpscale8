@@ -1,13 +1,10 @@
 def install(job):
     cuisine = job.service.executor.cuisine
 
-    try:
-        bin_location = cuisine.core.command_location('fs')
-    except:
-        bin_location = '/usr/local/bin/fs'
-        cuisine.core.dir_ensure('/usr/local/bin')
-        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', bin_location)
-        cuisine.core.file_attribs('/usr/local/bin/fs', '0550')
+    bin_location = '/usr/local/bin/fs'
+    cuisine.core.dir_ensure('/usr/local/bin')
+    cuisine.core.file_download('https://stor.jumpscale.org/public/fs', bin_location)
+    cuisine.core.file_attribs('/usr/local/bin/fs', '0550')
 
     service = job.service
     cuisine = service.executor.cuisine
