@@ -23,8 +23,7 @@ def install(job):
     space = acc.space_get(service.model.dbobj.name, service.model.data.location)
     owners = space.owners
     authorized_users = space.authorized_users
-    users = service.model.data.vdcUsers  # Users to be authorized_users
-
+    users = (user.name for user in service.producers.get('uservdc', []))  # Users to be authorized_users
     # Authorize users
     for user in users:
         if user not in authorized_users:

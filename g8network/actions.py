@@ -8,11 +8,14 @@ def install(job):
     space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
 
     data = service.model.data
+    for location in cl.locations:
+        if location['name'] == space.model['location']:
+            gid = location['gid']
 
     space.add_external_network(name=data.name,
                                subnet=data.publicSubnetCIDR,
                                gateway=data.gatewayIPAddress,
                                startip=data.startIPAddress,
                                endip=data.endIPAddress,
-                               gid=data.gridId,
+                               gid=gid,
                                vlan=data.vLANID)
