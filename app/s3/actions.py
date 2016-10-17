@@ -11,7 +11,7 @@ def init(job):
         'ports': [
             '2200:22',
             '2201:2201',
-            '8000:8000'
+            '80:8000'
         ],
         'datadisks': list(service.model.data.datadisks)
     }
