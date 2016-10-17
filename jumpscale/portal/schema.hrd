@@ -1,2 +1,3 @@
 os = type:str parent:os
 fs = type:string consume:fs:0
+redis = type:str consume:redis:0

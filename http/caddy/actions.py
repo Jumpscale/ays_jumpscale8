@@ -42,10 +42,10 @@ def install(job):
 
 
 def start(job):
-    cuisine = job.service.cuisine
+    cuisine = job.service.executor.cuisine
     cuisine.processmanager.start("caddy_%s" % service.name)
 
 
 def stop(job):
-    cuisine = job.service.cuisine
+    cuisine = job.service.executor.cuisine
     cuisine.processmanager.stop("caddy_%s" % service.name)

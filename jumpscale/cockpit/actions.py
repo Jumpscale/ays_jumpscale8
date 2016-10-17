@@ -29,16 +29,19 @@ def install(job):
     cuisine.core.file_write('$binDir/ays_daemon', tmpl)
 
     cmd = 'jspython $binDir/ays_daemon'
-    cuisine.processmanager.ensure(cmd=cmd, name='cockpit_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
+    pm = cuisine.processmanager.get('tmux')
+    pm.ensure(cmd=cmd, name='cockpit_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
 
 
 def start(job):
     service = job.service
     cuisine = service.executor.cuisine
-    cuisine.processmanager.ensure(name='cockpit_%s' % service.name)
+    pm = cuisine.processmanager.get('tmux')
+    pm.ensure(name='cockpit_%s' % service.name)
 
 
 def stop(job):
     service = job.service
     cuisine = service.executor.cuisine
-    cuisine.processmanager.ensure(name='cockpit_%s' % service.name)
+    pm = cuisine.processmanager.get('tmux')
+    pm.stop(name='cockpit_%s' % service.name)
