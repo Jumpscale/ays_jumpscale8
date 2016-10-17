@@ -1,0 +1,2 @@
+os = type:str parent:os
+clusterId = type:str default:"1"

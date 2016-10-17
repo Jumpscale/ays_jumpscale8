@@ -1,0 +1,15 @@
+os = type:str parent:'os'
+fs = list type:str consume:fs:0
+docker = type:str consume:app_docker:0
+
+image = type:str default:'ubuntu'
+ports = type:str list
+volumes = type:str list
+cmd = type:str
+sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
+
+ip.public = type:string
+ip.private = type:string
+
+ssh.login = type:string
+ssh.password = type:string

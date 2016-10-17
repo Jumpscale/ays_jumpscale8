@@ -1,5 +1,0 @@
-os = type:str parent:'os'
-backends = type:str descr:'backend server to proxy' list
-domain = type:str descr:'domain name to use'
-
-dns_client = type:str consume:dns_client:1

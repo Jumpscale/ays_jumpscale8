@@ -1,5 +1,0 @@
-smtp.server=type:str
-smtp.port=type:str
-smtp.login=type:str
-smtp.passwd=type:str
-smtp.sender=type:str default:'no-reply@greenitglobe.com'

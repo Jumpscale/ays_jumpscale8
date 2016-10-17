@@ -1,2 +1,0 @@
-docker = type:str consume:'docker':1:1
-

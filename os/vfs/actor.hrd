@@ -1,0 +1,5 @@
+flists.global =
+    namespace: 'main',
+    mountpoint: '/tmp/test2',
+    mode:  'ro',
+    store_url: 'http://192.168.103.242:8080',

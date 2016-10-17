@@ -1,4 +1,0 @@
-key.name = type:str default:'' descr:'Specify name for key (default is name of instance)' 
-key.passphrase= type:str default:'' descr:'Specify passphrase (default is empty)'
-agent.required = type:bool default:True descr:'is the agent required for you' 
-key.path = type:str default:'' descr:'If key path is supplied, uses pre-generated key'
