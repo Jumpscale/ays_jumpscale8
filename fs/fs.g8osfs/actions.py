@@ -18,10 +18,14 @@ def install(job):
         'aydostor': {},
     }
 
+    targets = []
+
     for config in service.producers['vfs_config']:
         # TODO download flist
         flist_path = cuisine.core.args_replace('$tmpDir/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
         cuisine.core.file_download(config.model.data.mountFlist, flist_path)
+
+        targets.append(config.model.data.mountMountpoint)
 
         mount = {
             'path': config.model.data.mountMountpoint,
@@ -85,6 +89,21 @@ def install(job):
     bin_location = cuisine.core.command_location('fs')
     cmd = '%s -config %s' % (bin_location, config_path)
     pm.ensure("fs_%s" % service.name, cmd=cmd, env={}, path='$cfgDir/fs', descr='G8OS FS')
+
+    # wait until all targets are actually mounted
+    # We wait max 1 min per target
+    # NOTE: in real life, once one target is ready all targets would be there
+    import time
+    for target in targets:
+        trials = 12
+        while trials > 0:
+            code, _, _ = cuisine.core.run('mount | grep -P "on {}\s"'.format(target), die=False)
+            if code != 0:
+                # not found yet. We sleep for 5 seconds
+                time.sleep(5)
+            else:
+                break
+            trials -= 1
 
 
 def stop(job):
