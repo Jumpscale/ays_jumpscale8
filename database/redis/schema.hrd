@@ -1,8 +1,8 @@
 os = type:str parent:os
 fs = type:string consume:fs:0
 
-host = type:str default:'127.0.0.1'
-port = type:int default:6379
+host = type:str
+port = type:int
 unixsocket = type:str default:''
 maxram = type:int default:200
 appendonly = type:bool default:True
