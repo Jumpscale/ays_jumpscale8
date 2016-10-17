@@ -1,6 +1,7 @@
 os = type:str parent:'os'
 fs = list type:str consume:fs:0
 docker = type:str consume:app_docker:0
+hostname = type:str default:''
 
 image = type:str default:'ubuntu'
 ports = type:str list

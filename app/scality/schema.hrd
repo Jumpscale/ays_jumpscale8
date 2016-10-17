@@ -1,3 +1,4 @@
 os = type:str parent:os
+domain = type:str
 storage.data = type:str
 storage.meta = type:str

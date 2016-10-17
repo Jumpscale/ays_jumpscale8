@@ -14,9 +14,20 @@ def install(job):
         'S3METADATAPATH': service.model.data.storageMeta,
     }
 
+    app_path = '/opt/jumpscale8/apps/S3'
+    config_path = j.sal.fs.joinPaths(app_path, 'config.json')
+    config_str = cuisine.core.file_read(config_path)
+    config = j.data.serializer.json.loads(config_str)
+    config['regions']['specifiedregion'] = [service.model.data.domain]
+
+    cuisine.core.file_write(
+        config_path,
+        j.data.serializer.json.dumps(config, indent=2)
+    )
+
     cuisine.processmanager.ensure(
         name='scalityS3',
         cmd='npm start',
         env=env,
-        path='/opt/jumpscale8/apps/S3'
+        path=app_path
     )

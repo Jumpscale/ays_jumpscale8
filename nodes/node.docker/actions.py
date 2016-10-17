@@ -23,11 +23,12 @@ def install(job):
 
     if out.strip() == "":  # I am wondering why u inject stuff in stdout.
         # docker doesn't exist
-        cmd = 'docker run -d -t --name {name} {ports} {volumes} {image} {cmd}'.format(
+        cmd = 'docker run -d -t --name {name} {hostname} {ports} {volumes} {image} {cmd}'.format(
             name=service.name,
             ports=ports,
             volumes=volumes,
             image=service.model.data.image,
+            hostname='--hostname %s' % service.model.data.hostname if service.model.data.hostname != '' else '',
             cmd=service.model.data.cmd,
         )
     else:
