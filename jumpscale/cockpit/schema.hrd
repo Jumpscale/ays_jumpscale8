@@ -1,0 +1,12 @@
+os = type:str parent:'os'
+redis = type:str consume:redis:1:1
+fs = type:string consume:fs:0
+
+dns.domain = type:str
+
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.organization = type:str
+oauth.jwt_key = type:str
+
+staging = type:bool default:False
