@@ -21,23 +21,26 @@ def install(job):
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.toml.dumps(daemon_cfg))
 
-    tmpl = """
-    from JumpScale.baselib.atyourservice81.AtYourServiceDaemon import Server
-    server = Server('{cfg_path}')
-    server.start()
-    """.format(cfg_path=cfg_path)
-    cuisine.core.file_write('$binDir/ays_daemon', tmpl)
-
-    cmd = 'jspython $binDir/ays_daemon'
+    # configure AYS daemon
+    cmd = 'ays start --conf %s' % cfg_path
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure(cmd=cmd, name='cockpit_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
+    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
+
+    # configure REST API
+    raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
+    raml = raml.replace('$(baseuri', "%s/api" % service.model.data.dnsDomain)
+    cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
+
+    cmd = 'jspython api_server'
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path='$appDir/ays_api')
 
 
 def start(job):
     service = job.service
     cuisine = service.executor.cuisine
+
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure(name='cockpit_%s' % service.name)
+    pm.start(name='cockpit_%s' % service.name)
 
 
 def stop(job):
