@@ -16,9 +16,10 @@ def install(job):
     cuisine.core.dir_ensure("/var/log/nginx")
     cuisine.core.dir_ensure("/var/lib/nginx")
 
+
     tidb = service.producers['tidb'][0]
-    tidbos = tidb.producers['os'][0]
-    tidbdocker = tidbos.producers['node'][0]
+    tidbos = tidb.parent
+    tidbdocker = tidbos.parent
     tidbhost = tidbdocker.model.data.ipPrivate
 
     tidbuser = service.model.data.tidbuser
