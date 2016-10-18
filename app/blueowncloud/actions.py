@@ -56,7 +56,7 @@ def init(job):
     tidb = {
         'image': 'jumpscale/ubuntu1604',
         'hostname': service.model.data.domain,
-        'fs': ['fuse', 'data'],
+        'fs': ['fuse'],
         'os': service.name,
         'ports': [
             '2201:22',
@@ -82,6 +82,7 @@ def init(job):
         ],
         'volumes': [
             '/mnt/fs/opt/:/opt/',
+            '/data/:/data/',
         ]
     }
 

@@ -18,14 +18,17 @@ def install(job):
     config_path = j.sal.fs.joinPaths(app_path, 'config.json')
     config_str = cuisine.core.file_read(config_path)
     config = j.data.serializer.json.loads(config_str)
-    config['regions']['specifiedregion'] = [service.model.data.domain]
+    config['regions'] = {
+        'us-east-1': [service.model.data.domain]
+    }
 
     cuisine.core.file_write(
         config_path,
         j.data.serializer.json.dumps(config, indent=2)
     )
 
-    cuisine.processmanager.ensure(
+    pm = cuisine.processmanager.get('tmux')
+    pm.ensure(
         name='scalityS3',
         cmd='npm start',
         env=env,
