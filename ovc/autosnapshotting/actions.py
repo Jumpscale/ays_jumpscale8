@@ -14,7 +14,7 @@ def install(job):
 
     recurring = service.model.dbobj.recurringActions[1]
     recurring.action = "cleanup"
-    recurring.period = j.data.types.duration.convertToSeconds("1d")
+    recurring.period = j.data.types.duration.convertToSeconds(service.model.data.cleanupInterval)
     recurring.log = True
     recurring.lastRun = 0
     service.saveAll()
