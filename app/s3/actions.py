@@ -11,7 +11,8 @@ def init(job):
         'ports': [
             '2200:22',
             '2201:2201',
-            '80:8000'
+            '2202:2202',
+            '80:80'
         ],
         'datadisks': list(service.model.data.datadisks)
     }
@@ -79,3 +80,38 @@ def init(job):
     }
 
     repo.actorGet('scality').serviceCreate('app', app)
+
+    # caddy proxy
+    caddy = {
+        'image': 'jumpscale/ubuntu1604',
+        'hostname': 'caddy',
+        'fs': ['fuse'],
+        'os': service.name,
+        'ports': [
+            '2202:22',
+            '80:80'
+        ],
+        'volumes': [
+            '/mnt/fs/opt/:/opt/',
+        ]
+    }
+
+    repo.actorGet('node.docker').serviceCreate('caddy', caddy)
+    repo.actorGet('os.ssh.ubuntu').serviceCreate('caddy', {'node': 'caddy'})
+
+    proxy = {
+        'src': '/',
+        'dst': ['172.17.0.1:8000']
+    }
+
+    repo.actorGet('caddy_proxy').serviceCreate('proxy', proxy)
+
+    caddy_service = {
+        'os': 'caddy',
+        'fs': 'cockpit',
+        'email': 'mail@fake.com',
+        'hostname': ':80',
+        'caddy_proxy': ['proxy']
+    }
+
+    repo.actorGet('caddy').serviceCreate('caddy', caddy_service)
