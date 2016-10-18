@@ -57,7 +57,7 @@ def processChange(job):
                             create=False)
 
         authorized_users = space.authorized_users
-        users = service.model.data.vdcUsers  # Users to be authorized_users
+        users = service.model.data.uservdc  # Users to be authorized_users
 
         # Authorize users
         for user in users:
