@@ -30,7 +30,7 @@ def install(job):
                                    description=disk_args.description,
                                    size=disk_args.size,
                                    type=disk_args.type.upper())
-        acc.disk_limit_io(disk_id, disk_args.maxIOPS)
+        machine.disk_limit_io(disk_id, disk_args.maxIOPS)
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress']
