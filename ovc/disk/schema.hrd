@@ -1,0 +1,4 @@
+size = type:int default:1 descr:'disk size in GB'
+type = type:str default:'normal' default:'D'
+description = type:str
+maxIOPS = type:int default:50

@@ -18,12 +18,19 @@ def install(job):
         if service.model.data.osImage not in image_names:
             raise j.exceptions.NotFound('Image %s not available for vdc %s' % (service.model.data.osImage, vdc.name))
 
-        datadisks = list(service.model.data.datadisks)
         machine = space.machine_create(name=service.name,
                                        image=service.model.data.osImage,
                                        memsize=service.model.data.memory,
-                                       disksize=service.model.data.bootdiskSize,
-                                       datadisks=datadisks)
+                                       disksize=service.model.data.bootdiskSize)
+
+    # Add disks to machine
+    for data_disk in service.producers.get('disk', []):
+        disk_args = data_disk.model.data
+        disk_id = machine.add_disk(name=data_disk.model.dbobj.name,
+                                   description=disk_args.description,
+                                   size=disk_args.size,
+                                   type=disk_args.type.upper())
+        acc.disk_limit_io(disk_id, disk_args.maxIOPS)
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress']

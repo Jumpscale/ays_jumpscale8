@@ -1,6 +1,5 @@
 description = type:multiline
 bootdisk.size = type:int descr:'boot disk size in GB' default:10
-datadisks = type:int list descr:'extra data disks in GB'
 memory = default:1 type:int descr:'memory in GB'
 os.image =  descr:'image as used in ms1' default:'Ubuntu 15.10' type:str
 ports = type:str list descr:'list of port forward to create src:dst'
@@ -13,3 +12,4 @@ ssh.login = type:string
 ssh.password = type:string
 
 vdc = type:str parent:'vdc' auto
+disk = list type:str consume:'disk':1
