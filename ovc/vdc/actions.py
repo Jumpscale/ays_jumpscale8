@@ -21,7 +21,6 @@ def install(job):
     acc = cl.account_get(service.model.data.account)
     # if space does not exist, it will create it
     space = acc.space_get(service.model.dbobj.name, service.model.data.location)
-    owners = space.owners
     authorized_users = space.authorized_users
     users = (user.name for user in service.producers.get('uservdc', []))  # Users to be authorized_users
     # Authorize users
@@ -31,7 +30,7 @@ def install(job):
 
     # Unauthorize users not in the schema
     for user in authorized_users:
-        if user not in users and user not in owners:
+        if user not in users:
             space.unauthorize_user(username=user)
 
 
