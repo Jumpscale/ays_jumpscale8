@@ -1,48 +1,56 @@
 def install(job):
     service = job.service
     # create the docker container based on the data
-    os = service.parent
-    ports = ' -p '.join(service.model.data.ports)
-    if ports != '':
-        ports = '-p %s' % ports
 
-    volumes = ' -v '.join(service.model.data.volumes)
-    if volumes != '':
-        volumes = '-v %s' % volumes
+    """
+    version: '2'
+    services:
+      mongo:
+        image: mongo
+        command: "--replSet c0"
+        network_mode: "bridge"
+        labels:
+          SERVICE_TAGS: traefik.enable=false
+        ports:
+          - "27017"
+        volumes:
+          - /var/mongo/:/data/
+    """
+    compose = {
+        'version': '2',
+        'services': {
+            service.name: {
+                'image': service.model.data.image,
+                'command': service.model.data.cmd,
+                'network_mode': 'bridge',
+                'ports': list(service.model.data.ports),
+                'volumes': list(service.model.data.volumes)
+            }
+        }
+    }
 
-    docker_bin = service.executor.cuisine.core.command_location('docker')
-    if docker_bin is None or docker_bin == '':
-        # install docker if not pre-install
-        service.executor.cuisine.systemservices.docker.install()
+    cuisine = service.executor.cuisine
 
-    cmd = ''
+    base = j.sal.fs.joinPaths('/var', 'dockers', service.name)
+    cuisine.core.dir_ensure(base)
+    cuisine.core.file_write(
+        j.sal.fs.joinPaths(base, 'docker-compose.yml'),
+        j.data.serializer.yaml.dumps(compose)
+    )
 
-    code, out, err = os.executor.cuisine.core.run('docker ps -a --filter name="%(name)s" --format {{.Names}}' % {'name': service.name})
+    code, _, err = cuisine.core.run('cd {} && docker-compose up -d'.format(base))
     if code != 0:
-        raise RuntimeError('failed to check docker exists: %s' % err)
+        raise RuntimeError('failed to provision docker container: %s' % err)
 
-    if out.strip() == "":  # I am wondering why u inject stuff in stdout.
-        # docker doesn't exist
-        cmd = 'docker run -d -t --name {name} {hostname} {ports} {volumes} {image} {cmd}'.format(
-            name=service.name,
-            ports=ports,
-            volumes=volumes,
-            image=service.model.data.image,
-            hostname='--hostname %s' % service.model.data.hostname if service.model.data.hostname != '' else '',
-            cmd=service.model.data.cmd,
-        )
-    else:
-        # docker exist, just start it
-        cmd = 'docker start {name}'.format(name=service.name)
-
-    code, _, err = os.executor.cuisine.core.run(cmd)
+    code, docker_id, err = cuisine.core.run('cd {} && docker-compose ps -q'.format(base))
     if code != 0:
-        raise RuntimeError('failed to provision/start the docker container: %s' % err)
+        raise RuntimeError('failed to get the container id: %s' % err)
 
     # get the ipaddress and ports
-    code, inspected, err = os.executor.cuisine.core.run('docker inspect {name}'.format(name=service.name))
+    code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id))
     if code != 0:
         raise RuntimeError('failed to inspect docker %s: %s' % (service.name, err))
+
     inspected = j.data.serializer.json.loads(inspected)
     info = inspected[0]
     ipaddress = info['NetworkSettings']['IPAddress']
