@@ -5,4 +5,4 @@ domain = type:str
 a.records = list type:str
 cname.records = list type:str
 
-node = list type:str consume:node
+node = list type:str consume:node:0
