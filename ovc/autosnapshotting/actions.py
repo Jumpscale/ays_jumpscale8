@@ -41,7 +41,7 @@ def snapshot(job):
         cl = cl.account_get(vdc.model.data.account)
         space = cl.space_get(vdc.name, vdc.model.data.location)
         for name, machine in space.machines.items():
-            machine.create_snapshot()
+            machine.create_snapshot(name='auto_snapshot')
 
 
 def cleanup(job):
@@ -59,9 +59,10 @@ def cleanup(job):
     cl = cl.account_get(vdc.model.data.account)
     space = cl.space_get(vdc.name, vdc.model.data.location)
 
+    now = int(time.time())
     for name, machine in space.machines.items():
         for snapshot in machine.list_snapshots():
             # Get the delta time in seconds
-            delta = int(time.time()) - snapshot['epoch']
-            if delta > RETENTION:
+            delta = now - snapshot['epoch']
+            if delta >= RETENTION:
                 machine.delete_snapshot(snapshot['epoch'])
