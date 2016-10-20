@@ -23,7 +23,7 @@ def input(job):
         args["key.pub"] = j.sal.fs.fileGetContents(path + '.pub')
 
     if 'key.name' in job.model.args:
-        path = j.do.getSSHKeyPathFromAgent("kds")
+        path = j.do.getSSHKeyPathFromAgent(job.model.args['key.name'])
         if not j.sal.fs.exists(path, followlinks=True):
             raise j.exceptions.Input(message="Cannot find ssh key:%s for service:%s" %
                                      (path, job.service), level=1, source="", tags="", msgpub="")
