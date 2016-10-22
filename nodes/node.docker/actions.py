@@ -1,3 +1,25 @@
+def input(job):
+    r = job.service.aysrepo
+
+    if "node" in job.model.args:
+        res = job.model.args
+        res["os"] = res["node"]
+        res.pop("node")
+        job.model.args = res
+
+    return job.model.args
+
+
+def init(job):
+
+    r = job.service.aysrepo
+
+    a = r.actorGet("os.ssh.ubuntu")
+    if r.serviceGet("os", job.service.name, die=False) == None:
+        s = a.serviceCreate(instance=job.service.name, args={
+                            "node": job.service.name, "sshkey": job.service.model.data.sshkey})
+
+
 def install(job):
     service = job.service
     # create the docker container based on the data

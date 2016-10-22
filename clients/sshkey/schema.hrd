@@ -2,3 +2,4 @@ key.path = type:str
 key.passphrase= type:str default:'' descr:'Specify passphrase (default is empty)'
 key.priv = type:str
 key.pub = type:str
+key.name = type:str
