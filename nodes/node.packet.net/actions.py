@@ -79,3 +79,45 @@ def uninstall(job):
         raise j.exceptions.NotFound("device id not know, node probably not installed")
     device = client.get_device(device_id)
     device.delete()
+
+
+def start(job):
+    import packet
+    service = job.service
+    packetclient = service.producers.get('packetnet_client')[0]
+    client = packet.Manager(packetclient.model.data.token)
+
+    device_id = service.model.data.deviceId
+    if device_id is None or device_id == '':
+        raise j.exceptions.NotFound("device id not know, node probably not installed")
+    device = client.get_device(device_id)
+    if device.state == 'inactive':
+        device.power_on()
+
+
+def stop(job):
+    import packet
+    service = job.service
+    packetclient = service.producers.get('packetnet_client')[0]
+    client = packet.Manager(packetclient.model.data.token)
+
+    device_id = service.model.data.deviceId
+    if device_id is None or device_id == '':
+        raise j.exceptions.NotFound("device id not know, node probably not installed")
+    device = client.get_device(device_id)
+    if device.state == 'active':
+        device.power_off()
+
+
+def restart(job):
+    import packet
+    service = job.service
+    packetclient = service.producers.get('packetnet_client')[0]
+    client = packet.Manager(packetclient.model.data.token)
+
+    device_id = service.model.data.deviceId
+    if device_id is None or device_id == '':
+        raise j.exceptions.NotFound("device id not know, node probably not installed")
+    device = client.get_device(device_id)
+    if device.state == 'active':
+        device.reboot()
