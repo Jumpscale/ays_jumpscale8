@@ -83,7 +83,7 @@ def install(job):
                                    type=disk_args.type.upper())
         rc, out, err = cuisine.core.run("lsblk -J", die=False)
 
-        jsonout = j.data.serializers.json.loads(out)
+        jsonout = j.data.serializer.json.loads(out)
         devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk'] # should be only 1
 
         for dv in devices:
