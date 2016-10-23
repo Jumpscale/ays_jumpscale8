@@ -25,7 +25,7 @@ def install(job):
         if code != 0:
             raise RuntimeError('failed to create filesystem: %s' % err)
 
-    if master['mountpoint'] == None:
+    if master['mountpoint'] is None:
         service.executor.cuisine.core.dir_ensure(service.model.data.mount)
         cmd = 'mount /dev/%s %s' % (master['name'], service.model.data.mount)
         code, out, err = service.executor.cuisine.core.run(cmd)

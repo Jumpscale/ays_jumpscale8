@@ -11,7 +11,7 @@ def input(job):
 def init(job):
     service = job.service
     os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
-    os_actor.serviceCreate(service.model.name, args={'node': service.model.name, 'sshkey': service.model.data.sshkey})
+    os_actor.serviceCreate(service.name, args={'node': service.name, 'sshkey': service.model.data.sshkey})
 
 
 def install(job):

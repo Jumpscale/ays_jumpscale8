@@ -1,2 +1,6 @@
 os = type:str parent:'os'
 mount = type:str
+
+#recurring.autoscale =
+    #period: 10m,
+    #log: True,

@@ -14,7 +14,7 @@ def init(job):
             '2202:2202',
             '80:80'
         ],
-        'datadisks': list(service.model.data.datadisks)
+        'disk': list(service.model.data.disk)
     }
 
     repo.actorGet('node.ovc').serviceCreate(service.name, vm)
