@@ -1,3 +1,9 @@
+def init(job):
+    service = job.service
+    os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
+    os_actor.serviceCreate(service.model.name, args={'node': service.model.name, 'sshkey': service.model.data.sshkey})
+
+
 def install(job):
     import time
     import packet
