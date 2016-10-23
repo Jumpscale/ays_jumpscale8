@@ -30,7 +30,6 @@ def input(job):
 
         args["key.priv"] = j.sal.fs.fileGetContents(path)
         args["key.pub"] = j.sal.fs.fileGetContents(path + '.pub')
-        args.pop('key.name')
 
     if 'key.priv' not in args or args['key.priv'].strip() == "":
         print("lets generate private key")
