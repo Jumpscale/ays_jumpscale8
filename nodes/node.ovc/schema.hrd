@@ -13,3 +13,7 @@ ssh.password = type:string
 
 vdc = type:str parent:'vdc' auto
 disk = list type:str consume:'disk':0
+
+sshkey                        = type:str consume:sshkey:1  auto
+ssh.addr                       = type:str
+ssh.port                       = type:int
