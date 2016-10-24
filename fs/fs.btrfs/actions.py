@@ -55,17 +55,22 @@ def install(job):
 
 def autoscale(job):
     service = job.service
-    btrfs = service.executor.cuisine.btrfs
-    usage = btrfs.getSpaceUsage(service.model.data.mount)
-    # find data keys
+    repo = service.aysrepo
+    
+    cuisine = service.executor.cuisine
 
-    keys = [k for k in usage if k.startswith('data-')]
-    if len(keys) != 1:
-        raise RuntimeError('could not find the data key')
+    code, out, err = cuisine.core.run('btrfs filesystem  usage -b {}'.format(service.model.data.mount), die=False)
+    if code != 0:
+        raise RuntimeError('failed to get device usage: %s', err)
 
-    key = keys.pop()
-    disk_usage = usage[key]
-    free = disk_usage['total'] - disk_usage['used']
+    # get free space.
+    import re
+    match = re.search('Free[^:]*:\s+(\d+)', out)
+    if match is None:
+        raise RuntimeError('failed to get free space')
+
+    free = int(match.group(1)) / (1024 * 1024) # MB.
+
     node = None
     for parent in service.parents:
         if parent.model.role == 'node':
@@ -73,7 +78,10 @@ def autoscale(job):
             break
     if node is None:
         raise RuntimeError('failed to find the parent node')
-        
+
+    # DEBUG, set free to 0
+    current_disks = list(node.model.data.disk)
+    free = 0
     if free < service.model.data.threshold:
         # add new disk to the array.
         args = {
@@ -82,3 +90,11 @@ def autoscale(job):
         }
 
         node.runAction('add_disk', args)
+
+    node = repo.serviceGet(node.model.role, node.name)
+    new_disks = list(node.model.data.disk)
+    added = set(new_disks).difference(current_disks)
+    if len(added) != 1:
+        raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
+
+    #TODO: add device to volume
