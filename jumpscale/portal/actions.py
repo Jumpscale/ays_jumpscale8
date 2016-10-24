@@ -9,7 +9,7 @@ def install(job):
 
     cuisine.core.dir_ensure('$cfgDir/portals')
     cuisine.core.file_link('$appDir/portals/jslib', '$cfgDir/portals/jslib')
-    cuisine.core.file_link('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$appDir/portals/main/base/')
+    cuisine.core.file_link('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$appDir/portals/main/base/AYS81')
 
     cmd = cuisine.core.args_replace('jspython portal_start.py')
     wd = cuisine.core.args_replace('$appDir/portals/main')
