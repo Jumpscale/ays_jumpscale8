@@ -85,37 +85,44 @@ def install(job):
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
                                             passphrase=None, key_filename=key_path)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
-
     cuisine = executor.cuisine
 
-    devicesmap = {}  # diskname -> devicename
-    seendevices = []  # only the ones with mountpoint is null
-    # Add disks to machine
-    for data_disk in service.producers.get('disk', []):
+    #  GET THE available devices on the system and bind them to services if available instead of creating disks
+    rc, out, err = cuisine.core.run("lsblk -J", die=False)
+    if rc != 0:
+        raise("Couldn't load json from lsblk -J")
+    jsonout = j.data.serializer.json.loads(out)
+    available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x] # should be only 1
+
+    datadisks = service.producers.get('disk', [])
+    takendevices = [x.model.data.devicename for x in datadisks if x.model.data.devicename != '']
+    # Add disks to machine if they arent there else logically bind to any of them.
+    for data_disk in datadisks:
         disk_args = data_disk.model.data
-        disk_id = machine.add_disk(name=data_disk.name,
-                                   description=disk_args.description,
-                                   size=disk_args.size,
-                                   type=disk_args.type.upper())
-        rc, out, err = cuisine.core.run("lsblk -J", die=False)
-        if rc != 0:
-            raise RuntimeError('could not list devices: %s' % err)
+        if data_disk.model.data.devicename == '' and len(available_devices):
+            data_disk.model.data.devicename = available_devices.pop(0)
+            takendevices.append(data_disk.model.data.devicename)
 
-        jsonout = j.data.serializer.json.loads(out)
-        devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk'] # should be only 1
+        else:
+            disk_id = machine.add_disk(name=data_disk.model.dbobj.name,
+                                       description=disk_args.description,
+                                       size=disk_args.size,
+                                       type=disk_args.type.upper())
 
-        for dv in devices:
-            if 'children' in dv:
-                continue
-            if dv['name'] not in seendevices:
-                data_disk.model.data.devicename = dv['name']
-                data_disk.saveAll()
-                devicesmap[data_disk.model.dbobj.name] = dv['name']
-                seendevices.append(dv['name'])
+            rc, out, err = cuisine.core.run("lsblk -J", die=False)
+            if rc != 0:
+                raise("Couldn't load json from lsblk -J")
+            jsonout = j.data.serializer.json.loads(out)
+            available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x and x['name'] not in takendevices]
+            data_disk.model.data.devicename = available_devices.pop(0)
+            takendevices.append(data_disk.model.data.devicename)
 
-        #machine.disk_limit_io(disk_id, disk_args.maxIOPS)  # COMMENTED BECAUSE OF GIG
+        data_disk.saveAll()
+
+    #machine.disk_limit_io(disk_id, disk_args.maxIOPS)
 
     service.saveAll()
+
 
 
 def add_disk(job):
@@ -192,8 +199,15 @@ def add_disk(job):
     disks.append(name)
     service.model.data.disk = disks
 
-    service.saveAll()
 
+
+def processChange(job):
+    service = job.service
+
+    node = service
+    args = job.model.args
+    if args["changeCategory"] == "dataschema":
+        service.runAction('install')
 
 def open_port(job):
     """
