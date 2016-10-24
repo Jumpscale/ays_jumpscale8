@@ -120,6 +120,7 @@ def install(job):
 
 def add_disk(job):
     service = job.service
+    repo = service.aysrepo
     vdc = service.parent
 
     if 'g8client' not in vdc.producers:
@@ -184,10 +185,12 @@ def add_disk(job):
             continue
         model['devicename'] = dv['name']
 
-    repo.actorGet('disk.ovc').serviceCreate(name, model)
-    disks = list(service.model.disk)
+    disk_service = repo.actorGet('disk.ovc').serviceCreate(name, model)
+    disk_service.saveAll()
+
+    disks = list(service.model.data.disk)
     disks.append(name)
-    service.model.disk = disks
+    service.model.data.disk = disks
 
     service.saveAll()
 
