@@ -51,3 +51,34 @@ def install(job):
                     device['name'],
                     err)
                 )
+
+
+def autoscale(job):
+    service = job.service
+    btrfs = service.executor.cuisine.btrfs
+    usage = btrfs.getSpaceUsage(service.model.data.mount)
+    # find data keys
+
+    keys = [k for k in usage if k.startswith('data-')]
+    if len(keys) != 1:
+        raise RuntimeError('could not find the data key')
+
+    key = keys.pop()
+    disk_usage = usage[key]
+    free = disk_usage['total'] - disk_usage['used']
+    node = None
+    for parent in service.parents:
+        if parent.model.role == 'node':
+            node = parent
+            break
+    if node is None:
+        raise RuntimeError('failed to find the parent node')
+        
+    if free < service.model.data.threshold:
+        # add new disk to the array.
+        args = {
+            'size': service.model.data.incrementSize,
+            'prefix': 'autoscale',
+        }
+
+        node.runAction('add_disk', args)

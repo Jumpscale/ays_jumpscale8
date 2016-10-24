@@ -93,11 +93,13 @@ def install(job):
     # Add disks to machine
     for data_disk in service.producers.get('disk', []):
         disk_args = data_disk.model.data
-        disk_id = machine.add_disk(name=data_disk.model.dbobj.name,
+        disk_id = machine.add_disk(name=data_disk.name,
                                    description=disk_args.description,
                                    size=disk_args.size,
                                    type=disk_args.type.upper())
         rc, out, err = cuisine.core.run("lsblk -J", die=False)
+        if rc != 0:
+            raise RuntimeError('could not list devices: %s' % err)
 
         jsonout = j.data.serializer.json.loads(out)
         devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk'] # should be only 1
@@ -112,6 +114,80 @@ def install(job):
                 seendevices.append(dv['name'])
 
         #machine.disk_limit_io(disk_id, disk_args.maxIOPS)  # COMMENTED BECAUSE OF GIG
+
+    service.saveAll()
+
+
+def add_disk(job):
+    service = job.service
+    vdc = service.parent
+
+    if 'g8client' not in vdc.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
+    # find os
+    os = None
+    for child in service.children:
+        if child.model.role == 'os':
+            os = child
+            break
+
+    if os is None:
+        raise RuntimeError('no child os found')
+
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    acc = cl.account_get(vdc.model.data.account)
+    space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+
+    machine = None
+    if service.name in space.machines:
+        # machine already exists
+        machine = space.machines[service.name]
+    else:
+        raise RuntimeError('machine not found')
+
+    args = job.model.args
+    prefix = args.get('prefix', 'added')
+
+    avaialble_disks = service.producers.get('disk', [])
+    available_names = map(lambda d: d.name, avaialble_disks)
+    device_names = map(lambda d: d.model.data.devicename, avaialble_disks)
+
+    idx = 1
+    name = ''
+    while True:
+        name = '%s-%d' % (prefix, idx)
+        if name not in available_names:
+            break
+        idx += 1
+
+    model = {
+        'size': args['size'],
+        'description': args.get('description', 'disk'),
+    }
+
+    disk_id = machine.add_disk(name=name,
+                               description=model['description'],
+                               size=model['size'],
+                               type='D')
+
+    code, out, err = os.executor.cuisine.core.run("lsblk -J", die=False)
+    if code != 0:
+        raise RuntimeError('failed to list devices on node: %s' % err)
+
+    jsonout = j.data.serializer.json.loads(out)
+    devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk'] # should be only 1
+
+    for dv in devices:
+        if 'children' in dv or dv['name'] in device_names:
+            continue
+        model['devicename'] = dv['name']
+
+    repo.actorGet('disk.ovc').serviceCreate(name, model)
+    disks = list(service.model.disk)
+    disks.append(name)
+    service.model.disk = disks
 
     service.saveAll()
 

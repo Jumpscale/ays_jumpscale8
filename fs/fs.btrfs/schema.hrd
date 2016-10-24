@@ -1,6 +1,4 @@
 os = type:str parent:'os'
 mount = type:str
-
-#recurring.autoscale =
-    #period: 10m,
-    #log: True,
+threshold = type:int  default:100 descr:'Size in mega before the autoscale should add new disk'
+incrementSize = type:int default:1000 descr:'Incremental disk size'
