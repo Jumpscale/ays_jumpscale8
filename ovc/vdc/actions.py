@@ -10,6 +10,7 @@ def init(job):
     g8client = service.producers["g8client"][0]
     if service.model.data.account == "":
         service.model.data.account = g8client.model.data.account
+    service.saveAll()
 
 
 def install(job):
