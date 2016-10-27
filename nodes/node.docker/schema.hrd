@@ -9,6 +9,8 @@ volumes = type:str list
 cmd = type:str
 sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
 
+id = type:str descr:'id of the container'
+
 ip.public = type:string
 ip.private = type:string
 

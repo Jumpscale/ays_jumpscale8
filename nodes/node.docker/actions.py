@@ -13,7 +13,6 @@ def init(job):
     os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
     os_actor.serviceCreate(service.name, args={'node': service.name, 'sshkey': service.model.data.sshkey})
 
-
 def install(job):
     service = job.service
     # create the docker container based on the data
@@ -61,6 +60,7 @@ def install(job):
     code, docker_id, err = cuisine.core.run('cd {} && docker-compose ps -q'.format(base))
     if code != 0:
         raise RuntimeError('failed to get the container id: %s' % err)
+    service.model.data.id = docker_id
 
     # get the ipaddress and ports
     code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id))

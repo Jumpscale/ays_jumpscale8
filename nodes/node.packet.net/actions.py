@@ -16,23 +16,18 @@ def install(job):
     packetclient = service.producers.get('packetnet_client')[0]
     client = packet.Manager(packetclient.model.data.token)
 
-    hostname = service.model.data.deviceName
-
+    hostname = service.model.name
     project_name = service.model.data.projectName
     project_ids = [project.id for project in client.list_projects() if project.name == project_name]
     if not project_ids:
         raise RuntimeError('No projects found with name %s' % project_name)
     project_id = project_ids[0]
 
-    key_pub = sshkey.model.data.keyPub
+    key_pub = sshkey.model.data.keyPub.strip()
+    key_label = sshkey.model.name
     key_labels = [key.label for key in client.list_ssh_keys()]
     key_keys = [key.key for key in client.list_ssh_keys()]
-    if key_pub not in key_keys:
-        i = 1
-        key_label = "%s-%s" % (service.name, i)
-        while not key_label or key_label in key_labels:
-            key_label = "%s-%s" % (service.name, i)
-            i += 1
+    if key_pub not in key_keys and key_label not in key_labels:
         client.create_ssh_key(key_label, key_pub)
 
     project_devices = {device.hostname: device for device in client.list_devices(project_id)}
@@ -49,7 +44,13 @@ def install(job):
             raise RuntimeError('No operating_systems found with name %s' % operating_system_name)
         operating_system = operating_systems[0]
 
-        facility_id = client.list_facilities()[0].id
+        location_names = {l.name.lower(): l.id for l in client.list_facilities()}
+        for name, id in location_names.items():
+            if name.find(service.model.data.location) != -1:
+                facility_id = id
+                break
+        else:
+            raise j.exceptions.Input("Location %s not available" % service.model.data.location)
 
         device = client.create_device(project_id=project_id, hostname=hostname, plan=plan_id, facility=facility_id, operating_system=operating_system)
     else:
