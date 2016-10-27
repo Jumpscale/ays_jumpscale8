@@ -1,7 +1,6 @@
 def install(job):
     service = job.service
     # List available devices
-
     code, out, err = service.executor.cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
     if code != 0:
         raise RuntimeError('failed to list bulk devices: %s' % err)
@@ -56,7 +55,7 @@ def install(job):
 def autoscale(job):
     service = job.service
     repo = service.aysrepo
-    
+
     cuisine = service.executor.cuisine
 
     code, out, err = cuisine.core.run('btrfs filesystem  usage -b {}'.format(service.model.data.mount), die=False)
@@ -89,7 +88,7 @@ def autoscale(job):
             'prefix': 'autoscale',
         }
 
-        node.runAction('add_disk', args)
+        node.executeActionJob('add_disk', args)
 
     node = repo.serviceGet(node.model.role, node.name)
     new_disks = list(node.model.data.disk)
@@ -98,3 +97,14 @@ def autoscale(job):
         raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
 
     #TODO: add device to volume
+    # get the disk object.
+    disk_name = added.pop()
+    disk = None
+    for dsk in service.producers.get('disk', []):
+        if dsk.name == disk_name:
+            disk = dsk
+            break
+    if disk is None:
+        raise RuntimeError('failed to find disk service instance')
+
+    cuisine.btrfs.deviceAdd(service.model.data.mount, '/dev/%s' % disk.model.data.devicename)

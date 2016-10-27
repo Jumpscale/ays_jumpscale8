@@ -200,15 +200,6 @@ def add_disk(job):
     service.model.data.disk = disks
 
 
-
-def processChange(job):
-    service = job.service
-
-    node = service
-    args = job.model.args
-    if args["changeCategory"] == "dataschema":
-        service.runAction('install')
-
 def open_port(job):
     """
     Open port in the firewall by creating port forward
