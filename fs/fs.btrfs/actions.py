@@ -1,7 +1,6 @@
 def install(job):
     service = job.service
     # List available devices
-
     code, out, err = service.executor.cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
     if code != 0:
         raise RuntimeError('failed to list bulk devices: %s' % err)
@@ -25,7 +24,7 @@ def install(job):
         if code != 0:
             raise RuntimeError('failed to create filesystem: %s' % err)
 
-    if master['mountpoint'] == None:
+    if master['mountpoint'] is None:
         service.executor.cuisine.core.dir_ensure(service.model.data.mount)
         cmd = 'mount /dev/%s %s' % (master['name'], service.model.data.mount)
         code, out, err = service.executor.cuisine.core.run(cmd)
@@ -51,3 +50,61 @@ def install(job):
                     device['name'],
                     err)
                 )
+
+
+def autoscale(job):
+    service = job.service
+    repo = service.aysrepo
+
+    cuisine = service.executor.cuisine
+
+    code, out, err = cuisine.core.run('btrfs filesystem  usage -b {}'.format(service.model.data.mount), die=False)
+    if code != 0:
+        raise RuntimeError('failed to get device usage: %s', err)
+
+    # get free space.
+    import re
+    match = re.search('Free[^:]*:\s+(\d+)', out)
+    if match is None:
+        raise RuntimeError('failed to get free space')
+
+    free = int(match.group(1)) / (1024 * 1024) # MB.
+
+    node = None
+    for parent in service.parents:
+        if parent.model.role == 'node':
+            node = parent
+            break
+    if node is None:
+        raise RuntimeError('failed to find the parent node')
+
+    # DEBUG, set free to 0
+    current_disks = list(node.model.data.disk)
+    free = 0
+    if free < service.model.data.threshold:
+        # add new disk to the array.
+        args = {
+            'size': service.model.data.incrementSize,
+            'prefix': 'autoscale',
+        }
+
+        node.executeActionJob('add_disk', args)
+
+    node = repo.serviceGet(node.model.role, node.name)
+    new_disks = list(node.model.data.disk)
+    added = set(new_disks).difference(current_disks)
+    if len(added) != 1:
+        raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
+
+    #TODO: add device to volume
+    # get the disk object.
+    disk_name = added.pop()
+    disk = None
+    for dsk in service.producers.get('disk', []):
+        if dsk.name == disk_name:
+            disk = dsk
+            break
+    if disk is None:
+        raise RuntimeError('failed to find disk service instance')
+
+    cuisine.btrfs.deviceAdd(service.model.data.mount, '/dev/%s' % disk.model.data.devicename)

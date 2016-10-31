@@ -56,11 +56,16 @@ def init(job):
         }
         repo.actorGet('dnsclient').serviceCreate(name, dns)
 
+    # only take that last part of the domain.
+    # e.g: sub.domain.com -> we keep domain.com
+    root_domain = '.'.join(service.model.data.domain.split('.')[-2:])
+    # sub domain is the domain minus the root_domain
+    subdomain = sub = service.model.data.domain[:-len(root_domain) - 1]
     dns_domain = {
         'dnsclient': dns_clients_names,
         'ttl': 600,
-        'domain': service.model.data.domain,
-        'a.records': ["{subdomain}:{node}".format(subdomain=service.model.data.subdomain, node=node.name)],
+        'domain': root_domain,
+        'a.records': ["{subdomain}:{node}".format(subdomain=subdomain, node=node.name)],
         'node': [node.name],
     }
 
@@ -86,7 +91,7 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'email': service.model.data.caddyEmail,
-        'hostname': '%s.%s' % (service.model.data.subdomain, service.model.data.domain),
+        'hostname': service.model.data.domain,
         'caddy_proxy': ['10_api', '99_portal'],
     }
 
@@ -121,7 +126,7 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'redis': redis.name,
-        'dns_domain': '%s.%s' % (service.model.data.subdomain, service.model.data.domain),
+        'dns_domain': service.model.data.domain,
     }
 
     repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)

@@ -2,5 +2,5 @@
 vdc = type:str parent:'vdc' auto
 sshkey = type:str consume:sshkey:1  auto
 
-datadisks = type:int list
+disk = type:str list consume:disk:0
 domain = type:str

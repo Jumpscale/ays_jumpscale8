@@ -5,6 +5,7 @@ plan.type = type:str default:'Type 0'
 device.name = type:str @ASk
 device.os = type:str default:'Ubuntu 14.04 LTS'
 device.id = type:str
+location = type:str
 
 ip.public = type:str
 ports = list type:str

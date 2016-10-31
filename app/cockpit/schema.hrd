@@ -3,7 +3,6 @@ vdc = type:str parent:'vdc' auto
 node.sshkey = type:str consume:sshkey:1 auto
 dns.sshkey.path = type:str
 
-subdomain = type:str
 domain = type:str
 
 caddy.email = type:str

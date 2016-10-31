@@ -1,13 +1,13 @@
-def input(job):
-    r = job.service.aysrepo
-
-    if "node" in job.model.args:
-        res = job.model.args
-        res["os"] = res["node"]
-        res.pop("node")
-        job.model.args = res
-
-    return job.model.args
+# def input(job):
+#     r = job.service.aysrepo
+#
+#     if "node" in job.model.args:
+#         res = job.model.args
+#         res["os"] = res["node"]
+#         res.pop("node")
+#         job.model.args = res
+#
+#     return job.model.args
 
 
 def init(job):
@@ -18,6 +18,14 @@ def init(job):
     if r.serviceGet("os", job.service.name, die=False) == None:
         s = a.serviceCreate(instance=job.service.name, args={
                             "node": job.service.name, "sshkey": job.service.model.data.sshkey})
+
+    # support for using node in blueprint to specify the parent.
+    # we change it to point to os so it match the requirment of the schema
+    args = job.model.args
+    if 'node' in args:
+        args['os'] = args['node']
+        del args['node']
+    return args
 
 
 def install(job):
@@ -67,6 +75,7 @@ def install(job):
     code, docker_id, err = cuisine.core.run('cd {} && docker-compose ps -q'.format(base))
     if code != 0:
         raise RuntimeError('failed to get the container id: %s' % err)
+    service.model.data.id = docker_id
 
     # get the ipaddress and ports
     code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id))
