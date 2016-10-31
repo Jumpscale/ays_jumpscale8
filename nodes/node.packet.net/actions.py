@@ -39,7 +39,6 @@ def install(job):
     hostname = service.model.data.deviceName
     # hostname = service.model.name
 
->>>>>> > 3d073bf8fa486239877214c0012db7a9d1ea94d4
     project_name = service.model.data.projectName
     project_ids = [project.id for project in client.list_projects() if project.name == project_name]
     if not project_ids:
@@ -47,24 +46,10 @@ def install(job):
     project_id = project_ids[0]
 
     key_pub = sshkey.model.data.keyPub.strip()
-<< << << < HEAD
-    key_labels = [key.label for key in client.list_ssh_keys()]
-    key_keys = [key.key.strip() for key in client.list_ssh_keys()]
-    if key_pub not in key_keys:
-        if sshkey.model.data.keyName != "":
-            key_label = sshkey.model.data.keyName
-        else:
-            key_label = sshkey.name
-        i = 0
-        while not key_label or key_label in key_labels:
-            key_label = "%s-%s" % (sshkey.name, i)
-            i += 1
-== == == =
     key_label = sshkey.model.name
     key_labels = [key.label for key in client.list_ssh_keys()]
     key_keys = [key.key for key in client.list_ssh_keys()]
     if key_pub not in key_keys and key_label not in key_labels:
->>>>>> > 3d073bf8fa486239877214c0012db7a9d1ea94d4
         client.create_ssh_key(key_label, key_pub)
 
     project_devices = {device.hostname: device for device in client.list_devices(project_id)}
@@ -82,13 +67,12 @@ def install(job):
             raise RuntimeError('No operating_systems found with name %s' % operating_system_name)
         operating_system = operating_systems[0]
 
-<<<<<<< HEAD
         facility_id = None
         for facility in client.list_facilities():
             if job.service.model.data.location in facility.name.lower():
                 facility_id = facility.id
 
-        if facility_id == None:
+        if facility_id is None:
             raise j.exceptions.Input(message="Could not find facility in packet.net:%s" %
                                      job.service.model.data.location, level=1, source="", tags="", msgpub="")
         try:
@@ -99,17 +83,6 @@ def install(job):
                 raise j.exceptions.Input(message="could not create packet.net machine, type of machine not available.%s" %
                                          job.service.model.dataJSON, level=1, source="", tags="", msgpub="")
             raise e
-=======
-        location_names = {l.name.lower(): l.id for l in client.list_facilities()}
-        for name, id in location_names.items():
-            if name.find(service.model.data.location) != -1:
-                facility_id = id
-                break
-        else:
-            raise j.exceptions.Input("Location %s not available" % service.model.data.location)
-
-        device = client.create_device(project_id=project_id, hostname=hostname, plan=plan_id, facility=facility_id, operating_system=operating_system)
->>>>>>> 3d073bf8fa486239877214c0012db7a9d1ea94d4
     else:
         device = project_devices[hostname]
 
@@ -128,6 +101,8 @@ def install(job):
     ip = [netinfo['address'] for netinfo in device.ip_addresses if netinfo['public'] and netinfo['address_family'] == 4]
     service.model.data.ipPublic = ip[0]
     service.model.data.ports = ['22:22']
+
+    service.saveAll()
 
 
 def uninstall(job):
