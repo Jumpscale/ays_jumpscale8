@@ -22,7 +22,7 @@ def install(job):
     cuisine.core.file_write(cfg_path, j.data.serializer.toml.dumps(daemon_cfg))
 
     # configure AYS daemon
-    cmd = 'ays start --conf %s' % cfg_path
+    cmd = 'ays start'
     pm = cuisine.processmanager.get('tmux')
     pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
 
