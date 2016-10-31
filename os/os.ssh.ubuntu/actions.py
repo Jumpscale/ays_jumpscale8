@@ -23,6 +23,9 @@ def install(job):
 
     sshkey = service.producers['sshkey'][0]
     key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
+    if not j.sal.fs.exists(sshkey.path):
+        # raise j.exceptions.RuntimeError("sshkey path not found at %s" % key_path)
+        key_path = None
     password = node.model.data.sshPassword if node.model.data.sshPassword != '' else None
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
