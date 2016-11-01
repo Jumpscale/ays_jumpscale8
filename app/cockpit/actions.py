@@ -2,21 +2,8 @@ def init(job):
     service = job.service
     repo = service.aysrepo
 
-    # ovc node.
-    vm = {
-        'vdc': service.parent.name,
-        'os.image': 'Ubuntu 16.04 x64',
-        'bootdisk.size': 50,
-        'memory': 4,
-        'ports': [
-            '22',
-            '80:80',
-            '443:443'
-        ]
-    }
-
-    node = repo.actorGet('node.ovc').serviceCreate('cockpit', vm)
-    os = repo.actorGet('os.ssh.ubuntu').serviceCreate('cockpit', {'node': node.name})
+    node = service.aysrepo.servicesFind(actor='node.*', name=service.model.data.hostNode)[0]
+    os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
 
     # filesystem
     # 1- fuse

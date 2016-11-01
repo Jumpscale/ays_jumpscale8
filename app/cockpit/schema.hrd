@@ -1,6 +1,6 @@
 #node stuff
-vdc = type:str parent:'vdc' auto
-node.sshkey = type:str consume:sshkey:1 auto
+host_node = type:str consume:node:1:1
+
 dns.sshkey.path = type:str
 
 domain = type:str
