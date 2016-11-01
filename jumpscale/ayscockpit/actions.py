@@ -25,7 +25,7 @@ def install(job):
 
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
-    raml = raml.replace('$(baseuri', "%s/api" % service.model.data.domain)
+    raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
     api_cfg = {
         'oauth':{
@@ -43,6 +43,10 @@ def install(job):
         }
     }
     cuisine.core.file_write('$cfgDir/cockpit_api/config.toml', j.data.serializer.toml.dumps(api_cfg))
+
+    # installed required package
+    cuisine.core.package.mdupdate()
+    cuisine.core.package.install('git')
 
     # start daemon
     cmd = 'ays start'
