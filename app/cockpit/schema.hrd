@@ -5,4 +5,8 @@ dns.sshkey.path = type:str
 
 domain = type:str
 
+oauth.organization = type:str
+oauth.client_id = type:str
+oauth.client_secret = type:str
+
 caddy.email = type:str

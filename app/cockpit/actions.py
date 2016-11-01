@@ -103,7 +103,18 @@ def init(job):
     portal = {
         'os': os.name,
         'fs': fs.name,
-        'redis': redis.name
+        'redis': redis.name,
+        'oauth.enabled': True,
+        'oauth.client_id': service.model.data.oauthClientId,
+        'oauth.scope': 'user:email:main,user:memberof:{organization}'.format(organization=service.model.data.oauthOrganization),
+        'oauth.secret': service.model.data.oauthClientSecret,
+        'oauth.client_url': 'https://itsyou.online/v1/oauth/authorize',
+        'oauth.client_user_info_url': 'https://itsyou.online/api/users',
+        'oauth.provider': 'itsyou.online',
+        'oauth.default_groups': ['admin', 'user'],
+        'oauth.organization': service.model.data.oauthOrganization,
+        'oauth.redirect_url': "https://{domain}/restmachine/system/oauth/authorize".format(domain=service.model.data.domain),
+        'oauth.token_url': 'https://itsyou.online/v1/oauth/access_token'
     }
 
     repo.actorGet('portal').serviceCreate('main', portal)
