@@ -45,7 +45,18 @@ def getExecutor(job):
     node = service.parent
     key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
 
-    executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
+    # search ssh port from parent node info. in case the port changed since creation of this service
+    ssh_port = '22'
+    for parent in service.parents:
+        if parent.model.role != 'node':
+            continue
+        for port in parent.model.data.ports:
+            src, _, dst = port.partition(':')
+            if ssh_port == dst:
+                ssh_port = src
+                break
+
+    executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=ssh_port,
                                             login='root', passwd=None,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
                                             passphrase=None, key_filename=key_path)
