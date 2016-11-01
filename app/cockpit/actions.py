@@ -10,12 +10,12 @@ def init(job):
     fuse_cfg = {
         'mount.namespace': 'sandbox_ub1604',
         'mount.mountpoint': '/opt',
-        'mount.flist': 'https://stor.jumpscale.org/stor2/flist/sandbox_ub1604/opt.flist',
+        'mount.flist': 'https://stor.jumpscale.org/stor2/flist/aysbuild/test.flist',
         'mount.mode': 'ol',
         'mount.trimbase': True,
         'mount.trim': '/opt',
         'backend.path': '/mnt/fs_backend/opt',
-        'backend.namespace': 'sandbox_ub1604',
+        'backend.namespace': 'aysbuild',
         'backend.cleanup.cron': "@every 1h",
         'backend.cleanup.old': 24,
         'store.url': 'https://stor.jumpscale.org/stor2'
