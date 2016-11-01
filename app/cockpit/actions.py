@@ -123,7 +123,17 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'redis': redis.name,
-        'dns_domain': service.model.data.domain,
+
+        'domain': service.model.data.domain,
+
+        'oauth.client_secret': service.model.data.oauthClientSecret,
+        'oauth.client_id': service.model.data.oauthClientId,
+        'oauth.organization': service.model.data.oauthOrganization,
+        'oauth.jwt_key': service.model.data.oauthJwtKey,
+        'oauth.redirect_url': 'https://{domain}/api/oauth/callback'.format(domain=service.model.data.domain),
+
+        'api.host': '127.0.0.1',
+        'api.port': 5000,
     }
 
     repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
