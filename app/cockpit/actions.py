@@ -67,9 +67,8 @@ def init(job):
     repo.actorGet('caddy_proxy').serviceCreate('10_api', api)
 
     api = {
-        'src': '/api',
-        'dst': ['127.0.0.1:82'],
-        'without': '/api'
+        'src': '/',
+        'dst': ['127.0.0.1:82']
     }
 
     repo.actorGet('caddy_proxy').serviceCreate('99_portal', api)
