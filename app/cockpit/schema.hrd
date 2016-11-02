@@ -1,7 +1,7 @@
 #node stuff
 host_node = type:str consume:node:1:1
 
-dns.sshkey.path = type:str
+dns.sshkey = type:str consume:sshkey:1:1
 
 domain = type:str
 

@@ -30,7 +30,7 @@ def init(job):
 
     fs = repo.actorGet('fs.g8osfs').serviceCreate('fuse', fuse)
 
-    dns_sshkey = repo.actorGet('sshkey').serviceCreate('dns', {'key.path': service.model.data.dnsSshkeyPath})
+    dns_sshkey = service.aysrepo.servicesFind(actor='sshkey', name=service.model.data.dnsSshkey)[0]
     dns_clients_names = []
     for i, addr in enumerate(['dns1.aydo.com', 'dns3.aydo.com', 'dns3.aydo.com']):
         name = "dns%s" % (i + 1)
