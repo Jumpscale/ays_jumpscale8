@@ -1,8 +1,13 @@
 #node stuff
-vdc = type:str parent:'vdc' auto
-node.sshkey = type:str consume:sshkey:1 auto
-dns.sshkey.path = type:str
+host_node = type:str consume:node:1:1
+
+dns.sshkey = type:str consume:sshkey:1:1
 
 domain = type:str
+
+oauth.organization = type:str
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.jwt_key = type:str
 
 caddy.email = type:str
