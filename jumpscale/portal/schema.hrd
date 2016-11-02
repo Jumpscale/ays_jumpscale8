@@ -1,3 +1,19 @@
 os = type:str parent:os
 fs = type:string consume:fs:0
 redis = type:str consume:redis:0
+
+listen_addr = type:str default:'127.0.0.1'
+listen_port = type:int default:82
+space.default = type:str default:'AYS81'
+
+oauth.enabled = type:bool default:False
+oauth.client_id = type:str
+oauth.scope = type:str
+oauth.secret = type:str
+oauth.client_url = type:str default:'https://itsyou.online/v1/oauth/authorize'
+oauth.client_user_info_url = type:str default:'https://itsyou.online/api/users'
+oauth.provider = type:str default:'itsyou.online'
+oauth.default_groups = list type:string
+oauth.organization = type:str
+oauth.redirect_url = type:str
+oauth.token_url = type:str default:'https://itsyou.online/v1/oauth/access_token'

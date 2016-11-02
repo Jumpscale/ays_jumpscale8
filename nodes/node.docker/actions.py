@@ -28,6 +28,7 @@ def install(job):
     version: '2'
     services:
       mongo:
+        container_name: mongodb
         image: mongo
         command: "--replSet c0"
         network_mode: "bridge"
@@ -42,6 +43,7 @@ def install(job):
         'version': '2',
         'services': {
             service.name: {
+                'container_name': service.name,
                 'image': service.model.data.image,
                 'command': service.model.data.cmd,
                 'network_mode': 'bridge',
@@ -70,7 +72,7 @@ def install(job):
     service.model.data.id = docker_id
 
     # get the ipaddress and ports
-    code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id))
+    code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id), showout=False)
     if code != 0:
         raise RuntimeError('failed to inspect docker %s: %s' % (service.name, err))
 
@@ -104,5 +106,70 @@ def install(job):
     service.model.data.sshPassword = 'gig1234'
 
     service.model.data.ports = docker_ports
+
+    service.saveAll()
+
+
+def start(job):
+    service = job.service
+    cuisine = service.executor.cuisine
+
+    docker_id = service.model.data.id
+    if docker_id is None or docker_id == '':
+        raise j.exceptions.RuntimeError('docker id is not known')
+
+    cuisine.core.run('docker start {id}'.format(id=docker_id))
+
+     # get the ipaddress and ports
+    code, inspected, err = cuisine.core.run('docker inspect {id}'.format(id=docker_id), showout=False)
+    if code != 0:
+        raise RuntimeError('failed to inspect docker %s: %s' % (service.name, err))
+
+    inspected = j.data.serializer.json.loads(inspected)
+    info = inspected[0]
+    ipaddress = info['NetworkSettings']['IPAddress']
+    ports = info['NetworkSettings']['Ports']
+
+    docker_ports = []
+    for dst_port_spec, host_port_info in ports.items():
+        dst_port, _, dst_proto = dst_port_spec.partition('/')
+        if host_port_info is None:
+            # no bindings
+            continue
+        host_port = host_port_info[0]['HostPort']
+        docker_ports.append('{src}:{dst}'.format(src=host_port, dst=dst_port))
+
+    service.model.data.ipPrivate = ipaddress
+    service.model.data.ports = docker_ports
+
+    service.saveAll()
+
+
+def stop(job):
+    service = job.service
+    cuisine = service.executor.cuisine
+
+    docker_id = service.model.data.id
+    if docker_id is None or docker_id == '':
+        raise j.exceptions.RuntimeError('docker id is not known')
+
+    cuisine.core.run('docker stop {id}'.format(id=docker_id))
+
+
+def uninstall(job):
+    service = job.service
+    cuisine = service.executor.cuisine
+
+    docker_id = service.model.data.id
+    if docker_id is None or docker_id == '':
+        raise j.exceptions.RuntimeError('docker id is not known')
+
+    cuisine.core.run('docker rm -f {id}'.format(id=docker_id))
+
+    service.model.data.id = ''
+    service.model.data.ipPrivate = ''
+    service.model.data.ipPublic = ''
+    service.model.data.sshLogin = 'root'
+    service.model.data.sshPassword = 'gig1234'
 
     service.saveAll()

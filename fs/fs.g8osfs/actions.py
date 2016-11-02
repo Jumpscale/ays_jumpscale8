@@ -1,6 +1,8 @@
 def install(job):
     cuisine = job.service.executor.cuisine
 
+    cuisine.package.mdupdate()
+    cuisine.package.install('fuse')
     bin_location = '/usr/local/bin/fs'
     cuisine.core.dir_ensure('/usr/local/bin')
     cuisine.core.file_download('https://stor.jumpscale.org/public/fs', bin_location)

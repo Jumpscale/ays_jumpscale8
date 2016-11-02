@@ -2,33 +2,20 @@ def init(job):
     service = job.service
     repo = service.aysrepo
 
-    # ovc node.
-    vm = {
-        'vdc': service.parent.name,
-        'os.image': 'Ubuntu 16.04 x64',
-        'bootdisk.size': 50,
-        'memory': 4,
-        'ports': [
-            '22',
-            '80:80',
-            '443:443'
-        ]
-    }
-
-    node = repo.actorGet('node.ovc').serviceCreate('cockpit', vm)
-    os = repo.actorGet('os.ssh.ubuntu').serviceCreate('cockpit', {'node': node.name})
+    node = service.aysrepo.servicesFind(actor='node.*', name=service.model.data.hostNode)[0]
+    os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
 
     # filesystem
     # 1- fuse
     fuse_cfg = {
         'mount.namespace': 'sandbox_ub1604',
         'mount.mountpoint': '/opt',
-        'mount.flist': 'https://stor.jumpscale.org/stor2/flist/sandbox_ub1604/opt.flist',
+        'mount.flist': 'https://stor.jumpscale.org/stor2/flist/aysbuild/test.flist',
         'mount.mode': 'ol',
         'mount.trimbase': True,
         'mount.trim': '/opt',
         'backend.path': '/mnt/fs_backend/opt',
-        'backend.namespace': 'sandbox_ub1604',
+        'backend.namespace': 'aysbuild',
         'backend.cleanup.cron': "@every 1h",
         'backend.cleanup.old': 24,
         'store.url': 'https://stor.jumpscale.org/stor2'
@@ -80,9 +67,8 @@ def init(job):
     repo.actorGet('caddy_proxy').serviceCreate('10_api', api)
 
     api = {
-        'src': '/api',
-        'dst': ['127.0.0.1:82'],
-        'without': '/api'
+        'src': '/',
+        'dst': ['127.0.0.1:82']
     }
 
     repo.actorGet('caddy_proxy').serviceCreate('99_portal', api)
@@ -117,7 +103,18 @@ def init(job):
     portal = {
         'os': os.name,
         'fs': fs.name,
-        'redis': redis.name
+        'redis': redis.name,
+        'oauth.enabled': True,
+        'oauth.client_id': service.model.data.oauthClientId,
+        'oauth.scope': 'user:email:main,user:memberof:{organization}'.format(organization=service.model.data.oauthOrganization),
+        'oauth.secret': service.model.data.oauthClientSecret,
+        'oauth.client_url': 'https://itsyou.online/v1/oauth/authorize',
+        'oauth.client_user_info_url': 'https://itsyou.online/api/users',
+        'oauth.provider': 'itsyou.online',
+        'oauth.default_groups': ['admin', 'user'],
+        'oauth.organization': service.model.data.oauthOrganization,
+        'oauth.redirect_url': "https://{domain}/restmachine/system/oauth/authorize".format(domain=service.model.data.domain),
+        'oauth.token_url': 'https://itsyou.online/v1/oauth/access_token'
     }
 
     repo.actorGet('portal').serviceCreate('main', portal)
@@ -126,7 +123,17 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'redis': redis.name,
-        'dns_domain': service.model.data.domain,
+
+        'domain': service.model.data.domain,
+
+        'oauth.client_secret': service.model.data.oauthClientSecret,
+        'oauth.client_id': service.model.data.oauthClientId,
+        'oauth.organization': service.model.data.oauthOrganization,
+        'oauth.jwt_key': service.model.data.oauthJwtKey,
+        'oauth.redirect_url': 'https://{domain}/api/oauth/callback'.format(domain=service.model.data.domain),
+
+        'api.host': '127.0.0.1',
+        'api.port': 5000,
     }
 
     repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
