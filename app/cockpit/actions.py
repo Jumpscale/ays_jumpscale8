@@ -32,7 +32,7 @@ def init(job):
 
     dns_sshkey = service.aysrepo.servicesFind(actor='sshkey', name=service.model.data.dnsSshkey)[0]
     dns_clients_names = []
-    for i, addr in enumerate(['dns1.aydo.com', 'dns3.aydo.com', 'dns3.aydo.com']):
+    for i, addr in enumerate(['dns1.aydo.com', 'dns2.aydo.com', 'dns3.aydo.com']):
         name = "dns%s" % (i + 1)
         dns_clients_names.append(name)
         dns = {
