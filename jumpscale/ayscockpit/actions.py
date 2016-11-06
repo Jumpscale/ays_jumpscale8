@@ -67,6 +67,10 @@ def start(job):
     cmd = 'ays start'
     pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, path=cuisine.core.args_replace('$cfgDir/ays'))
 
+    # in case we update the sandbox, need to reconfigure the raml with correct url
+    raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
+    raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
+    cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
     cmd = 'jspython api_server'
     pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
 
