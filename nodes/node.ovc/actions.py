@@ -121,6 +121,7 @@ def install(job):
                                        size=disk_args.size,
                                        type=disk_args.type.upper())
 
+            machine.disk_limit_io(disk_id, disk_args.maxIOPS)
             rc, out, err = cuisine.core.run("lsblk -J", die=False)
             if rc != 0:
                 raise("Couldn't load json from lsblk -J")
@@ -131,7 +132,6 @@ def install(job):
 
         data_disk.saveAll()
 
-    machine.disk_limit_io(disk_id, disk_args.maxIOPS)
 
     service.saveAll()
 
