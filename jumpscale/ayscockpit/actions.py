@@ -45,8 +45,8 @@ def install(job):
     cuisine.core.file_write('$cfgDir/cockpit_api/config.toml', j.data.serializer.toml.dumps(api_cfg))
 
     # installed required package
-    cuisine.core.package.mdupdate()
-    cuisine.core.package.install('git')
+    cuisine.package.mdupdate()
+    cuisine.package.install('git')
 
     # start daemon
     cmd = 'ays start'

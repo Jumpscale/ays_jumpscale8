@@ -119,11 +119,9 @@ def install(job):
 
         data_disk.saveAll()
 
-    #machine.disk_limit_io(disk_id, disk_args.maxIOPS)
+    machine.disk_limit_io(disk_id, disk_args.maxIOPS)
 
     service.saveAll()
-
-
 
 def add_disk(job):
     service = job.service
@@ -159,19 +157,17 @@ def add_disk(job):
     prefix = args.get('prefix', 'added')
 
     avaialble_disks = service.producers.get('disk', [])
-    available_names = map(lambda d: d.name, avaialble_disks)
-    device_names = map(lambda d: d.model.data.devicename, avaialble_disks)
-
+    #available_names = list(map(lambda d: d.model.dbobj.name, avaialble_disks))
+    available_names = service.model.data.disk
+    device_names = list(map(lambda d: d.model.data.devicename, avaialble_disks))
     idx = 1
-    name = ''
-    while True:
-        name = '%s-%d' % (prefix, idx)
-        if name not in available_names:
-            break
+    name = '%s-%d' % (prefix, idx)
+    while name in available_names:
         idx += 1
+        name = '%s-%d' % (prefix, idx)
 
     model = {
-        'size': args['size'],
+        'size': args.get('size', 1000),
         'description': args.get('description', 'disk'),
     }
 
@@ -185,7 +181,7 @@ def add_disk(job):
         raise RuntimeError('failed to list devices on node: %s' % err)
 
     jsonout = j.data.serializer.json.loads(out)
-    devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk'] # should be only 1
+    devices = [x for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk']  # should be only 1
 
     for dv in devices:
         if 'children' in dv or dv['name'] in device_names:
@@ -194,10 +190,11 @@ def add_disk(job):
 
     disk_service = repo.actorGet('disk.ovc').serviceCreate(name, model)
     disk_service.saveAll()
-
+    service.consume(disk_service)
     disks = list(service.model.data.disk)
     disks.append(name)
     service.model.data.disk = disks
+    service.saveAll()
 
 
 def open_port(job):

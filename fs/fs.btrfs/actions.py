@@ -43,7 +43,7 @@ def install(job):
     for device in btrfs_devices:
         if device['name'] not in fs_devices:
             # add device to filesystem
-            cmd = 'btfs device add -f /dev/%s %s' % (device['name'], service.model.data.mount)
+            cmd = 'btrfs device add -f /dev/%s %s' % (device['name'], service.model.data.mount)
             code, _, err = service.executor.cuisine.core.run(cmd)
             if code != 0:
                 raise RuntimeError('failed to add device %s to fs: %s' % (
@@ -55,21 +55,17 @@ def install(job):
 def autoscale(job):
     service = job.service
     repo = service.aysrepo
-
-    cuisine = service.executor.cuisine
-
+    exc = service.executor
+    cuisine = exc.cuisine
     code, out, err = cuisine.core.run('btrfs filesystem  usage -b {}'.format(service.model.data.mount), die=False)
     if code != 0:
         raise RuntimeError('failed to get device usage: %s', err)
-
     # get free space.
     import re
     match = re.search('Free[^:]*:\s+(\d+)', out)
     if match is None:
         raise RuntimeError('failed to get free space')
-
-    free = int(match.group(1)) / (1024 * 1024) # MB.
-
+    free = int(match.group(1)) / (1024 * 1024)  # MB.
     node = None
     for parent in service.parents:
         if parent.model.role == 'node':
@@ -77,7 +73,6 @@ def autoscale(job):
             break
     if node is None:
         raise RuntimeError('failed to find the parent node')
-
     # DEBUG, set free to 0
     current_disks = list(node.model.data.disk)
     free = 0
@@ -87,24 +82,28 @@ def autoscale(job):
             'size': service.model.data.incrementSize,
             'prefix': 'autoscale',
         }
-
-        node.executeActionJob('add_disk', args)
-
+        adddiskjob = node.getJob('add_disk')
+        adddiskjob.model.args = args
+        adddiskjob.executeInProcess()
     node = repo.serviceGet(node.model.role, node.name)
     new_disks = list(node.model.data.disk)
-    added = set(new_disks).difference(current_disks)
-    if len(added) != 1:
-        raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
 
+    added = set(new_disks).difference(current_disks)
+    # if len(added) != 1:
+    #     raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
     #TODO: add device to volume
     # get the disk object.
     disk_name = added.pop()
     disk = None
-    for dsk in service.producers.get('disk', []):
-        if dsk.name == disk_name:
+    os_svc = service.producers['os'][0]
+    nod = os_svc.producers['node'][0]
+    for dsk in nod.producers.get('disk', []):
+        if dsk.model.dbobj.name == disk_name:
             disk = dsk
             break
     if disk is None:
         raise RuntimeError('failed to find disk service instance')
 
-    cuisine.btrfs.deviceAdd(service.model.data.mount, '/dev/%s' % disk.model.data.devicename)
+    rc, out, err = cuisine.core.run("btrfs device add /dev/{devicename} {mountpoint}".format(devicename=disk.model.data.devicename, mountpoint=service.model.data.mount))
+    if rc != 0:
+        raise RuntimeError("Couldn't add device to /data")
