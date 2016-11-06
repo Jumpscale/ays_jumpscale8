@@ -3,20 +3,16 @@ def install(job):
 
     service = job.service
 
-    RECURRING_ACTION_COUNT = 2
-    service.model.dbobj.init("recurringActions", RECURRING_ACTION_COUNT)
+    snapshot_action = service.model.actions['snapshot']
+    snapshot_action.period = j.data.types.duration.convertToSeconds(service.model.data.snapshotInterval)
+    snapshot_action.log = True
+    snapshot_action.lastRun = 0
 
-    recurring = service.model.dbobj.recurringActions[0]
-    recurring.action = "snapshot"
-    recurring.period = j.data.types.duration.convertToSeconds(service.model.data.snapshotInterval)
-    recurring.log = True
-    recurring.lastRun = 0
+    snapshot_action = service.model.actions['cleanup']
+    snapshot_action.period = j.data.types.duration.convertToSeconds(service.model.data.cleanupInterval)
+    snapshot_action.log = True
+    snapshot_action.lastRun = 0
 
-    recurring = service.model.dbobj.recurringActions[1]
-    recurring.action = "cleanup"
-    recurring.period = j.data.types.duration.convertToSeconds(service.model.data.cleanupInterval)
-    recurring.log = True
-    recurring.lastRun = 0
     service.saveAll()
 
 
