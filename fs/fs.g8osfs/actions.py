@@ -22,7 +22,7 @@ def install(job):
     for config in service.producers['vfs_config']:
         # TODO download flist
         flist_path = cuisine.core.args_replace('$tmpDir/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
-        cuisine.core.file_download(config.model.data.mountFlist, flist_path)
+        cuisine.core.file_download(config.model.data.mountFlist, flist_path, overwrite=True)
 
         targets.append(config.model.data.mountMountpoint)
 
@@ -104,6 +104,18 @@ def install(job):
                 break
             trials -= 1
 
+def start(job):
+    # the start needs all the steps from install so just re-call install
+    service = job.service
+    job = service.getJob('install')
+    job.executeInProcess()
 
 def stop(job):
-    pass
+    service = job.service
+    cuisine = service.executor.cuisine
+
+    pm = cuisine.processmanager.get('tmux')
+    pm.stop('fs_%s' % service.name)
+
+
+
