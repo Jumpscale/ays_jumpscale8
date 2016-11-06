@@ -44,9 +44,15 @@ def uninstall(job):
 
         for record in service.model.data.aRecords:
             sub_domain, ip = record.split(':')
-            domain.del_a_record(ip=ip, subdomain=sub_domain)
+            try:
+                domain.del_a_record(ip=ip, subdomain=sub_domain)
+            except KeyError:
+                pass
         for record in service.model.data.cnameRecords:
             sub_domain, ip = record.split(':')
-            domain.del_cname_record(subdomain=sub_domain)
+            try:
+                domain.del_cname_record(subdomain=sub_domain)
+            except KeyError:
+                pass
 
-    domain.save()
+        domain.save()
