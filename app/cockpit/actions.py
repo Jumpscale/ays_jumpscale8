@@ -145,35 +145,36 @@ def update(job):
     cuisine = service.executor.cuisine
 
     dependencies = ['caddy', 'mongodb', 'redis', 'portal', 'ayscockpit']
-    # stop all dependencies
+    service.logger.info('stop all dependencies')
     for dep in dependencies:
         s = service.aysrepo.servicesFind(actor=dep)[0]
         job = s.getJob('stop')
         job.executeInProcess()
 
-    fs = service.aysrepo.serviceGet('fs.g8osfs','fuse')
-    fs.executeAction('stop')
-
+    fs = service.aysrepo.serviceGet('fs.g8osfs', 'fuse')
+    job = fs.getJob('stop')
+    job.executeInProcess()
 
     os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
     vm_cuisine = os.executor.cuisine
 
-    # copy portal config
-    vm_cuisine.core.file_copy('$appDir/portals/main/config.hrd', '/tmp/config.hrd')
+    service.logger.info('copy portal config')
+    if vm_cuisine.core.file_exists('$appDir/portals/main/config.hrd'):
+        vm_cuisine.core.file_copy('$appDir/portals/main/config.hrd', '/tmp/config.hrd')
 
-    # remove fs backend
+    service.logger.info('remove fs backend')
     vfs_config = service.aysrepo.serviceGet('vfs_config', 'opt')
     vm_cuisine.core.dir_remove(vfs_config.model.data.backendPath, recursive=True)
 
-    # restart fs
-    fs.executeAction('start')
+    service.logger.info('restart fuse')
+    job = fs.getJob('start')
+    job.executeInProcess()
 
-    # copy portal config back
+    service.logger.info('copy portal config back')
     vm_cuisine.core.file_copy('/tmp/config.hrd', '$appDir/portals/main/config.hrd')
 
-    # restart dependencies
+    service.logger.info('restart dependencies')
     for dep in dependencies:
         s = service.aysrepo.servicesFind(actor=dep)[0]
         job = s.getJob('start')
         job.executeInProcess()
-
