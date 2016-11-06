@@ -79,7 +79,7 @@ def init(job):
         'email': service.model.data.caddyEmail,
         'hostname': service.model.data.domain,
         'caddy_proxy': ['10_api', '99_portal'],
-        'stagging': service.model.data.stagging
+        'stagging': service.model.data.caddyStagging
     }
 
     repo.actorGet('caddy').serviceCreate('main', caddy_cfg)
