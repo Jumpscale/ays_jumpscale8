@@ -138,3 +138,42 @@ def init(job):
     }
 
     repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
+
+
+def update(job):
+    service = job.service
+    cuisine = service.executor.cuisine
+
+    dependencies = ['caddy', 'mongodb', 'redis', 'portal', 'ayscockpit']
+    # stop all dependencies
+    for dep in dependencies:
+        s = service.aysrepo.servicesFind(actor=dep)[0]
+        job = s.getJob('stop')
+        job.executeInProcess()
+
+    fs = service.aysrepo.serviceGet('fs.g8osfs','fuse')
+    fs.executeAction('stop')
+
+
+    os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
+    vm_cuisine = os.executor.cuisine
+
+    # copy portal config
+    vm_cuisine.core.file_copy('$appDir/portals/main/config.hrd', '/tmp/config.hrd')
+
+    # remove fs backend
+    vfs_config = service.aysrepo.serviceGet('vfs_config', 'opt')
+    vm_cuisine.core.dir_remove(vfs_config.model.data.backendPath, recursive=True)
+
+    # restart fs
+    fs.executeAction('start')
+
+    # copy portal config back
+    vm_cuisine.core.file_copy('/tmp/config.hrd', '$appDir/portals/main/config.hrd')
+
+    # restart dependencies
+    for dep in dependencies:
+        s = service.aysrepo.servicesFind(actor=dep)[0]
+        job = s.getJob('start')
+        job.executeInProcess()
+
