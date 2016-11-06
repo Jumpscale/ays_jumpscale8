@@ -40,18 +40,7 @@ def install(job):
                                        disksize=service.model.data.bootdiskSize)
 
     service.model.data.machineId = machine.id
-    service.model.data.ipPublic = machine.space.model['publicipaddress']
-    # poll for 1 minute, if cloud space is not deployed raise error
-    for num in range(30):
-        import time
-        if service.model.data.ipPublic:
-            break
-
-        time.sleep(2)
-        space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
-        service.model.data.ipPublic = space.model['publicipaddress']
-        if num == 29 and not service.model.data.ipPublic:
-            raise j.exceptions.RuntimeError('Cloudspace deployment is timedout')
+    service.model.data.ipPublic = machine.space.model['publicipaddress'] or space.get_space_ip()
 
     ip, vm_info = machine.get_machine_ip()
     service.model.data.ipPrivate = ip
@@ -132,8 +121,8 @@ def install(job):
 
         data_disk.saveAll()
 
-
     service.saveAll()
+
 
 def add_disk(job):
     service = job.service
