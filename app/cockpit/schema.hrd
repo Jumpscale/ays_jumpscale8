@@ -1,6 +1,9 @@
 #node stuff
 host_node = type:str consume:node:1:1
 
+# URL of the flist to use. change this to select version of the sandbox you want
+flist = type:str default:'https://stor.jumpscale.org/stor2/flist/aysbuild/jumpscale.flist'
+
 dns.sshkey = type:str consume:sshkey:1:1
 
 domain = type:str
