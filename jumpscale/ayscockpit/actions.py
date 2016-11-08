@@ -42,7 +42,7 @@ def install(job):
             }
         }
     }
-    cuisine.core.file_write('$cfgDir/cockpit_api/config.toml', j.data.serializer.yaml.dumps(api_cfg))
+    cuisine.core.file_write('$cfgDir/cockpit_api/config.toml', j.data.serializer.toml.dumps(api_cfg))
 
     # installed required package
     cuisine.package.mdupdate()
