@@ -22,16 +22,17 @@ def install(job):
     service.model.data.sshPort = int(ssh_port)
 
     sshkey = service.producers['sshkey'][0]
-    key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
-    if not j.sal.fs.exists(sshkey.path):
+    key_path = sshkey.model.data.keyPath
+    if not j.sal.fs.exists(key_path):
         raise j.exceptions.RuntimeError("sshkey path not found at %s" % key_path)
     password = node.model.data.sshPassword if node.model.data.sshPassword != '' else None
+    passphrase = sshkey.model.data.keyPassphrase if sshkey.model.data.keyPassphrase != '' else None
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
                                             login=node.model.data.sshLogin, passwd=password,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
-                                            passphrase=None, key_filename=key_path)
+                                            passphrase=passphrase, key_filename=key_path)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)
     service.saveAll()
 
@@ -43,7 +44,8 @@ def getExecutor(job):
 
     sshkey = service.producers['sshkey'][0]
     node = service.parent
-    key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
+    key_path = sshkey.model.data.keyPath
+    passphrase = sshkey.model.data.keyPassphrase if sshkey.model.data.keyPassphrase != '' else None
 
     # search ssh port from parent node info. in case the port changed since creation of this service
     ssh_port = '22'
@@ -59,5 +61,5 @@ def getExecutor(job):
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=ssh_port,
                                             login='root', passwd=None,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
-                                            passphrase=None, key_filename=key_path)
+                                            passphrase=passphrase, key_filename=key_path)
     return executor

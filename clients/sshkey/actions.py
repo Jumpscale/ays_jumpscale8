@@ -7,7 +7,7 @@ def input(job):
     """
 
     # THIS ONE IS FIXED
-    args = {}
+    args = job.model.args
 
     if 'key.path' in job.model.args and job.model.args['key.path'] is not None and job.model.args['key.path'] != '':
         path = job.model.args['key.path']
@@ -31,9 +31,10 @@ def input(job):
         args["key.priv"] = j.sal.fs.fileGetContents(path)
         args["key.pub"] = j.sal.fs.fileGetContents(path + '.pub')
         args["key.name"] = job.model.args["key.name"]
+        args["key.path"] = j.sal.fs.joinPaths(job.service.path, job.model.args['key.name'])
         j.sal.fs.createDir(job.service.path)
-        j.sal.fs.copyFile(path, j.sal.fs.joinPaths(job.service.path, job.model.args['key.name']))
-        j.sal.fs.copyFile(path + '.pub', j.sal.fs.joinPaths(job.service.path, '%s.%s' % (job.model.args['key.name'], 'pub')))
+        j.sal.fs.copyFile(path, j.sal.fs.joinPaths(job.service.path, args["key.path"]))
+        j.sal.fs.copyFile(path + '.pub', j.sal.fs.joinPaths(job.service.path, '%s.%s' % (args["key.path"], 'pub')))
         # r = job.model.args
         # r.pop('key.name')
         # job.model.args = r
