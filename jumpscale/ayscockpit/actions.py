@@ -19,9 +19,9 @@ def install(job):
             'port': redis.model.data.port,
         }
 
-    cfg_path = cuisine.core.args_replace('$cfgDir/ays/ays.config')
+    cfg_path = cuisine.core.args_replace('$cfgDir/jumpscale/ays.config')
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
-    cuisine.core.file_write(cfg_path, j.data.serializer.toml.dumps(config))
+    cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
