@@ -35,9 +35,6 @@ def input(job):
         j.sal.fs.createDir(job.service.path)
         j.sal.fs.copyFile(path, j.sal.fs.joinPaths(job.service.path, args["key.path"]))
         j.sal.fs.copyFile(path + '.pub', j.sal.fs.joinPaths(job.service.path, '%s.%s' % (args["key.path"], 'pub')))
-        # r = job.model.args
-        # r.pop('key.name')
-        # job.model.args = r
 
     if 'key.priv' not in args or args['key.priv'].strip() == "":
         print("lets generate private key")
@@ -48,5 +45,8 @@ def input(job):
         rc, out = j.sal.process.execute(cmd, die=True, outputToStdout=False, ignoreErrorOutput=False)
         args["key.priv"] = j.sal.fs.fileGetContents(args['key.path'])
         args["key.pub"] = j.sal.fs.fileGetContents(args['key.path'] + '.pub')
+
+    j.sal.fs.chmod(args['key.path'], 0o600)
+    j.sal.fs.chmod(args['key.path']+ '.pub', 0o600)
 
     return args
