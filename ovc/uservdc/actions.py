@@ -12,7 +12,7 @@ def install(job):
     password = password if not provider else "fakeeeee"
 
     g8client = service.producers["g8client"][0]
-    client = j.cligetFromService(g8client)
+    client = j.clients.openvcloud.getFromService(g8client)
 
     if not client.api.system.usermanager.userexists(name=username):
         groups = service.model.data.groups
