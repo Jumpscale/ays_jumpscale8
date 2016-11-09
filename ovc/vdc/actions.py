@@ -23,7 +23,14 @@ def install(job):
     # if space does not exist, it will create it
     space = acc.space_get(service.model.dbobj.name, service.model.data.location)
     authorized_users = space.authorized_users
-    users = (user.name for user in service.producers.get('uservdc', []))  # Users to be authorized_users
+    userslist = service.producers.get('uservdc', [])
+
+    users = []
+    for u in userslist:
+        if u.model.data.provider != '':
+            users.append(u.model.dbobj.name+"@"+u.model.data.provider)
+        else:
+            users.append(u.model.dbobj.name)
     # Authorize users
     for user in users:
         if user not in authorized_users:
@@ -57,8 +64,15 @@ def processChange(job):
                             create=False)
 
         authorized_users = space.authorized_users
-        users = service.model.data.uservdc  # Users to be authorized_users
+        userslist = service.model.data.uservdc  # Users to be authorized_users
 
+        users = []
+        for u in userslist:
+            if u.model.data.provider != '':
+                users.append(u.model.dbobj.name+"@"+u.model.data.provider)
+            else:
+                users.append(u.model.dbobj.name)
+                
         # Authorize users
         for user in users:
             if user not in authorized_users:
