@@ -1,0 +1,11 @@
+os = type:str parent:os
+g8 = type:str list
+botToken = type:str
+dns.sshkey = type:str consume:sshkey:1:1
+oauth.host = type:str
+oauth.port = type:int
+oauth.redirect = type:str
+oauth.client = type:str
+oauth.secret = type:str
+oauth.itsyouonlinehost = type:str
+oauth.host = type:str
