@@ -8,7 +8,7 @@ def install(job):
     # configure redis connection for AYS
     redis = service.producers['redis'][0]
     # this line create the default config if it doesn't exsits yet
-    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/ays.yaml")
+    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/jumpscale/ays.yaml")
     config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
     if 'redis' not in config:
         config['redis'] = {}
