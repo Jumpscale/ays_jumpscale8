@@ -31,7 +31,7 @@ def install(job):
     cuisine.core.dir_ensure(os.path.dirname(AYS_CONFIG_LOCATION))
     cuisine.core.file_write(location=AYS_CONFIG_LOCATION, content=ays_conf, replaceArgs=True)
     pm = cuisine.processmanager.get("tmux")
-    pm.ensure(name="ays_daemon", cmd="ays start")
+    pm.ensure(name="ays_daemon", cmd="ays start -c {config}".format(config=AYS_CONFIG_LOCATION))
 
     cuisine.development.git.pullRepo('https://github.com/Jumpscale/jscockpit', '$codeDir/github/jumpscale/jscockpit')
 
