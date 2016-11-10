@@ -1,7 +1,7 @@
 
 def install(job):
     service = job.service
-    
+
     # create user if it doesn't exists
     username = service.model.dbobj.name
     password = service.model.data.password
@@ -13,21 +13,16 @@ def install(job):
 
     g8client = service.producers["g8client"][0]
     client = j.clients.openvcloud.getFromService(g8client)
-
     if not client.api.system.usermanager.userexists(name=username):
         groups = service.model.data.groups
         client.api.system.usermanager.create(username=username, password=password, groups=groups, emails=[email], domain='', provider=provider)
+
 
 def uninstall(job):
     service = job.service
 
     # unauthorize user to all consumed vdc
-
     username = service.model.dbobj.name
-    password = service.model.data.password
-    
-    email = service.model.data.email
-
     g8client = service.producers["g8client"][0]
     client = j.clients.openvcloud.getFromService(g8client)
     provider = service.model.data.provider
