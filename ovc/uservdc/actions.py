@@ -25,8 +25,11 @@ def uninstall(job):
 
     username = service.model.dbobj.name
     password = service.model.data.password
+    
     email = service.model.data.email
-    client = service.model.data.g8client
+
+    g8client = service.producers["g8client"][0]
+    client = j.clients.openvcloud.getFromService(g8client)
     provider = service.model.data.provider
     username = "%s@%s" % (username, provider) if provider else username
     if client.api.system.usermanager.userexists(name=username):

@@ -1,4 +1,3 @@
-username = type:str
 password = type:str default:'rooter'
 email = type:str default:''
 provider = type:str default:''
