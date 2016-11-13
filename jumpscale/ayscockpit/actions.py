@@ -9,7 +9,9 @@ def install(job):
     redis = service.producers['redis'][0]
     # this line create the default config if it doesn't exsits yet
     cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/ays.yaml")
-    config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
+    config = j.data.serializer.yaml.loads("redis:\n    host: 'localhost'\n    port: 6379\n")
+    if cuisine.core.file_exists(cfg_path):
+        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
     if 'redis' not in config:
         config['redis'] = {}
 

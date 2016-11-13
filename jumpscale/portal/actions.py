@@ -38,10 +38,9 @@ def install(job):
         cfg.set('param.cfg.token_url', service.model.data.oauthTokenUrl)
 
 
-    cuisine.core.file_write('$appDir/portals/main/config.hrd', str(cfg))
+    cuisine.core.file_write('$cfgDir/portals/main/config.hrd', str(cfg))
 
     cuisine.core.dir_ensure('$cfgDir/portals')
-    cuisine.core.file_link('$appDir/portals/jslib', '$cfgDir/portals/jslib')
     if not cuisine.core.file_exists('$appDir/portals/main/base/AYS81'):
         cuisine.core.file_link('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$appDir/portals/main/base/AYS81')
 
@@ -65,5 +64,3 @@ def stop(job):
     cuisine = service.executor.cuisine
     pm = cuisine.processmanager.get('tmux')
     pm.stop('portal_%s' % service.name)
-
-
