@@ -3,7 +3,7 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    cfg = cuisine.core.file_read('$tmplsDir/portals/main/config.hrd')
+    cfg = cuisine.core.file_read('$tmplsDir/cfg/portal/config.hrd')
     cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
 
     # configure portal basics
