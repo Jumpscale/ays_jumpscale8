@@ -158,10 +158,6 @@ def update(job):
     os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
     vm_cuisine = os.executor.cuisine
 
-    service.logger.info('copy portal config')
-    if vm_cuisine.core.file_exists('$cfgDir/portals/main/config.hrd'):
-        vm_cuisine.core.file_copy('$cfgDir/portals/main/config.hrd', '/tmp/config.hrd')
-
     service.logger.info('remove fs backend')
     vfs_config = service.aysrepo.serviceGet('vfs_config', 'opt')
     vm_cuisine.core.dir_remove(vfs_config.model.data.backendPath, recursive=True)
@@ -169,9 +165,6 @@ def update(job):
     service.logger.info('restart fuse')
     job = fs.getJob('start')
     job.executeInProcess()
-
-    service.logger.info('copy portal config back')
-    vm_cuisine.core.file_copy('/tmp/config.hrd', '$cfgDir/portals/main/config.hrd')
 
     service.logger.info('restart dependencies')
     for dep in dependencies:
