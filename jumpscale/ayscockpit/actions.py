@@ -55,7 +55,7 @@ def install(job):
     # start daemon
     cmd = 'ays start'
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, path=j.sal.fs.getParent(cfg_path))
+    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
 
     # start api
     cmd = 'jspython api_server'
@@ -69,7 +69,7 @@ def start(job):
     pm = cuisine.processmanager.get('tmux')
 
     cmd = 'ays start'
-    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, path=cuisine.core.args_replace('$cfgDir/ays'))
+    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
 
     # in case we update the sandbox, need to reconfigure the raml with correct url
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
