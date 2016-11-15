@@ -28,7 +28,7 @@ def install(job):
     users = []
     for u in userslist:
         if u.model.data.provider != '':
-            users.append(u.model.dbobj.name+"@"+u.model.data.provider)
+            users.append(u.model.dbobj.name + "@" + u.model.data.provider)
         else:
             users.append(u.model.dbobj.name)
     # Authorize users
@@ -46,11 +46,22 @@ def processChange(job):
     service = job.service
 
     args = job.model.args
+    category = args.pop('changeCategory')
+    if category == "dataschema":
 
-    if args["changeCategory"] == "dataschema":
         for key, value in args.items():
-            if key != "changeCategory":
-                setattr(service.model.data, key, value)
+            if key == 'uservdc':
+                # value is a list of (uservdc)
+                if not isinstance(value, list):
+                    raise j.exceptions.Input(message="Value is not a list.")
+                for s in service.producers['uservdc']:
+                    if s.name not in value:
+                        service.model.producerRemove(s)
+                for v in value:
+                    userservice = service.aysrepo.serviceGet('uservdc', v)
+                    if userservice not in service.producers.get('uservdc', []):
+                        service.consume(userservice)
+            setattr(service.model.data, key, value)
 
         if 'g8client' not in service.producers:
             raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
@@ -60,19 +71,18 @@ def processChange(job):
         acc = cl.account_get(service.model.data.account)
         # Get given space, raise error if not found
         space = acc.space_get(name=service.model.dbobj.name,
-                            location=service.model.data.location,
-                            create=False)
+                              location=service.model.data.location,
+                              create=False)
 
         authorized_users = space.authorized_users
-        userslist = service.model.data.uservdc  # Users to be authorized_users
-
+        userslist = service.producers.get('uservdc', [])
         users = []
         for u in userslist:
             if u.model.data.provider != '':
-                users.append(u.model.dbobj.name+"@"+u.model.data.provider)
+                users.append(u.model.dbobj.name + "@" + u.model.data.provider)
             else:
                 users.append(u.model.dbobj.name)
-                
+
         # Authorize users
         for user in users:
             if user not in authorized_users:
