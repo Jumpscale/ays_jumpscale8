@@ -43,6 +43,8 @@ def install(job):
     service.model.data.ipPublic = machine.space.model['publicipaddress'] or space.get_space_ip()
 
     ip, vm_info = machine.get_machine_ip()
+    if not ip:
+        raise j.exceptions.RuntimeError('The machine %s does not get an IP ' % service.name)
     service.model.data.ipPrivate = ip
     service.model.data.sshLogin = vm_info['accounts'][0]['login']
     service.model.data.sshPassword = vm_info['accounts'][0]['password']
@@ -122,6 +124,98 @@ def install(job):
         data_disk.saveAll()
 
     service.saveAll()
+
+
+def export(job):
+    service = job.service
+    vdc = service.parent
+    if 'g8client' not in vdc.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    acc = cl.account_get(vdc.model.data.account)
+    space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+
+    if service.name in space.machines:
+        # machine already exists
+        machine = space.machines[service.name]
+    else:
+        raise j.exceptions.NotFound("Can not find a machine with this name %s" % service.name)
+    cl.api.cloudapi.machines.exportOVF(
+                    link=service.model.data.ovfLink,
+                    username=service.model.data.ovfUsername,
+                    passwd=service.model.data.ovfPassword,
+                    path=service.model.data.ovfPath,
+                    machineId=service.model.data.machineId,
+                    callbackUrl=service.model.data.ovfCallbackUrl)
+
+def import_(job):
+    service = job.service
+    vdc = service.parent
+    if 'g8client' not in vdc.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    acc = cl.account_get(vdc.model.data.account)
+    space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+    sizeId = space.size_find_id(service.model.data.memory)
+    cl.api.cloudapi.machines.importOVF(
+                    link=service.model.data.ovfLink,
+                    username=service.model.data.ovfUsername,
+                    passwd=service.model.data.ovfPassword,
+                    path=service.model.data.ovfPath,
+                    cloudspaceId=space.id,
+                    name=service.name,
+                    sizeId=sizeId,
+                    callbackUrl=service.model.data.ovfCallbackUrl
+                    )
+
+def init_actions_(service, args):
+    """
+    this needs to returns an array of actions representing the depencies between actions.
+    Looks at ACTION_DEPS in this module for an example of what is expected
+    """
+
+    # some default logic for simple actions
+
+    action_required = args.get('action_required')
+
+    if action_required in ['stop', 'uninstall']:
+        for action_name, action_model in service.model.actions.items():
+            if action_name in ['stop', 'uninstall']:
+                continue
+            if action_model.state == 'scheduled':
+                action_model.state = 'new'
+
+    if action_required in ['install']:
+        for action_name, action_model in service.model.actions.items():
+            if action_name in ['uninstall', 'stop'] and action_model.state == 'scheduled':
+                action_model.state = 'new'
+
+
+    if action_required == 'stop':
+        if service.model.actionsState['start'] == 'sheduled':
+            service.model.actionsState['start'] = 'new'
+
+    if action_required == 'start':
+        if service.model.actionsState['stop'] == 'sheduled':
+            service.model.actionsState['stop'] = 'new'
+
+
+    service.save()
+
+    return {
+        'init': [],
+        'install': ['init'],
+        'start': ['install'],
+        'export': ['install'],
+        'import_': ['init'],
+        'monitor': ['start'],
+        'stop': [],
+        'uninstall': ['stop'],
+    }
 
 
 def add_disk(job):

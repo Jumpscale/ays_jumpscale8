@@ -1,6 +1,12 @@
 def init(job):
     service = job.service
     repo = service.aysrepo
+    disksizes = list(service.model.data.datadisks)
+    disks = []
+    for idx, size in enumerate(disksizes):
+        disk_name = 'disk-%s' % idx
+        repo.actorGet('disk.ovc').serviceCreate(disk_name, {'size': size})
+        disks.append(disk_name)
 
     # ovc node.
     vm = {
@@ -14,7 +20,7 @@ def init(job):
             '2202:2202',
             '80:80'
         ],
-        'datadisks': list(service.model.data.datadisks)
+        'disk': disks
     }
 
     repo.actorGet('node.ovc').serviceCreate(service.name, vm)

@@ -22,3 +22,9 @@ e.g: to expose port 22 of the VM to the port 9000 on the public port of the vdc 
 - ssh.password: password used to create ssh connection to the vm. **fill automaticlly, don't specify it in Blueprint**
 
 - vdc: service name of the vdc service where to deploy the VM. This is the parent service. **required**
+
+- ovf.link: the link to owncloud e.g http://mycloud.com/remote.php/webdav/ where you want to store the exported machine
+- ovf.username: username for owncloud server  
+- ovf.password: password for owncloud server
+- ovf.path: path to put the exported machine in e.g /exported_vms/machine.ovf
+- ovf.callbackUrl: callbackurl for calling you back when the machine is exported
