@@ -1,0 +1,9 @@
+os = type:str parent:os
+fs = type:str consume:fs:0
+botToken = type:str
+oauth.host = type:str default:'0.0.0.0'
+oauth.port = type:int default:6366
+oauth.redirect = type:str
+oauth.client = type:str
+oauth.secret = type:str
+oauth.itsyouonlinehost = type:str default:'https://itsyou.online'
