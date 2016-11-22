@@ -18,9 +18,9 @@ def install(job):
 
 def start(job):
     cuisine = job.service.executor.cuisine
-    cuisine.processmanager.start('ays_bot')
+    cuisine.processmanager.start('aysbot__main')
 
 
 def stop(job):
     cuisine = job.service.executor.cuisine
-    cuisine.processmanager.stop('ays_bot')
+    cuisine.processmanager.stop('aysbot__main')
