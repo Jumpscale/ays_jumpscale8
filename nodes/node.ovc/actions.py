@@ -93,7 +93,7 @@ def install(job):
     #  GET THE available devices on the system and bind them to services if available instead of creating disks
     rc, out, err = cuisine.core.run("lsblk -J", die=False)
     if rc != 0:
-        raise("Couldn't load json from lsblk -J")
+        raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
     jsonout = j.data.serializer.json.loads(out)
     available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x] # should be only 1
 
@@ -115,7 +115,7 @@ def install(job):
             machine.disk_limit_io(disk_id, disk_args.maxIOPS)
             rc, out, err = cuisine.core.run("lsblk -J", die=False)
             if rc != 0:
-                raise("Couldn't load json from lsblk -J")
+                raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
             jsonout = j.data.serializer.json.loads(out)
             available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x and x['name'] not in takendevices]
             data_disk.model.data.devicename = available_devices.pop(0)
