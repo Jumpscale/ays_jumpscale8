@@ -20,8 +20,20 @@ def install(job):
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
     acc = cl.account_get(service.model.data.account)
+
+    # Set limits
     # if space does not exist, it will create it
-    space = acc.space_get(service.model.dbobj.name, service.model.data.location)
+
+    space = acc.space_get(name=service.model.dbobj.name,
+                          location=service.model.data.location,
+                          create=True,
+                          maxMemoryCapacity=service.model.data.maxMemoryCapacity,
+                          maxVDiskCapacity=service.model.data.maxDiskCapacity,
+                          maxCPUCapacity=service.model.data.maxCPUCapacity,
+                          maxNumPublicIP=service.model.data.maxNumPublicIP,
+                          maxNetworkPeerTransfer=service.model.data.maxNetworkPeerTransfer,
+                          maxNetworkOptTransfer=service.model.data.maxNetworkOptTransfer,
+                          )
 
     # add space ID to data
     service.model.data.cloudspaceID = space.model['id']
