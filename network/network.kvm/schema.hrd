@@ -1,0 +1,13 @@
+os = type:str parent:os
+openvswitch = type:str consume:openvswitch:1:1
+
+name = type:str
+ip.addr = type:str default:10.0.0.1
+netmask = type:int default:24
+gateway = type:str default:''
+
+masquerading = type:bool default:True
+
+dhcp.enable = type:bool default:False
+dhcp.range.start = type:string
+dhcp.range.stop = type:string

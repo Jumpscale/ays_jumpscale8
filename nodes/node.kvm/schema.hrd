@@ -1,18 +1,13 @@
-os = type:str parent:'os'
-fs = list type:str consume:fs:0
-docker = type:str consume:app_docker:0
-hostname = type:str default:''
+os = type:str parent:os
 
-image = type:str default:'ubuntu'
-ports = type:str list
-volumes = type:str list
-cmd = type:str
-sshkey = descr:'authorized sshkey' consume:sshkey:1:1 auto
-
-id = type:str descr:'id of the container'
+image = type:str consume:image_os:1:1
+disks = type:int list
+nics = type:str list consume:network:1
+memory = type:int default:256
+cpu = type:int default:1
 
 ip.public = type:string
 ip.private = type:string
 
-ssh.login = type:string
-ssh.password = type:string
+ssh.login = type:string default:'root'
+ssh.password = type:string default:'gig1234'
