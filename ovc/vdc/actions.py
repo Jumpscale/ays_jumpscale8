@@ -22,6 +22,11 @@ def install(job):
     acc = cl.account_get(service.model.data.account)
     # if space does not exist, it will create it
     space = acc.space_get(service.model.dbobj.name, service.model.data.location)
+
+    # add space ID to data
+    service.model.data.cloudspaceID = space.model['id']
+    service.model.save()
+
     authorized_users = space.authorized_users
     userslist = service.producers.get('uservdc', [])
 

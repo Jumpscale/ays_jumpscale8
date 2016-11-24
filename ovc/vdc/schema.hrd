@@ -5,3 +5,5 @@ g8client = type:str consume:'g8client' auto
 account = type:str default:''
 location = type:str default:''
 uservdc = list type:str consume:'uservdc' auto
+
+cloudspaceID = type:int default:0
