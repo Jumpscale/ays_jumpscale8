@@ -70,7 +70,7 @@ def install(job):
 
         facility_id = None
         for facility in client.list_facilities():
-            if job.service.model.data.location in facility.name.lower():
+            if facility.name.lower().find(job.service.model.data.location.lower()) != -1:
                 facility_id = facility.id
 
         if facility_id is None:
