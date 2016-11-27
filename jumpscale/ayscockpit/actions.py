@@ -33,6 +33,7 @@ def install(job):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
 
     if 'dirs' in config:
+        cuisine.core.dir_ensure(cuisine.core.args_replace('$varDir/code/'))
         config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
         cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
         cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
