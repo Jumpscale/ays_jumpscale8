@@ -13,9 +13,12 @@ def test(job):
     import time
     from ast import literal_eval
     tc = unittest.TestCase('__init__')
+    log = j.logger.get('test')
+    log.addHandler(j.logger._LoggerFactory__fileRotateHandler('js8_test'))
     service = job.service
     branch = service.model.data.branch
     cuisine = service.executor.cuisine
+    log.info('Installing jumpscale on the VM')
     cuisine.core.run('apt-get update')
     cuisine.core.run('echo Y | apt-get install curl')
     cuisine.core.run('curl -k https://raw.githubusercontent.com/Jumpscale/'
@@ -25,12 +28,15 @@ def test(job):
     cuisine.core.run('bash install.sh')
     time.sleep(50)
 
+    log.info('Check if js is working, should succeed')
     output = cuisine.core.run('js "print(j.sal.fs.getcwd())"')
     tc.assertEqual(output[1], '/')
 
+    log.info('Check if directories under /optvar/ is as expected')
     output = cuisine.core.run('ls /optvar')
     tc.assertEqual(output[1], 'cfg\ndata')
 
+    log.info('Check if directories under /opt/jumpscale8/ is as expected')
     output = cuisine.core.run('ls /opt/jumpscale8/')
     tc.assertEqual(output[1], 'bin\nenv.sh\nlib')
 
@@ -42,6 +48,7 @@ def test(job):
             str_list[str_list.index(i)] = var.split(':')
         return dict(str_list)
 
+    log.info('Compare js.dir to j.tools.cuisine.local.core.dir_paths, should be the same')
     output = cuisine.core.run('js "print(j.dirs)"')
     output2 = cuisine.core.run('js "print(j.tools.cuisine.local.core.dir_paths)"')
     dict1 = convert_string_to_dict(output[1], '\n')
@@ -58,4 +65,3 @@ def test(job):
     tc.assertEqual(dict1['logDir'].replace('/', ''), dict2['logDir'].replace('/', ''))
     tc.assertEqual(dict1['varDir'].replace('/', ''), dict2['varDir'].replace('/', ''))
     tc.assertEqual(dict1['tmplsDir'].replace('/', ''), dict2['tmplsDir'].replace('/', ''))
-
