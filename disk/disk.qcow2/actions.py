@@ -1,7 +1,9 @@
 from JumpScale import j
 
+
 def install(job):
-	job.model().create()
+    job.model().create()
+
 
 def model(job):
     service = job.service
