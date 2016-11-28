@@ -13,7 +13,7 @@ def install(job):
                'itsyouonlinehost': service.model.data.oauthItsyouonlinehost
                }
            }
-    cuisine.apps.aysbot.configure(cfg=cfg)
+    cuisine.apps.aysbot.create_config(cfg=cfg)
     cuisine.apps.aysbot.install()
 
 def start(job):
