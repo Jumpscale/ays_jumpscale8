@@ -41,6 +41,11 @@ def install(job):
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
+    content = cuisine.core.file_read('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki')
+    if 'REST API:/api' not in content:
+        cuisine.core.file_write('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki',
+                                'REST API:/api',
+                                append=True)
     api_cfg = {
         'oauth':{
             'client_secret': service.model.data.oauthClientSecret,
