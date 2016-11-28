@@ -31,8 +31,6 @@ def install(job):
                           maxVDiskCapacity=service.model.data.maxDiskCapacity,
                           maxCPUCapacity=service.model.data.maxCPUCapacity,
                           maxNumPublicIP=service.model.data.maxNumPublicIP,
-                          maxNetworkPeerTransfer=service.model.data.maxNetworkPeerTransfer,
-                          maxNetworkOptTransfer=service.model.data.maxNetworkOptTransfer,
                           )
 
     # add space ID to data
