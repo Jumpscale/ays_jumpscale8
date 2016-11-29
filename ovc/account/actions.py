@@ -6,9 +6,6 @@ def init(job):
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
 
-    if service.model.data.name == "":
-        raise j.exceptions.Input("name argument cannot be empty, cannot continue init of %s" % service)
-
     service.saveAll()
 
 
@@ -112,6 +109,5 @@ def uninstall(job):
 
     g8client = service.producers["g8client"][0]
     cl = j.clients.openvcloud.getFromService(g8client)
-    acc = cl.account_get(service.model.data.account)
-    space = acc.space_get(service.model.dbobj.name, service.model.data.location)
-    space.delete()
+    acc = cl.account_get(service.model.dbobj.name)
+    acc.delete()

@@ -1,7 +1,6 @@
 description = type:multiline
 
 g8client = type:str consume:'g8client' auto
-name = type:str default:''
 accountusers = list type:str consume:'uservdc' auto
 
 accountID = type:int default:0
