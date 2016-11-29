@@ -1,12 +1,16 @@
+from JumpScale import j
+
+
+def input(job):
+    service = job.service
+    if job.model.args.get('location', "") == "":
+        raise j.exceptions.Input("location argument cannot be empty, cannot continue init of %s" % service)
+
 
 def init(job):
     service = job.service
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
-
-    if service.model.data.location == "":
-        raise j.exceptions.Input("location argument cannot be empty, cannot continue init of %s" % service)
-
     g8client = service.producers["g8client"][0]
     if service.model.data.account == "":
         service.model.data.account = g8client.model.data.account
@@ -83,6 +87,8 @@ def processChange(job):
                     userservice = service.aysrepo.serviceGet('uservdc', v)
                     if userservice not in service.producers.get('uservdc', []):
                         service.consume(userservice)
+            elif key == 'location' and service.model.data.location != value:
+                raise RuntimeError("Can not change attribute location")
             setattr(service.model.data, key, value)
 
         if 'g8client' not in service.producers:
