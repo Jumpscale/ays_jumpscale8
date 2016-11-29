@@ -27,10 +27,25 @@ def install(job):
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
+    # change codedir path in system.yaml to be /optvar/code
+    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/system.yaml")
+    if cuisine.core.file_exists(cfg_path):
+        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
+
+    if 'dirs' in config:
+        config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
+        cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
+        cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
+
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
+    content = cuisine.core.file_read('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki')
+    if 'REST API:/api' not in content:
+        cuisine.core.file_write('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki',
+                                'REST API:/api',
+                                append=True)
     api_cfg = {
         'oauth':{
             'client_secret': service.model.data.oauthClientSecret,
@@ -60,6 +75,8 @@ def install(job):
     # start api
     cmd = 'jspython api_server'
     pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
+    # upload the aysrepo used in installing to the cockpit
+    cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
 
 
 def start(job):

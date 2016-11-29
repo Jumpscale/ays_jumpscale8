@@ -34,6 +34,8 @@ def install(job):
         if service.model.data.osImage not in image_names:
             raise j.exceptions.NotFound('Image %s not available for vdc %s' % (service.model.data.osImage, vdc.name))
 
+        if service.model.data.sizeID and vdc.model.data.allowedVMSizes and service.model.data.sizeID not in vdc.model.data.allowedVMSizes:
+            raise RuntimeError("sizeID provided (%s) is not in the allowedVMSizes (%s)" % (service.model.data.sizeID, vdc.model.data.allowedVMSizes))
         machine = space.machine_create(name=service.name,
                                        image=service.model.data.osImage,
                                        memsize=service.model.data.memory,

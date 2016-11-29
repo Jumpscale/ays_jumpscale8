@@ -73,6 +73,13 @@ def init(job):
 
     repo.actorGet('caddy_proxy').serviceCreate('99_portal', api)
 
+    api = {
+        'src': '/ays_bot/',
+        'dst': ['127.0.0.1:6366']
+    }
+
+    repo.actorGet('caddy_proxy').serviceCreate('88_aysbot', api)
+
     caddy_cfg = {
         'os': os.name,
         'fs': fs.name,
@@ -138,6 +145,21 @@ def init(job):
     }
 
     repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
+
+    client_id = service.model.data.oauthClientId
+    if not service.model.data.oauthClientId:
+        client_id = service.model.data.botClient
+    aysbot_cfg = {
+        'os': os.name,
+        'fs': fs.name,
+        'oauth.secret': service.model.data.botSecret,
+        'oauth.client': client_id,
+        'oauth.redirect': 'https://{domain}/ays_bot/callback'.format(domain=service.model.data.domain),
+        'oauth.host': '0.0.0.0',
+        'oauth.port': 6366,
+    }
+
+    repo.actorGet('aysbot').serviceCreate('main', aysbot_cfg)
 
 
 def update(job):

@@ -8,6 +8,9 @@ dns.sshkey = type:str consume:sshkey:1:1
 
 domain = type:str
 
+bot.client = type:str default:''
+bot.Secret = type:str default:''
+
 oauth.organization = type:str
 oauth.client_id = type:str
 oauth.client_secret = type:str
