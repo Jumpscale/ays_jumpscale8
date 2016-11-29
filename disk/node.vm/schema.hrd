@@ -1,4 +1,0 @@
-disks = type:str consume:disk:1
-networks = type:str consume:openvswitch:0
-ram = type:int
-cpu = type:int

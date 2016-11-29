@@ -1,6 +1,0 @@
-name = type:str
-ip = type:str default:'10.0.4.1'
-netmask = type:int default:24
-masquerading = type:bool default:True
-ipconfig = type:bool default:True
-dhcp = type:bool default:True
