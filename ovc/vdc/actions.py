@@ -56,6 +56,13 @@ def install(job):
         if user not in users:
             space.unauthorize_user(username=user)
 
+    # update capacity incase cloudspace already existed update it
+    space.model['maxMemoryCapacity'] = service.model.data.maxMemoryCapacity
+    space.model['maxVDiskCapacity'] = service.model.data.maxDiskCapacity
+    space.model['maxNumPublicIP'] = service.model.data.maxNumPublicIP
+    space.model['maxCPUCapacity'] = service.model.data.maxCPUCapacity
+    space.save()
+
 
 def processChange(job):
     service = job.service
@@ -107,6 +114,13 @@ def processChange(job):
         for user in authorized_users:
             if user not in users:
                 space.unauthorize_user(username=user)
+
+        # update capacity incase cloudspace already existed update it
+        space.model['maxMemoryCapacity'] = service.model.data.maxMemoryCapacity
+        space.model['maxVDiskCapacity'] = service.model.data.maxDiskCapacity
+        space.model['maxNumPublicIP'] = service.model.data.maxNumPublicIP
+        space.model['maxCPUCapacity'] = service.model.data.maxCPUCapacity
+        space.save()
 
         service.save()
 
