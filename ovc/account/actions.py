@@ -54,8 +54,7 @@ def processChange(job):
 
     args = job.model.args
     category = args.pop('changeCategory')
-    if category == "dataschema":
-
+    if category == "dataschema" and service.model.actionsState['install'] == 'ok':
         for key, value in args.items():
             if key == 'uservdc':
                 # value is a list of (uservdc)
