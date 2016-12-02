@@ -29,6 +29,7 @@ def init(job):
     }
 
     fs = repo.actorGet('fs.g8osfs').serviceCreate('fuse', fuse)
+    service.consume(fs)
 
     dns_sshkey = service.aysrepo.servicesFind(actor='sshkey', name=service.model.data.dnsSshkey)[0]
     dns_clients_names = []
@@ -56,7 +57,8 @@ def init(job):
         'node': [node.name],
     }
 
-    repo.actorGet('dns_domain').serviceCreate('cockpit', dns_domain)
+    dns_domain_service = repo.actorGet('dns_domain').serviceCreate('cockpit', dns_domain)
+    service.consume(dns_domain_service)
 
     api = {
         'src': '/api',
@@ -89,14 +91,16 @@ def init(job):
         'stagging': service.model.data.caddyStagging
     }
 
-    repo.actorGet('caddy').serviceCreate('main', caddy_cfg)
+    caddy = repo.actorGet('caddy').serviceCreate('main', caddy_cfg)
+    service.consume(caddy)
 
     mongodb_cfg = {
         'os': os.name,
         'fs': fs.name,
     }
 
-    repo.actorGet('mongodb').serviceCreate('main', mongodb_cfg)
+    mongodb = repo.actorGet('mongodb').serviceCreate('main', mongodb_cfg)
+    service.consume(mongodb)
 
     redis_cfg = {
         'os': os.name,
@@ -107,8 +111,9 @@ def init(job):
     }
 
     redis = repo.actorGet('redis').serviceCreate('ays', redis_cfg)
+    service.consume(redis)
 
-    portal = {
+    portal_cfg = {
         'os': os.name,
         'fs': fs.name,
         'redis': redis.name,
@@ -125,7 +130,8 @@ def init(job):
         'oauth.token_url': 'https://itsyou.online/v1/oauth/access_token'
     }
 
-    repo.actorGet('portal').serviceCreate('main', portal)
+    portal = repo.actorGet('portal').serviceCreate('main', portal_cfg)
+    service.consume(portal)
 
     ayscockpit_cfg = {
         'os': os.name,
@@ -144,22 +150,8 @@ def init(job):
         'api.port': 5000,
     }
 
-    repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
-
-    client_id = service.model.data.oauthClientId
-    if not service.model.data.oauthClientId:
-        client_id = service.model.data.botClient
-    aysbot_cfg = {
-        'os': os.name,
-        'fs': fs.name,
-        'oauth.secret': service.model.data.botSecret,
-        'oauth.client': client_id,
-        'oauth.redirect': 'https://{domain}/ays_bot/callback'.format(domain=service.model.data.domain),
-        'oauth.host': '0.0.0.0',
-        'oauth.port': 6366,
-    }
-
-    repo.actorGet('aysbot').serviceCreate('main', aysbot_cfg)
+    ayscockpit = repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
+    service.consume(ayscockpit)
 
 
 def update(job):
