@@ -153,6 +153,22 @@ def init(job):
     ayscockpit = repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
     service.consume(ayscockpit)
 
+    # client_id = service.model.data.oauthClientId
+    # if not service.model.data.oauthClientId:
+    #     client_id = service.model.data.botClient
+    # aysbot_cfg = {
+    #     'os': os.name,
+    #     'fs': fs.name,
+    #     'oauth.secret': service.model.data.botSecret,
+    #     'oauth.client': client_id,
+    #     'oauth.redirect': 'https://{domain}/ays_bot/callback'.format(domain=service.model.data.domain),
+    #     'oauth.host': '0.0.0.0',
+    #     'oauth.port': 6366,
+    # }
+    #
+    # aysbot = repo.actorGet('aysbot').serviceCreate('main', aysbot_cfg)
+    # service.consume(aysbot)
+
 
 def update(job):
     service = job.service
