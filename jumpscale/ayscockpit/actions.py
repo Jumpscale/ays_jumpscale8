@@ -76,7 +76,9 @@ def install(job):
     cmd = 'jspython api_server'
     pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
     # upload the aysrepo used in installing to the cockpit
+    cuisine.core.dir_ensure('$varDir/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
+    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays list')
 
 
 def start(job):
