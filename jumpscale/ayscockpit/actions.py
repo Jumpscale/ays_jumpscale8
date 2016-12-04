@@ -78,7 +78,7 @@ def install(job):
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$varDir/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
-    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays list')
+    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays restore')
 
 
 def start(job):
