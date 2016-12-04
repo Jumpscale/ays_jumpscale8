@@ -41,9 +41,9 @@ def install(job):
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
-    content = cuisine.core.file_read('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki')
+    content = cuisine.core.file_read('$appDir/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
-        cuisine.core.file_write('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81/.space/nav.wiki',
+        cuisine.core.file_write('$appDir/portals/main/base/AYS81/.space/nav.wiki',
                                 'REST API:/api',
                                 append=True)
     api_cfg = {
@@ -76,7 +76,9 @@ def install(job):
     cmd = 'jspython api_server'
     pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
     # upload the aysrepo used in installing to the cockpit
+    cuisine.core.dir_ensure('$varDir/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
+    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays restore')
 
 
 def start(job):
