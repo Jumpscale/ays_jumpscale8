@@ -2,6 +2,7 @@
 
 ## Description:
 This actor template is responsible to create a periodic snapshots on all machines inside the specified VDC.
+make sure that ays deamon is started `ays start`
 
 ## Schema:
 
