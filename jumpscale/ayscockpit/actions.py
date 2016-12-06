@@ -28,14 +28,60 @@ def install(job):
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
     # change codedir path in system.yaml to be /optvar/code
+    dir_paths = {
+        'CODEDIR': cuisine.core.args_replace('$varDir/code'),
+        'JSBASE': cuisine.core.dir_paths['base'],
+        'CFGDIR': cuisine.core.dir_paths['cfgDir'],
+        'DATADIR': cuisine.core.args_replace('$varDir/data/'),
+        'TMPDIR': '/tmp',
+        'VARDIR': cuisine.core.dir_paths['varDir']
+        }
+
+    branch = 'master'
+    cfg_path = cuisine.core.args_replace("$optDir/build.yaml")
+    if cuisine.core.file_exists(cfg_path):
+        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
+        if 'jumpscale' in config:
+            branch = config['jumpscale']
+
+    config = {
+        'dirs': dir_paths,
+        'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
+        'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
+        }
     cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/system.yaml")
+    cuisine.core.dir_ensure('$varDir/code/')
     if cuisine.core.file_exists(cfg_path):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
 
-    if 'dirs' in config:
-        config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
-        cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
-        cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
+        if 'dirs' in config:
+            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
+
+    else:
+        dir_paths = {
+            'CODEDIR': cuisine.core.args_replace('$varDir/code'),
+            'JSBASE': cuisine.core.dir_paths['base'],
+            'CFGDIR': cuisine.core.dir_paths['cfgDir'],
+            'DATADIR': cuisine.core.args_replace('$varDir/data/'),
+            'TMPDIR': '/tmp',
+            'VARDIR': cuisine.core.dir_paths['varDir']
+            }
+
+        build_path = cuisine.core.args_replace("$optDir/build.yaml")
+        branch = 'master'
+        if cuisine.core.file_exists(cfg_path):
+            build_versions = j.data.serializer.yaml.loads(cuisine.core.file_read(build_path))
+            if 'jumpscale' in build_versions:
+                branch = build_versions['jumpscale']
+
+        config = {
+            'dirs': dir_paths,
+            'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
+            'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
+            }
+
+    cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
+    cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
@@ -78,7 +124,7 @@ def install(job):
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$varDir/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
-    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays restore')
+    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays restore', profile=True)
 
 
 def start(job):
