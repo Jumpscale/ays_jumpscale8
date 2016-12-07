@@ -1,5 +1,5 @@
 # S3 Umbrella package
-S3 is an ays templates that installs an configure a scality s3 machine. 
+S3 is an ays templates that installs an configure a scality s3 machine.
 To create a machine with scality isntalled, follow the example blueprint below.
 
 ## Config
@@ -48,4 +48,19 @@ s3__demo:
 
 actions:
   - action: 'install'
+```
+
+> NOTE: Scality doesn't work well with `CyperDuck` the s3 client. To test scality, use `s3cmd`
+
+## `s3cmd` Config
+```toml
+[default]
+access_key = accessKey1
+secret_key = verySecretKey1
+
+host_base = mystorage.com
+host_bucket = mystorage.com
+
+signature_v2 = True
+use_https = False
 ```
