@@ -53,7 +53,7 @@ actions:
 > NOTE: Scality doesn't work well with `CyperDuck` the s3 client. To test scality, use `s3cmd`
 
 ## `s3cmd` Config
-```toml
+```ini
 [default]
 access_key = accessKey1
 secret_key = verySecretKey1
