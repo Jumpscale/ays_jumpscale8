@@ -33,7 +33,7 @@ If you want to actually create a docker on a vm hosted on openvcloud
 
 ----------------------------------------
 #### Services used:
- - [g8client](ays_jumpscale8/blob/8.1.0/templates/clients/g8client)
+ - [g8client](/ays_jumpscale8/blob/8.1.0/templates/clients/g8client)
  - [vdc](ays_jumpscale8/blob/8.1.0/templates/ovc/vdc)
  - [os.ssh.ubuntu](ays_jumpscale8/blob/8.1.0/templates/os/os.ssh.ubuntu)
  - [node.ovc](ays_jumpscale8/blob/8.1.0/templates/nodes/node.ovc)
