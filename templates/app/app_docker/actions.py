@@ -10,6 +10,9 @@ def install(job):
     if not cuisine.systemservices.docker.isInstalled():
         cuisine.systemservices.docker.install()
 
+    if not cuisine.systemservices.dockercompose.isInstalled():
+        cuisine.systemservices.dockercompose.install()
+
 
 def start(job):
     pass

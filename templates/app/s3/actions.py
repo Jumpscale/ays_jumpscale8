@@ -4,7 +4,7 @@ def init(job):
 
     # ovc node.
     vm = {
-        'os.image': 'g8os-test-1604',
+        'os.image': service.model.data.image,
         'bootdisk.size': 10,
         'vdc': service.parent.name,
         'memory': 4,
@@ -51,10 +51,12 @@ def init(job):
     }
 
     repo.actorGet('fs.btrfs').serviceCreate('data', btrfs)
+    repo.actorGet('app_docker').serviceCreate('docker')
 
     # app docker
     docker = {
         'image': 'jumpscale/ubuntu1604',
+        'docker': 'docker',
         'hostname': service.model.data.domain,
         'fs': ['fuse', 'data'],
         'os': service.name,
@@ -84,6 +86,7 @@ def init(job):
     # caddy proxy
     caddy = {
         'image': 'jumpscale/ubuntu1604',
+        'docker': 'docker',
         'hostname': 'caddy',
         'fs': ['fuse'],
         'os': service.name,

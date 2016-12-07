@@ -23,22 +23,6 @@ def init(job):
 def install(job):
     service = job.service
     # create the docker container based on the data
-
-    """
-    version: '2'
-    services:
-      mongo:
-        container_name: mongodb
-        image: mongo
-        command: "--replSet c0"
-        network_mode: "bridge"
-        labels:
-          SERVICE_TAGS: traefik.enable=false
-        ports:
-          - "27017"
-        volumes:
-          - /var/mongo/:/data/
-    """
     compose = {
         'version': '2',
         'services': {
