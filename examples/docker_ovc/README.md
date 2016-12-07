@@ -33,11 +33,11 @@ If you want to actually create a docker on a vm hosted on openvcloud
 
 ----------------------------------------
 #### Services used:
- - [g8client](/ays_jumpscale8/blob/8.1.0/templates/clients/g8client)
- - [vdc](ays_jumpscale8/blob/8.1.0/templates/ovc/vdc)
- - [os.ssh.ubuntu](ays_jumpscale8/blob/8.1.0/templates/os/os.ssh.ubuntu)
- - [node.ovc](ays_jumpscale8/blob/8.1.0/templates/nodes/node.ovc)
- - [node.docker](ays_jumpscale8/blob/8.1.0/templates/nodes/node.docker)
+ - [g8client](../../templates/clients/g8client)
+ - [vdc](../../templates/ovc/vdc)
+ - [os.ssh.ubuntu](../../templates/os/os.ssh.ubuntu)
+ - [node.ovc](../../templates/nodes/node.ovc)
+ - [node.docker](../../templates/nodes/node.docker)
 
 #### Useful links:
 - More about [AYS noexec](https://github.com/Jumpscale/jumpscale_core8/blob/8.1.0/docs/AYS/Commands/noexe.md)
