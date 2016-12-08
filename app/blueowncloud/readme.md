@@ -22,8 +22,6 @@ to access this machine u need either to modify the DNS yourself, or add the `dom
 
 ```yaml
 
-sshkey__demo:
-
 g8client__env1:
     url: 'gig.demo.greenitglobe.com'
     login: 'login'
@@ -40,6 +38,5 @@ blueowncloud__oc1:
     datadisks:
         - 1000
         - 1000
-
 
 ```
