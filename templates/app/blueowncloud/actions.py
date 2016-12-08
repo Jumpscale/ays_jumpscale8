@@ -10,7 +10,7 @@ def init(job):
 
     # ovc node.
     vm = {
-        'os.image': 'g8os-test-1604',
+        'os.image': 'Ubuntu 16.04 x64',
         'bootdisk.size': 10,
         'vdc': service.parent.name,
         'memory': 4,
@@ -25,6 +25,7 @@ def init(job):
 
     repo.actorGet('node.ovc').serviceCreate(service.name, vm)
     repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': service.name})
+    repo.actorGet('app_docker').serviceCreate('appdocker', {'os': service.name})
 
     # filesystem
     # 1- fuse
