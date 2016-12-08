@@ -112,7 +112,8 @@ def install(job):
             disk_id = machine.add_disk(name=data_disk.model.dbobj.name,
                                        description=disk_args.description,
                                        size=disk_args.size,
-                                       type=disk_args.type.upper())
+                                       type=disk_args.type.upper(),
+                                       ssdSize=disk_args.ssdSize)
 
             machine.disk_limit_io(disk_id, disk_args.maxIOPS)
             rc, out, err = cuisine.core.run("lsblk -J", die=False)
