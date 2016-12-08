@@ -82,6 +82,11 @@ def install(job):
 
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
+    # write logginf.yaml if it does not exists
+    logging_path = cuisine.core.args_replace("$cfgDir/jumpscale/logging.yaml")
+    if not cuisine.core.file_exists(loggin_path):
+        loggin_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
+        cusine.core.file_write(loggin_path, j.data.serializer.yaml.dumps(loggin_config))
 
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')

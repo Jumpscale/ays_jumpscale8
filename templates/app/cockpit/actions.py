@@ -106,7 +106,7 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'unixsocket': '/optvar/tmp/redis.sock',
-        'maxram': 2000000,
+        'maxram': 20000000,
         'appendonly': True,
     }
 
