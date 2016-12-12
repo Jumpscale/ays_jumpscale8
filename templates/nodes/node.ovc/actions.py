@@ -51,7 +51,10 @@ def install(job):
     service.model.data.sshLogin = vm_info['accounts'][0]['login']
     service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
-    for i, port in enumerate(service.model.data.ports):
+    ssh_present = any([ports for ports in service.model.data.ports if ports.startswith('22')])
+    data = j.data.serializer.json.loads(service.model.dataJSON)
+    ports = data.get('ports', []) if ssh_present else data.get('ports', []) + ['22']
+    for i, port in enumerate(ports):
         ss = port.split(':')
         if len(ss) == 2:
             public_port, local_port = ss
@@ -60,7 +63,10 @@ def install(job):
             public_port = None
 
         public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
-        service.model.data.ports[i] = "%s:%s" % (public, local)
+        ports[i] = "%s:%s" % (public, local)
+
+    service.model.data.ports = ports
+
     if 'sshkey' not in service.producers:
         raise j.exceptions.AYSNotFound("No sshkey service consumed. please consume an sshkey service")
 
@@ -72,7 +78,7 @@ def install(job):
     # we need to find all the ports forwarding chain to reach the inner most node.
     ssh_port = '22'
 
-    for port in service.model.data.ports:
+    for port in ports:
         src, _, dst = port.partition(':')
         if ssh_port == dst:
             ssh_port = src
