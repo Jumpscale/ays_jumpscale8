@@ -3,7 +3,7 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    cfg = cuisine.core.file_read('$tmplsDir/cfg/portal/config.hrd')
+    cfg = cuisine.core.file_read('$TEMPLATEDIR/cfg/portal/config.hrd')
     cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
 
     # configure portal basics
@@ -38,14 +38,14 @@ def install(job):
         cfg.set('param.cfg.token_url', service.model.data.oauthTokenUrl)
 
 
-    cuisine.core.file_write('$cfgDir/portals/main/config.hrd', str(cfg))
+    cuisine.core.file_write('$JSCFGDIR/portals/main/config.hrd', str(cfg))
 
-    cuisine.core.dir_ensure('$cfgDir/portals')
-    if not cuisine.core.file_exists('$appDir/portals/main/base/AYS81'):
-        cuisine.core.file_link('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$appDir/portals/main/base/AYS81')
+    cuisine.core.dir_ensure('$JSCFGDIR/portals')
+    if not cuisine.core.file_exists('$JSAPPDIR/portals/main/base/AYS81'):
+        cuisine.core.file_link('$CODEDIR/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$JSAPPDIR/portals/main/base/AYS81')
 
     cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$appDir/portals/main')
+    wd = cuisine.core.args_replace('$JSAPPDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 
@@ -54,7 +54,7 @@ def start(job):
     service = job.service
     cuisine = service.executor.cuisine
     cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$appDir/portals/main')
+    wd = cuisine.core.args_replace('$JSAPPDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 

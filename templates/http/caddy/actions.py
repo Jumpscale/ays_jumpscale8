@@ -3,7 +3,7 @@ def install(job):
     cuisine = job.service.executor.cuisine
 
     name = "caddy_%s" % service.name
-    proxies_dir = cuisine.core.args_replace('$cfgDir/caddy/%s/proxies' % name)
+    proxies_dir = cuisine.core.args_replace('$JSCFGDIR/caddy/%s/proxies' % name)
     cuisine.core.dir_ensure(proxies_dir)
 
     for proxy_info in service.producers.get('caddy_proxy', []):
@@ -27,7 +27,7 @@ def install(job):
         cfg += 'gzip\n'
     cfg += 'import %s/*\n' % proxies_dir
 
-    conf_location = cuisine.core.args_replace('$cfgDir/caddy/%s/Caddyfile' % name)
+    conf_location = cuisine.core.args_replace('$JSCFGDIR/caddy/%s/Caddyfile' % name)
     cuisine.core.file_write(conf_location, cfg)
 
     bin_location = cuisine.core.command_location('caddy')
@@ -38,7 +38,7 @@ def install(job):
     if service.model.data.stagging is True:
         # enable stating environment, remove for prodction
         cmd += ' -ca https://acme-staging.api.letsencrypt.org/directory'
-    cuisine.processmanager.ensure("caddy_%s" % service.name, cmd=cmd, path='$cfgDir/caddy/%s' % name)
+    cuisine.processmanager.ensure("caddy_%s" % service.name, cmd=cmd, path='$JSCFGDIR/caddy/%s' % name)
 
 
 def start(job):

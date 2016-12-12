@@ -8,7 +8,7 @@ def install(job):
     # configure redis connection for AYS
     redis = service.producers['redis'][0]
     # this line create the default config if it doesn't exsits yet
-    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/ays.yaml")
+    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/ays.yaml")
     config = j.data.serializer.yaml.loads("redis:\n    host: 'localhost'\n    port: 6379\n")
     if cuisine.core.file_exists(cfg_path):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
@@ -29,12 +29,12 @@ def install(job):
 
     # change codedir path in system.yaml to be /optvar/code
     dir_paths = {
-        'CODEDIR': cuisine.core.args_replace('$varDir/code'),
+        'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
         'JSBASE': cuisine.core.dir_paths['base'],
-        'CFGDIR': cuisine.core.dir_paths['cfgDir'],
-        'DATADIR': cuisine.core.args_replace('$varDir/data/'),
+        'CFGDIR': cuisine.core.dir_paths['JSCFGDIR'],
+        'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
         'TMPDIR': '/tmp',
-        'VARDIR': cuisine.core.dir_paths['varDir']
+        'VARDIR': cuisine.core.dir_paths['VARDIR']
         }
 
     branch = 'master'
@@ -49,22 +49,22 @@ def install(job):
         'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
         'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
         }
-    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/system.yaml")
-    cuisine.core.dir_ensure('$varDir/code/')
+    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/system.yaml")
+    cuisine.core.dir_ensure('$VARDIR/code/')
     if cuisine.core.file_exists(cfg_path):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
 
         if 'dirs' in config:
-            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
+            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$VARDIR/code/')
 
     else:
         dir_paths = {
-            'CODEDIR': cuisine.core.args_replace('$varDir/code'),
+            'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
             'JSBASE': cuisine.core.dir_paths['base'],
-            'CFGDIR': cuisine.core.dir_paths['cfgDir'],
-            'DATADIR': cuisine.core.args_replace('$varDir/data/'),
+            'CFGDIR': cuisine.core.dir_paths['JSCFGDIR'],
+            'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
             'TMPDIR': '/tmp',
-            'VARDIR': cuisine.core.dir_paths['varDir']
+            'VARDIR': cuisine.core.dir_paths['VARDIR']
             }
 
         build_path = cuisine.core.args_replace("$optDir/build.yaml")
@@ -83,18 +83,18 @@ def install(job):
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
     # write logginf.yaml if it does not exists
-    logging_path = cuisine.core.args_replace("$cfgDir/jumpscale/logging.yaml")
+    logging_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/logging.yaml")
     if not cuisine.core.file_exists(logging_path):
         loggin_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
         cusine.core.file_write(loggin_path, j.data.serializer.yaml.dumps(loggin_config))
 
     # configure REST API
-    raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
+    raml = cuisine.core.file_read('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
-    content = cuisine.core.file_read('$appDir/portals/main/base/AYS81/.space/nav.wiki')
+    cuisine.core.file_write('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml', raml)
+    content = cuisine.core.file_read('$JSAPPDIR/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
-        cuisine.core.file_write('$appDir/portals/main/base/AYS81/.space/nav.wiki',
+        cuisine.core.file_write('$JSAPPDIR/portals/main/base/AYS81/.space/nav.wiki',
                                 'REST API:/api',
                                 append=True)
     api_cfg = {
@@ -112,7 +112,7 @@ def install(job):
             }
         }
     }
-    cuisine.core.file_write('$cfgDir/cockpit_api/config.toml', j.data.serializer.toml.dumps(api_cfg))
+    cuisine.core.file_write('$JSCFGDIR/cockpit_api/config.toml', j.data.serializer.toml.dumps(api_cfg))
 
     # installed required package
     cuisine.package.mdupdate()
@@ -125,11 +125,11 @@ def install(job):
 
     # start api
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPDIR/ays_api'))
     # upload the aysrepo used in installing to the cockpit
-    cuisine.core.dir_ensure('$varDir/cockpit_repos')
-    cuisine.core.upload(service.aysrepo.path, '$varDir/cockpit_repos/cockpit')
-    cuisine.core.run('cd $varDir/cockpit_repos/cockpit; ays restore', profile=True)
+    cuisine.core.dir_ensure('$VARDIR/cockpit_repos')
+    cuisine.core.upload(service.aysrepo.path, '$VARDIR/cockpit_repos/cockpit')
+    cuisine.core.run('cd $VARDIR/cockpit_repos/cockpit; ays restore', profile=True)
 
 
 def start(job):
@@ -142,11 +142,11 @@ def start(job):
     pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
 
     # in case we update the sandbox, need to reconfigure the raml with correct url
-    raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
+    raml = cuisine.core.file_read('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
+    cuisine.core.file_write('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml', raml)
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$appDir/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPDIR/ays_api'))
 
 
 def stop(job):

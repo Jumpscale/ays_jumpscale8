@@ -52,7 +52,7 @@ def init(job):
     # cuisine.solutions.cockpit.install_deps()
 
     # # Configure ays
-    # AYS_CONFIG_LOCATION = "$cfgDir/ays/ays.conf"
+    # AYS_CONFIG_LOCATION = "$JSCFGDIR/ays/ays.conf"
     # _conf = {
     #     "redis": {
     #         "host": "localhost",
@@ -72,7 +72,7 @@ def init(job):
     # pm = cuisine.processmanager.get("tmux")
     # pm.ensure(name="ays_daemon", cmd="ays start")
 
-    # cuisine.development.git.pullRepo('https://github.com/Jumpscale/jscockpit', '$codeDir/github/jumpscale/jscockpit')
+    # cuisine.development.git.pullRepo('https://github.com/Jumpscale/jscockpit', '$CODEDIR/github/jumpscale/jscockpit')
 
     # # Prepare ssh keys
     # dns = service.producers['sshkey'][0]
@@ -106,9 +106,9 @@ def init(job):
     #     }
     # }
     # deployer_cfg = yaml.dump(deployer_cfg, default_flow_style=False)
-    # cuisine.core.file_write(location="$codeDir/github/jumpscale/jscockpit/deployer_bot/config.yaml",
+    # cuisine.core.file_write(location="$CODEDIR/github/jumpscale/jscockpit/deployer_bot/config.yaml",
     #                         content=deployer_cfg,
     #                         replaceArgs=True)
 
-    # cmd = "cd $codeDir/github/jumpscale/jscockpit/deployer_bot && ./telegram-bot -c config.yaml"
+    # cmd = "cd $CODEDIR/github/jumpscale/jscockpit/deployer_bot && ./telegram-bot -c config.yaml"
     # pm.ensure(name="deployer", cmd=cmd)

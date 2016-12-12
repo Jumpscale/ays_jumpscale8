@@ -21,7 +21,7 @@ def install(job):
 
     for config in service.producers['vfs_config']:
         # TODO download flist
-        flist_path = cuisine.core.args_replace('$tmpDir/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
+        flist_path = cuisine.core.args_replace('$TMPDIR/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
         cuisine.core.file_download(config.model.data.mountFlist, flist_path, overwrite=True)
 
         targets.append(config.model.data.mountMountpoint)
@@ -80,14 +80,14 @@ def install(job):
         cuisine.core.dir_ensure(path)
 
     # write config
-    config_path = cuisine.core.args_replace('$cfgDir/fs/%s.toml' % service.name)
+    config_path = cuisine.core.args_replace('$JSCFGDIR/fs/%s.toml' % service.name)
     cuisine.core.file_write(config_path, j.data.serializer.toml.dumps(final_config))
 
     # create service
     pm = cuisine.processmanager.get('tmux')
     bin_location = cuisine.core.command_location('fs')
     cmd = '%s -config %s' % (bin_location, config_path)
-    pm.ensure("fs_%s" % service.name, cmd=cmd, env={}, path='$cfgDir/fs', descr='G8OS FS')
+    pm.ensure("fs_%s" % service.name, cmd=cmd, env={}, path='$JSCFGDIR/fs', descr='G8OS FS')
 
     # wait until all targets are actually mounted
     # We wait max 1 min per target
