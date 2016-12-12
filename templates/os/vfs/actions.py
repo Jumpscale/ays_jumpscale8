@@ -3,9 +3,9 @@ def install(job):
 
     # For now we download FS from there. when we have proper VM image it will be installed already
     if not cuisine.core.command_check('fs'):
-        cuisine.core.dir_ensure('$binDir')
-        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', '$binDir/fs')
-        cuisine.core.file_attribs('$binDir/fs', '0550')
+        cuisine.core.dir_ensure('$BINDIR')
+        cuisine.core.file_download('https://stor.jumpscale.org/public/fs', '$BINDIR/fs')
+        cuisine.core.file_attribs('$BINDIR/fs', '0550')
 
 
 def start(job):
@@ -55,7 +55,7 @@ def start(job):
         cuisine.core.file_write(config_path, config)
 
         pm = cuisine.processmanager.get('tmux')
-        cmd = '$binDir/fs -config %s' % config_path
+        cmd = '$BINDIR/fs -config %s' % config_path
         pm.ensure("fs_%s" % flist.name, cmd=cmd, env={}, path='$JSCFGDIR/fs', descr='G8OS FS')
 
 
@@ -128,7 +128,7 @@ def start_flist(job):
     cuisine.core.file_write(config_path, config)
 
     pm = cuisine.processmanager.get('tmux')
-    cmd = '$binDir/fs -config %s' % config_path
+    cmd = '$BINDIR/fs -config %s' % config_path
     pm.ensure("fs_%s" % flist_name, cmd=cmd, env={}, path='$JSCFGDIR/fs', descr='G8OS FS')
 
 
