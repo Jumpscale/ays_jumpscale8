@@ -43,7 +43,42 @@ def install(job):
     cuisine.core.dir_ensure('$cfgDir/portals')
     if not cuisine.core.file_exists('$appDir/portals/main/base/AYS81'):
         cuisine.core.file_link('$codeDir/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$appDir/portals/main/base/AYS81')
+    # make sure system.yaml exists at this step
+    # change codedir path in system.yaml to be /optvar/code
+    dir_paths = {
+        'CODEDIR': cuisine.core.args_replace('$varDir/code'),
+        'JSBASE': cuisine.core.dir_paths['base'],
+        'CFGDIR': cuisine.core.dir_paths['cfgDir'],
+        'DATADIR': cuisine.core.args_replace('$varDir/data/'),
+        'TMPDIR': '/tmp',
+        'VARDIR': cuisine.core.dir_paths['varDir']
+        }
 
+    branch = 'master'
+    build_path = cuisine.core.args_replace("$optDir/build.yaml")
+    if cuisine.core.file_exists(build_path):
+        versions = j.data.serializer.yaml.loads(cuisine.core.file_read(build_path))
+        if 'jumpscale' in versions:
+            branch = versions['jumpscale']
+
+    config = {
+        'dirs': dir_paths,
+        'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
+        'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
+        }
+    cfg_path = cuisine.core.args_replace("$cfgDir/jumpscale/system.yaml")
+    cuisine.core.dir_ensure('$varDir/code/')
+    if cuisine.core.file_exists(cfg_path):
+        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
+        if 'dirs' in config:
+            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$varDir/code/')
+    cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
+    cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
+    # make sure logging.yaml exists
+    logging_path = cuisine.core.args_replace("$cfgDir/jumpscale/logging.yaml")
+    if not cuisine.core.file_exists(logging_path):
+        logging_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
+        cuisine.core.file_write(logging_path, j.data.serializer.yaml.dumps(logging_config))
     cmd = cuisine.core.args_replace('jspython portal_start.py')
     wd = cuisine.core.args_replace('$appDir/portals/main')
     pm = cuisine.processmanager.get('tmux')

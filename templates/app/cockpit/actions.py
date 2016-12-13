@@ -137,6 +137,7 @@ def init(job):
         'os': os.name,
         'fs': fs.name,
         'redis': redis.name,
+        'portal': portal.name,
 
         'domain': service.model.data.domain,
 
