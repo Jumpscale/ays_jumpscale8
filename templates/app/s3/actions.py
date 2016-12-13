@@ -78,7 +78,9 @@ def init(job):
         'os': 'app',
         'domain': service.model.data.domain,
         'storage.data': '/data/data',
-        'storage.meta': '/data/meta'
+        'storage.meta': '/data/meta',
+        'key.access': service.model.data.keyAccess,
+        'key.secret': service.model.data.keySecret,
     }
 
     repo.actorGet('scality').serviceCreate('app', app)
