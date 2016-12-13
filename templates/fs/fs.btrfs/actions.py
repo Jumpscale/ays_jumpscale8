@@ -86,7 +86,6 @@ def autoscale(job):
         raise RuntimeError('failed to find the parent node')
     # DEBUG, set free to 0
     current_disks = list(node.model.data.disk)
-    free = 0
     if free < service.model.data.threshold:
         # add new disk to the array.
         args = {
