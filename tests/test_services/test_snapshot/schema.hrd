@@ -1,0 +1,3 @@
+g8client=type:str consume:g8client
+node.ovc=type:str consume:node.ovc
+result=type:str
