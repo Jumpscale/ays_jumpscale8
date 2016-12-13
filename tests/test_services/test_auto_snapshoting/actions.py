@@ -8,11 +8,11 @@ def init_actions_(service, args):
 
 
     return {
-        'test_snapshot': ['install']
+        'test_auto_snapshoting': ['install']
     }
 
 
-def test_snapshot(job):
+def test_auto_snapshoting(job):
     import requests, sys
     service = job.service
     try:
@@ -36,14 +36,14 @@ def test_snapshot(job):
         response = session.get(url=API_URL, data=API_BODY)
 
         if response.status_code == 200:
-            service.model.data.result = 'OK : %s ' % 'test_snapshot'
+            service.model.data.result = 'OK : %s ' % 'test_auto_snapshoting'
         else:
             response_data = {'status_code': response.status_code,
                              'content': response.content}
-            service.model.data.result = 'FAILED : %s %s' % ('test_snapshot',str(response_data))
+            service.model.data.result = 'FAILED : %s %s' % ('test_auto_snapshoting',str(response_data))
 
     except:
-        service.model.data.result = 'ERROR : %s %s' % ('test_snapshot', str(sys.exc_info()[:2]))
+        service.model.data.result = 'ERROR : %s %s' % ('test_auto_snapshoting', str(sys.exc_info()[:2]))
     service.save()
 
 
