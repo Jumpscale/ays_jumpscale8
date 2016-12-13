@@ -1,0 +1,2 @@
+os = type:string  parent:os
+branch = type:string default:'master'
