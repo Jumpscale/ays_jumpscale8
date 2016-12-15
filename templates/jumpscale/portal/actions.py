@@ -34,6 +34,15 @@ def install(job):
         cfg.set('param.cfg.force_oauth_instance', service.model.data.oauthProvider)
         cfg.set('param.cfg.oauth.default_groups', [i for i in service.model.data.oauthDefaultGroups])
         cfg.set('param.cfg.organization', service.model.data.oauthOrganization)
+
+        if service.model.data.oauthRedirectUrl.split('/')[2] == '':  # if no domain is set use ip instead
+            node = service.aysrepo.servicesFind(actor='node.*')[0]
+            redirect_url = service.model.data.oauthRedirectUrl.split('/')
+            redirect_url[2] = node.model.data.ipPublic
+            #  if not domain use http instead of https
+            redirect_url[0] = 'http:'
+            service.model.data.oauthRedirectUrl = '/'.join(redirect_url)
+
         cfg.set('param.cfg.redirect_url', service.model.data.oauthRedirectUrl)
         cfg.set('param.cfg.token_url', service.model.data.oauthTokenUrl)
 

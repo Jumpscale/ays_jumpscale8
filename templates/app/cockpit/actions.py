@@ -43,22 +43,22 @@ def init(job):
             'login': 'root',
         }
         repo.actorGet('dnsclient').serviceCreate(name, dns)
+    if service.model.data.domain:
+        # only take that last part of the domain.
+        # e.g: sub.domain.com -> we keep domain.com
+        root_domain = '.'.join(service.model.data.domain.split('.')[-2:])
+        # sub domain is the domain minus the root_domain
+        subdomain = sub = service.model.data.domain[:-len(root_domain) - 1]
+        dns_domain = {
+            'dnsclient': dns_clients_names,
+            'ttl': 600,
+            'domain': root_domain,
+            'a.records': ["{subdomain}:{node}".format(subdomain=subdomain, node=node.name)],
+            'node': [node.name],
+        }
 
-    # only take that last part of the domain.
-    # e.g: sub.domain.com -> we keep domain.com
-    root_domain = '.'.join(service.model.data.domain.split('.')[-2:])
-    # sub domain is the domain minus the root_domain
-    subdomain = sub = service.model.data.domain[:-len(root_domain) - 1]
-    dns_domain = {
-        'dnsclient': dns_clients_names,
-        'ttl': 600,
-        'domain': root_domain,
-        'a.records': ["{subdomain}:{node}".format(subdomain=subdomain, node=node.name)],
-        'node': [node.name],
-    }
-
-    dns_domain_service = repo.actorGet('dns_domain').serviceCreate('cockpit', dns_domain)
-    service.consume(dns_domain_service)
+        dns_domain_service = repo.actorGet('dns_domain').serviceCreate('cockpit', dns_domain)
+        service.consume(dns_domain_service)
 
     api = {
         'src': '/api',

@@ -29,13 +29,27 @@ def install(job):
 
     # configure REST API
     raml = cuisine.core.file_read('$appDir/ays_api/ays_api/apidocs/api.raml')
-    raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
+    if service.model.data.domain == '':  # if no domain is set use ip instead
+        node = service.aysrepo.servicesFind(actor='node.*')[0]
+        service.model.data.domain = node.model.data.ipPublic
+        raml = raml.replace('$(baseuri)', "http://%s/api" % service.model.data.domain)
+    else:
+        raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$appDir/ays_api/ays_api/apidocs/api.raml', raml)
     content = cuisine.core.file_read('$appDir/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
         cuisine.core.file_write('$appDir/portals/main/base/AYS81/.space/nav.wiki',
                                 'REST API:/api',
                                 append=True)
+
+    if service.model.data.oauthRedirectUrl.split('/')[2] == '':  # if no domain is set use ip instead
+        node = service.aysrepo.servicesFind(actor='node.*')[0]
+        redirect_url = service.model.data.oauthRedirectUrl.split('/')
+        redirect_url[2] = node.model.data.ipPublic
+        #  use http instead of https
+        redirect_url[0] = 'http:'
+        service.model.data.oauthRedirectUrl = '/'.join(redirect_url)
+
     api_cfg = {
         'oauth': {
             'client_secret': service.model.data.oauthClientSecret,
