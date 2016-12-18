@@ -1,0 +1,2 @@
+s3 = type:string consume:s3
+scality = type:string consume:scality
