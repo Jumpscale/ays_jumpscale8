@@ -1,17 +1,16 @@
 ### This blueprint is not tested yet, please don't use
 g8client__main:
-    url: 'du-conv-3.demo.greenitglobe.com'
-    login: 'thabeta'
-    password: '******'
-    account: 'thabeta'
+    url: '{environment}'
+    login: '{username}'
+    password: '{password}'
+    account: '{account}'
 
-vdc__main:
+vdc__{random_vdc}:
     g8client: 'main'
-    description: 'desc'
-    location: 'du-conv-3'
+    location: '{environment}'
 
 blueowncloud__bc:
-    vdc: 'main'
+    vdc: '{random_vdc}'
     datadisks:
        - 1000
        - 1000
@@ -19,3 +18,8 @@ blueowncloud__bc:
 
 test_owncloud_install:
     blueowncloud: 'bc'
+
+actions:
+    - action: 'install'
+    - action: 'test'
+      actor: 'test_owncloud_install'
