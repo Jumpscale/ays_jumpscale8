@@ -16,8 +16,10 @@ blueowncloud__bc:
        - 1000
     domain: 'testcloud.com'
 
+# 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_owncloud_install:
     blueowncloud: 'bc'
+    owncloud: 'own1'
 
 actions:
     - action: 'install'
