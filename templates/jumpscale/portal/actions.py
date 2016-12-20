@@ -41,11 +41,11 @@ def install(job):
     cuisine.core.file_write('$JSCFGDIR/portals/main/config.hrd', str(cfg))
 
     cuisine.core.dir_ensure('$JSCFGDIR/portals')
-    if not cuisine.core.file_exists('$JSAPPDIR/portals/main/base/AYS81'):
-        cuisine.core.file_link('$CODEDIR/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$JSAPPDIR/portals/main/base/AYS81')
+    if not cuisine.core.file_exists('$JSAPPSDIR/portals/main/base/AYS81'):
+        cuisine.core.file_link('$CODEDIR/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$JSAPPSDIR/portals/main/base/AYS81')
 
     cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$JSAPPDIR/portals/main')
+    wd = cuisine.core.args_replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 
@@ -54,7 +54,7 @@ def start(job):
     service = job.service
     cuisine = service.executor.cuisine
     cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$JSAPPDIR/portals/main')
+    wd = cuisine.core.args_replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 

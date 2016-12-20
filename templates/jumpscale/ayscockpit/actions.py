@@ -89,12 +89,12 @@ def install(job):
         cusine.core.file_write(loggin_path, j.data.serializer.yaml.dumps(loggin_config))
 
     # configure REST API
-    raml = cuisine.core.file_read('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml')
+    raml = cuisine.core.file_read('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml', raml)
-    content = cuisine.core.file_read('$JSAPPDIR/portals/main/base/AYS81/.space/nav.wiki')
+    cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
+    content = cuisine.core.file_read('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
-        cuisine.core.file_write('$JSAPPDIR/portals/main/base/AYS81/.space/nav.wiki',
+        cuisine.core.file_write('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki',
                                 'REST API:/api',
                                 append=True)
     api_cfg = {
@@ -125,7 +125,7 @@ def install(job):
 
     # start api
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPDIR/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPSDIR/ays_api'))
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$VARDIR/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$VARDIR/cockpit_repos/cockpit')
@@ -142,11 +142,11 @@ def start(job):
     pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
 
     # in case we update the sandbox, need to reconfigure the raml with correct url
-    raml = cuisine.core.file_read('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml')
+    raml = cuisine.core.file_read('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml')
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$JSAPPDIR/ays_api/ays_api/apidocs/api.raml', raml)
+    cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPDIR/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPSDIR/ays_api'))
 
 
 def stop(job):
