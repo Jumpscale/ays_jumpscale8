@@ -23,7 +23,7 @@ def init(job):
         'disk': disks
     }
 
-    repo.actorGet('node.ovc').serviceCreate(service.name, vm)
+    nodevm = repo.actorGet('node.ovc').serviceCreate(service.name, vm)
     repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': service.name})
     repo.actorGet('app_docker').serviceCreate('appdocker', {'os': service.name})
 
@@ -98,12 +98,18 @@ def init(job):
 
     repo.actorGet('tidb').serviceCreate('tidb', {'os': 'tidb', 'clusterId': '1'})
 
+    # app
+    machineip = nodevm.model.data.ipPublic
+    # ip2num
+    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
+    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.appname, num=machineuniquenumber)
+
     owncloudconf = {
         'os': 'owncloud',
         'tidb': 'tidb',
         'tidbuser': 'root',
         'tidbpassword': '',
-        'sitename': service.model.data.domain,
+        'sitename': domain,
         'owncloudAdminUser': 'admin',
         'owncloudAdminPassword': 'admin'
     }

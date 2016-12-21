@@ -17,7 +17,7 @@ def init(job):
         'disk': list(service.model.data.disk)
     }
 
-    repo.actorGet('node.ovc').serviceCreate(service.name, vm)
+    nodevm = repo.actorGet('node.ovc').serviceCreate(service.name, vm)
     repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': service.name})
 
     # filesystem
@@ -74,9 +74,14 @@ def init(job):
     repo.actorGet('os.ssh.ubuntu').serviceCreate('app', {'node': 'app'})
 
     # app
+    machineip = nodevm.model.data.ipPublic
+    # ip2num
+    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
+    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.appname, num=machineuniquenumber)
+
     app = {
         'os': 'app',
-        'domain': service.model.data.domain,
+        'domain': domain,
         'storage.data': '/data/data',
         'storage.meta': '/data/meta',
         'key.access': service.model.data.keyAccess,
