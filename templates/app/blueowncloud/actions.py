@@ -85,7 +85,7 @@ def init(job):
         'os': service.name,
         'ports': [
             '2202:22',
-            '80:80'
+            '8000:80'
         ],
         'volumes': [
             '/mnt/fs/opt/:/opt/',
@@ -102,7 +102,9 @@ def init(job):
     machineip = nodevm.model.data.ipPublic
     # ip2num
     machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
-    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.appname, num=machineuniquenumber)
+    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    service.model.data.fqdn = domain
+    service.saveAll()
 
     owncloudconf = {
         'os': 'owncloud',
@@ -115,3 +117,39 @@ def init(job):
     }
 
     repo.actorGet('owncloud').serviceCreate('own1', owncloudconf)
+
+    # caddy proxy
+    caddy = {
+        'image': 'jumpscale/ubuntu1604',
+        'docker': 'docker',
+        'hostname': 'caddy',
+        'fs': ['fuse'],
+        'os': service.name,
+        'ports': [
+            '2202:22',
+            '80:80'
+        ],
+        'volumes': [
+            '/mnt/fs/opt/:/opt/',
+        ]
+    }
+
+    repo.actorGet('node.docker').serviceCreate('caddy', caddy)
+    repo.actorGet('os.ssh.ubuntu').serviceCreate('caddy', {'node': 'caddy'})
+
+    proxy = {
+        'src': '/',
+        'dst': ['172.17.0.1:8000']
+    }
+
+    repo.actorGet('caddy_proxy').serviceCreate('proxy', proxy)
+
+    caddy_service = {
+        'os': 'caddy',
+        'fs': 'cockpit',
+        'email': 'mail@fake.com',
+        'hostname': ':80',
+        'caddy_proxy': ['proxy']
+    }
+
+    repo.actorGet('caddy').serviceCreate('caddy', caddy_service)

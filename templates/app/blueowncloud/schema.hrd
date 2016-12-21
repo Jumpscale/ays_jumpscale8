@@ -3,4 +3,5 @@ vdc = type:str parent:'vdc' auto
 sshkey = type:str consume:sshkey:1  auto
 
 datadisks = type:int list
-appname = type:str
+hostprefix = type:str
+fqdn = type:str default:''

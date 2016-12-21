@@ -77,8 +77,9 @@ def init(job):
     machineip = nodevm.model.data.ipPublic
     # ip2num
     machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
-    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.appname, num=machineuniquenumber)
-
+    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    service.model.data.fqdn = domain
+    service.saveAll()
     app = {
         'os': 'app',
         'domain': domain,
