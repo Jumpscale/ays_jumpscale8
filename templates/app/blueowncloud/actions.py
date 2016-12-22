@@ -173,6 +173,13 @@ def install(job):
 
     fqdn = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
     httpdomain = "http://{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+
+    httpdomain = "http://{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    if service.model.enablehttps is False:
+        httpdomain = httpdomain.replace("https", "http")
+    else:
+        httpdomain = httpdomain.replace("https", "https")
+
     service.model.data.fqdn = fqdn
     service.saveAll()
 

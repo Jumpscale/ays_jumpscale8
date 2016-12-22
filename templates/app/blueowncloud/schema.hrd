@@ -5,3 +5,4 @@ sshkey = type:str consume:sshkey:1  auto
 datadisks = type:int list
 hostprefix = type:str
 fqdn = type:str default:''
+enablehttps = type:bool  default:False

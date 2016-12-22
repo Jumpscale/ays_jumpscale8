@@ -8,3 +8,4 @@ hostprefix = type:str
 fqdn = type:str default:''
 key.access = type:str default:''
 key.secret = type:str default:''
+enablehttps = type:bool  default:False
