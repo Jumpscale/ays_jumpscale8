@@ -18,12 +18,14 @@ def init(job):
             '2200:22',
             '2201:2201',
             '2202:2202',
+            '2303:2203',
             '80:80'
         ],
         'disk': disks
     }
-
     nodevm = repo.actorGet('node.ovc').serviceCreate(service.name, vm)
+    service.consume(nodevm)  # CONSUME NODEVM TO FIX ORDER OF EXECUTION
+
     repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': service.name})
     repo.actorGet('app_docker').serviceCreate('appdocker', {'os': service.name})
 
@@ -62,7 +64,7 @@ def init(job):
     # tidb docker
     tidb = {
         'image': 'jumpscale/ubuntu1604',
-        'hostname': service.model.data.domain,
+        'hostname': service.model.data.fqdn,
         'fs': ['fuse'],
         'os': service.name,
         'ports': [
@@ -80,7 +82,7 @@ def init(job):
     # app docker
     owncloud = {
         'image': 'jumpscale/ubuntu1604',
-        'hostname': service.model.data.domain,
+        'hostname': service.model.data.fqdn,
         'fs': ['fuse', 'data'],
         'os': service.name,
         'ports': [
@@ -98,20 +100,20 @@ def init(job):
 
     repo.actorGet('tidb').serviceCreate('tidb', {'os': 'tidb', 'clusterId': '1'})
 
-    # app
-    machineip = nodevm.model.data.ipPublic
-    # ip2num
-    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
-    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
-    service.model.data.fqdn = domain
-    service.saveAll()
+    # # app
+    # machineip = nodevm.model.data.ipPublic
+    # # ip2num
+    # machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
+    # domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    #service.model.data.fqdn = fqdn
+    #service.saveAll()
 
     owncloudconf = {
         'os': 'owncloud',
         'tidb': 'tidb',
         'tidbuser': 'root',
         'tidbpassword': '',
-        'sitename': domain,
+        'sitename': service.model.data.fqdn,
         'owncloudAdminUser': 'admin',
         'owncloudAdminPassword': 'admin'
     }
@@ -126,7 +128,7 @@ def init(job):
         'fs': ['fuse'],
         'os': service.name,
         'ports': [
-            '2202:22',
+            '2203:22',
             '80:80'
         ],
         'volumes': [
@@ -149,7 +151,38 @@ def init(job):
         'fs': 'cockpit',
         'email': 'mail@fake.com',
         'hostname': ':80',
-        'caddy_proxy': ['proxy']
+        'caddy_proxy': ['proxy'],
+        'stagging': True,
+        'transparent': True,
     }
 
     repo.actorGet('caddy').serviceCreate('caddy', caddy_service)
+
+
+
+def install(job):
+
+    service = job.service
+    repo = service.aysrepo
+    nodevm = repo.serviceGet(role='node.ovc', instance=service.name)   # nodevm.
+    # app
+    machineip = nodevm.model.data.ipPublic
+    # ip2num
+    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
+
+    fqdn = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    httpdomain = "http://{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    service.model.data.fqdn = fqdn
+    service.saveAll()
+
+    # NOW SET the domain on the services that requires the fqdn.
+
+    # 1- owncloud service conf
+    owncloudconf = repo.serviceGet(role="owncloud", instance="own1")
+    owncloudconf.model.data.sitename = fqdn
+    owncloudconf.saveAll()
+
+    # 2- caddy service conf
+    caddyconf = repo.serviceGet(role='caddy', instance='caddy')
+    caddyconf.model.data.hostname = httpdomain
+    caddyconf.saveAll()
