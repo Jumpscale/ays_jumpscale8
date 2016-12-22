@@ -5,5 +5,6 @@ hostname = type:str
 gzip = type:bool default:True
 email = type:str
 stagging = type:bool default:False
+transparent = type:bool default:False
 
 caddy_proxy = list type:str consume:caddy_proxy

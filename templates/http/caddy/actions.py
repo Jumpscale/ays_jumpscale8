@@ -17,6 +17,8 @@ def install(job):
             cfg += '\theader_upstream %s\n' % header
         for header in proxy_info.model.data.headerDownstream:
             cfg += '\theader_downstream %s\n' % header
+        if proxy_info.model.data.transparent is True:
+            cfg += '\ttransparent\n'
         cfg += '}\n'
 
         cuisine.core.file_write(proxies_dir + '/%s' % proxy_info.name, cfg)
