@@ -141,7 +141,9 @@ def init(job):
 
     proxy = {
         'src': '/',
-        'dst': ['172.17.0.1:8000']
+        'dst': ['172.17.0.1:8000'],
+        'transparent': True,
+
     }
 
     repo.actorGet('caddy_proxy').serviceCreate('proxy', proxy)
@@ -153,7 +155,6 @@ def init(job):
         'hostname': ':80',
         'caddy_proxy': ['proxy'],
         'stagging': True,
-        'transparent': True,
     }
 
     repo.actorGet('caddy').serviceCreate('caddy', caddy_service)

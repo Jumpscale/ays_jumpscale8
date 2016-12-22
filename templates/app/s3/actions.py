@@ -18,7 +18,8 @@ def init(job):
     }
 
     nodevm = repo.actorGet('node.ovc').serviceCreate(service.name, vm)
-    repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': service.name})
+    repo.actorGet('os.ssh.ubuntu').serviceCreate(service.name, {'node': nodevm.name})
+    service.consume(nodevm)  # CONSUME NODEVM TO FIX ORDER OF EXECUTION
 
     # filesystem
     # 1- fuse
@@ -53,11 +54,12 @@ def init(job):
     repo.actorGet('fs.btrfs').serviceCreate('data', btrfs)
     repo.actorGet('app_docker').serviceCreate('docker')
 
+
     # app docker
     docker = {
         'image': 'jumpscale/ubuntu1604',
         'docker': 'docker',
-        'hostname': service.model.data.domain,
+        'hostname': service.model.data.fqdn,
         'fs': ['fuse', 'data'],
         'os': service.name,
         'ports': [
@@ -73,16 +75,10 @@ def init(job):
     repo.actorGet('node.docker').serviceCreate('app', docker)
     repo.actorGet('os.ssh.ubuntu').serviceCreate('app', {'node': 'app'})
 
-    # app
-    machineip = nodevm.model.data.ipPublic
-    # ip2num
-    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
-    domain = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
-    service.model.data.fqdn = domain
-    service.saveAll()
+
     app = {
         'os': 'app',
-        'domain': domain,
+        'domain': service.model.data.fqdn,
         'storage.data': '/data/data',
         'storage.meta': '/data/meta',
         'key.access': service.model.data.keyAccess,
@@ -112,7 +108,9 @@ def init(job):
 
     proxy = {
         'src': '/',
-        'dst': ['172.17.0.1:8000']
+        'dst': ['172.17.0.1:8000'],
+        'transparent': True,
+
     }
 
     repo.actorGet('caddy_proxy').serviceCreate('proxy', proxy)
@@ -122,7 +120,35 @@ def init(job):
         'fs': 'cockpit',
         'email': 'mail@fake.com',
         'hostname': ':80',
-        'caddy_proxy': ['proxy']
+        'caddy_proxy': ['proxy'],
+        'stagging': True,
     }
 
     repo.actorGet('caddy').serviceCreate('caddy', caddy_service)
+
+def install(job):
+
+    service = job.service
+    repo = service.aysrepo
+    nodevm = repo.serviceGet(role='node.ovc', instance=service.name)   # nodevm.
+    # app
+    machineip = nodevm.model.data.ipPublic
+    # ip2num
+    machineuniquenumber = j.sal.nettools.ip_to_num(machineip)
+
+    fqdn = "{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    httpdomain = "http://{appname}-{num}.gigapps.io".format(appname=service.model.data.hostprefix, num=machineuniquenumber)
+    service.model.data.fqdn = fqdn
+    service.saveAll()
+
+    # NOW SET the domain on the services that requires the fqdn.
+
+    # 1- scality service conf
+    scalityconf = repo.serviceGet(role="scality", instance="app")
+    scalityconf.model.data.domain = fqdn
+    scalityconf.saveAll()
+
+    # 2- caddy service conf
+    caddyconf = repo.serviceGet(role='caddy', instance='caddy')
+    caddyconf.model.data.hostname = httpdomain
+    caddyconf.saveAll()
