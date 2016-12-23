@@ -18,7 +18,7 @@ def init(job):
             '2200:22',
             '2201:2201',
             '2202:2202',
-            '2303:2203',
+            '2203:2203',
             '80:80'
         ],
         'disk': disks
@@ -34,7 +34,7 @@ def init(job):
     fuse_cfg = {
         'mount.namespace': 'sandbox_ub1604',
         'mount.mountpoint': '/mnt/fs',
-        'mount.flist': 'https://stor.jumpscale.org/stor2/flist/sandbox_ub1604/opt.flist',
+        'mount.flist':'https://stor.jumpscale.org/stor2/flist/sandbox_ub1604/opt.flist',
         'mount.mode': 'ol',
         'mount.trimbase': False,
         'backend.path': '/mnt/fs_backend/opt',
@@ -190,7 +190,7 @@ def install(job):
     owncloudconf.model.data.sitename = fqdn
     owncloudconf.saveAll()
 
-    # 2- caddy service conf
+#    # 2- caddy service conf
     caddyconf = repo.serviceGet(role='caddy', instance='caddy')
     caddyconf.model.data.hostname = httpdomain
     caddyconf.saveAll()

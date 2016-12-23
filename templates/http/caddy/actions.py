@@ -35,7 +35,12 @@ def install(job):
     conf_location = cuisine.core.args_replace('$cfgDir/caddy/%s/Caddyfile' % name)
     cuisine.core.file_write(conf_location, cfg)
 
-    bin_location = cuisine.core.command_location('caddy')
+    #bin_location = cuisine.core.command_location('caddy')
+    caddy_url = 'https://github.com/mholt/caddy/releases/download/v0.9.4/caddy_linux_amd64.tar.gz'
+    dest = '$tmpDir/caddy_linux_amd64.tar.gz'
+    cuisine.core.file_download(caddy_url, dest)
+    cuisine.core.run('cd $tmpDir; tar xvf $tmpDir/caddy_linux_amd64.tar.gz')
+    bin_location=cuisine.core.args_replace('$tmpDir/caddy_linux_amd64')
     cmd = '{bin} -conf {conf} --agree --email {email}'.format(
         bin=bin_location,
         conf=conf_location,
