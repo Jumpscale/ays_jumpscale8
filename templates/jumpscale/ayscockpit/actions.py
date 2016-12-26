@@ -8,7 +8,7 @@ def install(job):
     # configure redis connection for AYS
     redis = service.producers['redis'][0]
     # this line create the default config if it doesn't exsits yet
-    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/ays.yaml")
+    cfg_path = cuisine.core.replace("$JSCFGDIR/jumpscale/ays.yaml")
     config = j.data.serializer.yaml.loads("redis:\n    host: 'localhost'\n    port: 6379\n")
     if cuisine.core.file_exists(cfg_path):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
@@ -27,86 +27,39 @@ def install(job):
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
-    # change codedir path in system.yaml to be /optvar/code
-    dir_paths = {
-        'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
-        'JSBASE': cuisine.core.dir_paths['base'],
-        'CFGDIR': cuisine.core.dir_paths['JSCFGDIR'],
-        'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
-        'TMPDIR': '/tmp',
-        'VARDIR': cuisine.core.dir_paths['VARDIR']
-        }
-
-    branch = 'master'
-    cfg_path = cuisine.core.args_replace("$optDir/build.yaml")
-    if cuisine.core.file_exists(cfg_path):
-        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
-        if 'jumpscale' in config:
-            branch = config['jumpscale']
-
-    config = {
-        'dirs': dir_paths,
-        'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
-        'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
-        }
-    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/system.yaml")
-    cuisine.core.dir_ensure('$VARDIR/code/')
-    if cuisine.core.file_exists(cfg_path):
-        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
-
-        if 'dirs' in config:
-            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$VARDIR/code/')
-
-    else:
-        dir_paths = {
-            'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
-            'JSBASE': cuisine.core.dir_paths['base'],
-            'CFGDIR': cuisine.core.dir_paths['JSCFGDIR'],
-            'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
-            'TMPDIR': '/tmp',
-            'VARDIR': cuisine.core.dir_paths['VARDIR']
-            }
-
-        build_path = cuisine.core.args_replace("$optDir/build.yaml")
-        branch = 'master'
-        if cuisine.core.file_exists(cfg_path):
-            build_versions = j.data.serializer.yaml.loads(cuisine.core.file_read(build_path))
-            if 'jumpscale' in build_versions:
-                branch = build_versions['jumpscale']
-
-        config = {
-            'dirs': dir_paths,
-            'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
-            'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
-            }
-
-    cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
-    cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
-    # write logginf.yaml if it does not exists
-    logging_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/logging.yaml")
-    if not cuisine.core.file_exists(logging_path):
-        loggin_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
-        cusine.core.file_write(loggin_path, j.data.serializer.yaml.dumps(loggin_config))
-
     # configure REST API
     raml = cuisine.core.file_read('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml')
-    raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
+    if service.model.data.domain == '':  # if no domain is set use ip instead
+        node = service.aysrepo.servicesFind(actor='node.*')[0]
+        service.model.data.domain = node.model.data.ipPublic
+        raml = raml.replace('$(baseuri)', "http://%s/api" % service.model.data.domain)
+    else:
+        raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
     content = cuisine.core.file_read('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
         cuisine.core.file_write('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki',
                                 'REST API:/api',
                                 append=True)
+
+    if service.model.data.oauthRedirectUrl.split('/')[2] == '':  # if no domain is set use ip instead
+        node = service.aysrepo.servicesFind(actor='node.*')[0]
+        redirect_url = service.model.data.oauthRedirectUrl.split('/')
+        redirect_url[2] = node.model.data.ipPublic
+        #  use http instead of https
+        redirect_url[0] = 'http:'
+        service.model.data.oauthRedirectUrl = '/'.join(redirect_url)
+
     api_cfg = {
-        'oauth':{
+        'oauth': {
             'client_secret': service.model.data.oauthClientSecret,
             'client_id': service.model.data.oauthClientId,
             'organization': service.model.data.oauthOrganization,
             'jwt_key': service.model.data.oauthJwtKey,
             'redirect_uri': service.model.data.oauthRedirectUrl,
         },
-        'api':{
-            'ays':{
+        'api': {
+            'ays': {
                 'host': service.model.data.apiHost,
                 'port': service.model.data.apiPort,
             }

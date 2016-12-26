@@ -1,6 +1,7 @@
 os = type:str parent:'os'
 redis = type:str consume:redis:1:1
 fs = type:string consume:fs:0
+portal = type:string consume:portal:1:1
 
 domain = type:str
 

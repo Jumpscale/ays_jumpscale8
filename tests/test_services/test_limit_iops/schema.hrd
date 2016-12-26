@@ -1,0 +1,2 @@
+os = type:string consume:os
+vm = type:string consume:node.ovc

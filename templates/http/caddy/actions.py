@@ -22,6 +22,9 @@ def install(job):
         cuisine.core.file_write(proxies_dir + '/%s' % proxy_info.name, cfg)
 
     cfg = ''
+    if not service.model.data.hostname:
+        node = service.aysrepo.servicesFind(actor='node.*')[0]
+        service.model.data.hostname = node.model.data.ipPublic
     cfg += service.model.data.hostname + '\n'
     if service.model.data.gzip:
         cfg += 'gzip\n'

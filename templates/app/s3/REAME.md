@@ -45,10 +45,13 @@ s3__demo:
     disk:
       - 'disk1'
     domain: 'mystorage.com'
+    key.access: '' # optional access key (if empty a new one will be generated)
+    key.secret: ''
 
 actions:
   - action: 'install'
 ```
+> NOTE: If `key.access` is not set, a new access key/secret key pair will be generated
 
 > NOTE: Scality doesn't work well with `CyperDuck` the s3 client. To test scality, use `s3cmd`
 

@@ -86,7 +86,6 @@ def autoscale(job):
         raise RuntimeError('failed to find the parent node')
     # DEBUG, set free to 0
     current_disks = list(node.model.data.disk)
-    free = 0
     if free < service.model.data.threshold:
         # add new disk to the array.
         args = {
@@ -104,17 +103,18 @@ def autoscale(job):
     #     raise RuntimeError('failed to find the new added disk (disks found %d)', len(added))
     #TODO: add device to volume
     # get the disk object.
-    disk_name = added.pop()
-    disk = None
-    os_svc = service.producers['os'][0]
-    nod = os_svc.producers['node'][0]
-    for dsk in nod.producers.get('disk', []):
-        if dsk.model.dbobj.name == disk_name:
-            disk = dsk
-            break
-    if disk is None:
-        raise RuntimeError('failed to find disk service instance')
+    if added:
+        disk_name = added.pop()
+        disk = None
+        os_svc = service.producers['os'][0]
+        nod = os_svc.producers['node'][0]
+        for dsk in nod.producers.get('disk', []):
+            if dsk.model.dbobj.name == disk_name:
+                disk = dsk
+                break
+        if disk is None:
+            raise RuntimeError('failed to find disk service instance')
 
-    rc, out, err = cuisine.core.run("btrfs device add /dev/{devicename} {mountpoint}".format(devicename=disk.model.data.devicename, mountpoint=service.model.data.mount))
-    if rc != 0:
-        raise RuntimeError("Couldn't add device to /data")
+        rc, out, err = cuisine.core.run("btrfs device add /dev/{devicename} {mountpoint}".format(devicename=disk.model.data.devicename, mountpoint=service.model.data.mount))
+        if rc != 0:
+            raise RuntimeError("Couldn't add device to /data")

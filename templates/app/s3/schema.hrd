@@ -5,3 +5,6 @@ sshkey = type:str consume:sshkey:1  auto
 
 disk = type:str list consume:disk:0
 domain = type:str
+
+key.access = type:str default:''
+key.secret = type:str default:''

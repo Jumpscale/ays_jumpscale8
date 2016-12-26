@@ -34,6 +34,15 @@ def install(job):
         cfg.set('param.cfg.force_oauth_instance', service.model.data.oauthProvider)
         cfg.set('param.cfg.oauth.default_groups', [i for i in service.model.data.oauthDefaultGroups])
         cfg.set('param.cfg.organization', service.model.data.oauthOrganization)
+
+        if service.model.data.oauthRedirectUrl.split('/')[2] == '':  # if no domain is set use ip instead
+            node = service.aysrepo.servicesFind(actor='node.*')[0]
+            redirect_url = service.model.data.oauthRedirectUrl.split('/')
+            redirect_url[2] = node.model.data.ipPublic
+            #  if not domain use http instead of https
+            redirect_url[0] = 'http:'
+            service.model.data.oauthRedirectUrl = '/'.join(redirect_url)
+
         cfg.set('param.cfg.redirect_url', service.model.data.oauthRedirectUrl)
         cfg.set('param.cfg.token_url', service.model.data.oauthTokenUrl)
 
@@ -42,8 +51,43 @@ def install(job):
 
     cuisine.core.dir_ensure('$JSCFGDIR/portals')
     if not cuisine.core.file_exists('$JSAPPSDIR/portals/main/base/AYS81'):
-        cuisine.core.file_link('$CODEDIR/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$JSAPPSDIR/portals/main/base/AYS81')
+        cuisine.core.file_link('$JSCFGDIR/github/jumpscale/jumpscale_portal8/apps/portalbase/AYS81', '$JSAPPSDIR/portals/main/base/AYS81')
+    # make sure system.yaml exists at this step
+    # change codedir path in system.yaml to be /optvar/code
+    dir_paths = {
+        'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
+        'JSBASE': cuisine.core.dir_paths['base'],
+        'CFGDIR': cuisine.core.dir_paths['cfgDir'],
+        'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
+        'TMPDIR': '/tmp',
+        'VARDIR': cuisine.core.dir_paths['VARDIR']
+        }
 
+    branch = 'master'
+    build_path = cuisine.core.replace("$OPTDIR/build.yaml")
+    if cuisine.core.file_exists(build_path):
+        versions = j.data.serializer.yaml.loads(cuisine.core.file_read(build_path))
+        if 'jumpscale' in versions:
+            branch = versions['jumpscale']
+
+    config = {
+        'dirs': dir_paths,
+        'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
+        'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
+        }
+    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/system.yaml")
+    cuisine.core.dir_ensure('$VARDIR/code/')
+    if cuisine.core.file_exists(cfg_path):
+        config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
+        if 'dirs' in config:
+            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$VARDIR/code/')
+    cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
+    cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
+    # make sure logging.yaml exists
+    logging_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/logging.yaml")
+    if not cuisine.core.file_exists(logging_path):
+        logging_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
+        cuisine.core.file_write(logging_path, j.data.serializer.yaml.dumps(logging_config))
     cmd = cuisine.core.args_replace('jspython portal_start.py')
     wd = cuisine.core.args_replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')

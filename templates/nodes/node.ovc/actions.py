@@ -51,7 +51,10 @@ def install(job):
     service.model.data.sshLogin = vm_info['accounts'][0]['login']
     service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
-    for i, port in enumerate(service.model.data.ports):
+    ssh_present = any([ports for ports in service.model.data.ports if ports.startswith('22')])
+    data = j.data.serializer.json.loads(service.model.dataJSON)
+    ports = data.get('ports', []) if ssh_present else data.get('ports', []) + ['22']
+    for i, port in enumerate(ports):
         ss = port.split(':')
         if len(ss) == 2:
             public_port, local_port = ss
@@ -60,7 +63,10 @@ def install(job):
             public_port = None
 
         public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
-        service.model.data.ports[i] = "%s:%s" % (public, local)
+        ports[i] = "%s:%s" % (public, local)
+
+    service.model.data.ports = ports
+
     if 'sshkey' not in service.producers:
         raise j.exceptions.AYSNotFound("No sshkey service consumed. please consume an sshkey service")
 
@@ -72,7 +78,7 @@ def install(job):
     # we need to find all the ports forwarding chain to reach the inner most node.
     ssh_port = '22'
 
-    for port in service.model.data.ports:
+    for port in ports:
         src, _, dst = port.partition(':')
         if ssh_port == dst:
             ssh_port = src
@@ -128,6 +134,96 @@ def install(job):
 
     service.saveAll()
 
+def processChange(job):
+    # HERE we take care of changing ports in the blueprints.
+    # REMOVING PORT FORWARDING IN BLUEPRINTS REFLECTS WILL REMOVE THE PORTFORWARD.
+    # ADDING NEW PORT FORWARD IN BLUEPRINT WILL ADD A NEW PORTFORWARD.
+    # EDITING PORT FOWARD IN BLUEPRINT = REMOVING THE OLD PORTFORWARD AND CREATING NEW ONE.
+    # PORT 22 IS SPECIAL CASE WE KEEP IT EVEN IF EDITED OR DELETED.
+    service = job.service
+    vdc = service.parent
+    if 'g8client' not in vdc.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    acc = cl.account_get(vdc.model.data.account)
+    space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+
+    if service.name in space.machines:
+        # machine already exists
+        machine = space.machines[service.name]
+
+    args = job.model.args
+    category = args.pop('changeCategory')
+    if category == "dataschema" and service.model.actionsState['install'] == 'ok':
+
+        for key, value in args.items():
+            if key == 'ports':
+
+                oldpfs_set = set()
+                newpfs_set = set()
+                oldports = service.model.data.ports
+
+                # HERE WE GET THE 22 mapping if exists
+                oldlocal22 = '22'
+                oldpublic22 = None # OR THE DEFAULT IS 2200?
+                for port in oldports:
+                    public_port = None
+                    local_port = None
+                    ss = port.split(':')
+                    if len(ss) == 2:
+                        public_port, local_port = ss
+                    else:
+                        local_port = port
+                        public_port = None
+                    if local_port == "22":
+                        oldpublic22 = public_port
+                    oldpfs_set.add((public_port, local_port))
+
+
+                if not isinstance(value, list):
+                    raise j.exceptions.Input(message="Value is not a list.")
+
+
+                ports_list = value  # new ports
+                if oldlocal22:
+                    ports_list.append("%s:%s" % (oldpublic22, oldlocal22))
+                for i, port in enumerate(ports_list):
+                    public_port = None
+                    local_port = None
+                    ss = port.split(':')
+                    if len(ss) == 2:
+                        public_port, local_port = ss
+                    else:
+                        local_port = port
+                        public_port = None
+
+                    newpfs_set.add((public_port, local_port))
+
+                toremove = oldpfs_set - newpfs_set
+                tocreate = newpfs_set - oldpfs_set
+
+                for idx, (public_port, local_port) in enumerate(toremove):
+                    if local_port == '22':
+                        continue
+                    machine.delete_portforwarding(public_port)
+
+                ports = [None]*(len(tocreate) - ( 1 if oldlocal22 else 0))
+                for idx, (public_port, local_port) in enumerate(tocreate):
+                    if local_port == oldlocal22:
+                        idx -= 1
+                        continue
+                    public, local = machine.create_portforwarding(publicport=public_port, localport=local_port, protocol='tcp')
+                    ports.append("%s:%s" % (public, local))
+
+                # KEEP THE OLDSSH PART
+                ports.append("%s:%s"%(oldpublic22, oldlocal22))
+
+                setattr(service.model.data, key, value)
+
+        space.save()
+        service.save()
 
 def export(job):
     service = job.service
