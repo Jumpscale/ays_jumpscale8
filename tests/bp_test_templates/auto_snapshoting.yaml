@@ -23,11 +23,11 @@ autosnapshotting__{random_snap}:
   retention: '5d'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
-test_snapshot__{random}:
+test_auto_snapshoting__{random}:
    g8client: 'islam'
-   node.ovc: {random_node}
+   node: {random_node}
 
 actions:
    - action: 'install'
-   - action: 'test_snapshot'
-     actor: test_snapshot
+   - action: 'test_auto_snapshoting'
+     actor: test_auto_snapshoting
