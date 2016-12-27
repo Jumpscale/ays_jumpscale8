@@ -36,11 +36,12 @@ def install(job):
     cuisine.core.file_write(conf_location, cfg)
 
     #bin_location = cuisine.core.command_location('caddy')
+    # FORCE TO USE NEW VERSION OF CADDY
     caddy_url = 'https://github.com/mholt/caddy/releases/download/v0.9.4/caddy_linux_amd64.tar.gz'
     dest = '$tmpDir/caddy_linux_amd64.tar.gz'
     cuisine.core.file_download(caddy_url, dest)
-    cuisine.core.run('cd $tmpDir; tar xvf $tmpDir/caddy_linux_amd64.tar.gz')
-    bin_location=cuisine.core.args_replace('$tmpDir/caddy_linux_amd64')
+    cuisine.core.run('cd $tmpDir && tar xvf $tmpDir/caddy_linux_amd64.tar.gz && mv $tmpDir/caddy_linux_amd64 /root/caddybin')
+    bin_location = cuisine.core.args_replace('/root/caddybin')
     cmd = '{bin} -conf {conf} --agree --email {email}'.format(
         bin=bin_location,
         conf=conf_location,
