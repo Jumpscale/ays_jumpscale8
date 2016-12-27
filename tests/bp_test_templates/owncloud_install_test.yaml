@@ -14,7 +14,7 @@ blueowncloud__bc:
     datadisks:
        - 1000
        - 1000
-    domain: 'testcloud.com'
+    hostprefix: 'testcloud'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_owncloud_install:
