@@ -67,3 +67,6 @@ host_bucket = mystorage.com
 signature_v2 = True
 use_https = False
 ```
+
+Note: The `sskkey` in the blueprint above is optional. A one will be created for you if it's not specificed in the blueprint.
+This `sshkey` is used internally by ays to access the create OVC node (that hosts scality services).
