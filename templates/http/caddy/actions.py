@@ -17,6 +17,8 @@ def install(job):
             cfg += '\theader_upstream %s\n' % header
         for header in proxy_info.model.data.headerDownstream:
             cfg += '\theader_downstream %s\n' % header
+        if proxy_info.model.data.transparent is True:
+            cfg += '\ttransparent\n'
         cfg += '}\n'
 
         cuisine.core.file_write(proxies_dir + '/%s' % proxy_info.name, cfg)
@@ -33,7 +35,13 @@ def install(job):
     conf_location = cuisine.core.args_replace('$JSCFGDIR/caddy/%s/Caddyfile' % name)
     cuisine.core.file_write(conf_location, cfg)
 
-    bin_location = cuisine.core.command_location('caddy')
+    #bin_location = cuisine.core.command_location('caddy')
+    # FORCE TO USE NEW VERSION OF CADDY
+    caddy_url = 'https://github.com/mholt/caddy/releases/download/v0.9.4/caddy_linux_amd64.tar.gz'
+    dest = '$tmpDir/caddy_linux_amd64.tar.gz'
+    cuisine.core.file_download(caddy_url, dest)
+    cuisine.core.run('cd $tmpDir && tar xvf $tmpDir/caddy_linux_amd64.tar.gz && mv $tmpDir/caddy_linux_amd64 /root/caddybin')
+    bin_location = cuisine.core.args_replace('/root/caddybin')
     cmd = '{bin} -conf {conf} --agree --email {email}'.format(
         bin=bin_location,
         conf=conf_location,

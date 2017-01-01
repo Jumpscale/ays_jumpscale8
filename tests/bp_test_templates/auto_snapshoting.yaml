@@ -19,8 +19,9 @@ node.ovc__{random_node}:
 
 autosnapshotting__{random_snap}:
   vdc: {random_vdc}
-  snapshotInterval: '2m'
-  retention: '15m'
+  snapshotInterval: '1m'
+  retention: '5m'
+  cleanupInterval : '1m'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_auto_snapshoting__{random}:
