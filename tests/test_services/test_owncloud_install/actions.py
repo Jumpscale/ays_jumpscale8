@@ -16,7 +16,7 @@ def test(job):
         service = job.service
         repo = service.aysrepo
         log = j.logger.get('test')
-        log.addHandler(j.logger._LoggerFactory__fileRotateHandler('scality_test'))
+        log.addHandler(j.logger._LoggerFactory__fileRotateHandler('tests'))
         log.info('Test started')
         bocs = service.producers['blueowncloud'][0]
         fqdn = bocs.model.data.fqdn
@@ -26,6 +26,7 @@ def test(job):
         out = tidbos.executor.cuisine.core.run("ps aux |  grep -o -F 'tidb-server -P 3306' -m 1")
         if out[1] != 'tidb-server -P 3306':
             service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+            service.save()
             return
 
         # Check that nginx is running
@@ -34,12 +35,14 @@ def test(job):
         out = ocos.executor.cuisine.core.run("ps aux | grep -o -F -m 1 '{}' ".format(ngx_ms))
         if out[1] != "{}".format(ngx_ms):
             service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+            service.save()
             return
 
         log.info('Check that the owncloud site in enabled in nginx')
         out = ocos.executor.cuisine.core.run("ls /optvar/cfg/nginx/etc/sites-enabled")
         if out[1] != fqdn:
             service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+            service.save()
             return
 
         log.info('Check that the pid for the nginx don\'t change')
@@ -48,6 +51,7 @@ def test(job):
         out2 = ocos.executor.cuisine.core.run("sv status nginx | awk '{print$4}'")
         if out[1] != out2[1]:
             service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+            service.save()
             return
 
         log.info('Check if the owncloud site can respond back')
@@ -55,10 +59,11 @@ def test(job):
         out = ocos.executor.cuisine.core.run("curl %s -L | grep -o -F -m 1 'GreenITGlobe'" % fqdn)
         if out[1] != 'GreenITGlobe':
             service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+            service.save()
             return
-        import ipdb;ipdb.set_trace()
         service.model.data.result = 'OK : {} '.format('test_owncloud_install')
 
     except:
         service.model.data.result = 'ERROR : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
+    log.info('Test Ended')
     service.save()
