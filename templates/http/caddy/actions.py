@@ -3,7 +3,7 @@ def install(job):
     cuisine = job.service.executor.cuisine
 
     name = "caddy_%s" % service.name
-    proxies_dir = cuisine.core.args_replace('$JSCFGDIR/caddy/%s/proxies' % name)
+    proxies_dir = cuisine.core.replace('$JSCFGDIR/caddy/%s/proxies' % name)
     cuisine.core.dir_ensure(proxies_dir)
 
     for proxy_info in service.producers.get('caddy_proxy', []):
@@ -32,7 +32,7 @@ def install(job):
         cfg += 'gzip\n'
     cfg += 'import %s/*\n' % proxies_dir
 
-    conf_location = cuisine.core.args_replace('$JSCFGDIR/caddy/%s/Caddyfile' % name)
+    conf_location = cuisine.core.replace('$JSCFGDIR/caddy/%s/Caddyfile' % name)
     cuisine.core.file_write(conf_location, cfg)
 
     #bin_location = cuisine.core.command_location('caddy')
@@ -41,7 +41,7 @@ def install(job):
     dest = '$tmpDir/caddy_linux_amd64.tar.gz'
     cuisine.core.file_download(caddy_url, dest)
     cuisine.core.run('cd $tmpDir && tar xvf $tmpDir/caddy_linux_amd64.tar.gz && mv $tmpDir/caddy_linux_amd64 /root/caddybin')
-    bin_location = cuisine.core.args_replace('/root/caddybin')
+    bin_location = cuisine.core.replace('/root/caddybin')
     cmd = '{bin} -conf {conf} --agree --email {email}'.format(
         bin=bin_location,
         conf=conf_location,

@@ -21,7 +21,7 @@ def install(job):
 
     for config in service.producers['vfs_config']:
         # TODO download flist
-        flist_path = cuisine.core.args_replace('$TMPDIR/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
+        flist_path = cuisine.core.replace('$TMPDIR/%s' % j.sal.fs.getBaseName(config.model.data.mountFlist))
         cuisine.core.file_download(config.model.data.mountFlist, flist_path, overwrite=True)
 
         targets.append(config.model.data.mountMountpoint)
@@ -80,7 +80,7 @@ def install(job):
         cuisine.core.dir_ensure(path)
 
     # write config
-    config_path = cuisine.core.args_replace('$JSCFGDIR/fs/%s.toml' % service.name)
+    config_path = cuisine.core.replace('$JSCFGDIR/fs/%s.toml' % service.name)
     cuisine.core.file_write(config_path, j.data.serializer.toml.dumps(final_config))
 
     # create service
