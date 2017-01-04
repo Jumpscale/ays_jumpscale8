@@ -17,7 +17,7 @@ blueowncloud__bc:
     hostprefix: 'testcloud'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
-test_owncloud_install:
+test_owncloud_install__tc:
     blueowncloud: 'bc'
     owncloud: 'own1'
 
