@@ -17,7 +17,12 @@ where:
 - `key.pub`: public sshkey.
 
 
+## preferred method specify name of loaded ssh key
 
+```yaml
+sshkey__main:
+    key.name: ovh_install
+```
 
 ## Example (using `key.path`)
 
@@ -27,16 +32,17 @@ dns_rsa  dns_rsa.pub  known_hosts
 root@myjs8xenial:/opt/repos/testssh# cat blueprints/1_test.yaml
 
 ```
+
 ```yaml
 sshkey__main:
     key.path: /root/.ssh/dns_rsa
-
-
 ```
+
+### usage through jumpscale script
+
 Here we make sure to use the `dns_rsa` key by setting its path.
 
-
-```
+```python3
 In [1]: repo = j.atyourservice.repoGet("/opt/repos/testssh")
 
 In [2]: repo.services
@@ -93,6 +99,7 @@ Out[3]: <schema_c29d6191fd30b4b7_capnp:Schema builder (keyPath = "/opt/repos/tes
 
 ## typical usecase blueprint
 ```yaml
+#shortcut for not having to specify the ssh key
 sshkey__demo:
 
 

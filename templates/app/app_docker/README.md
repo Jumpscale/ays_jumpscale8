@@ -8,7 +8,6 @@ This actor template installs docker and docker compose on parent os.
  - os: Parent os service name defined in blueprint. *Required*
 
 ##Example:
-Replace \<with actual value \>
 
 ```yaml
 sshkey__ovh_install:
@@ -32,6 +31,7 @@ os.ssh.ubuntu__ovh4:
   agent: False
 
 app_docker__dockerapp:
+  #name of os on which we will install docker application
   os: 'ubuntu__ovh4'
 
 ```

@@ -1,5 +1,14 @@
 from JumpScale import j
 
+def input(job):
+    #can also use node as argument, looks more logical than os
+    if "node" in job.model.args:
+        res = job.model.args
+        res["os"] = res["node"]
+        res.pop("node")
+        job.model.args = res
+
+    return job.model.args
 
 def install(job):
     '''

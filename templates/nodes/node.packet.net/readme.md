@@ -1,7 +1,12 @@
-To get the token, login to your packet.net account, create a project and go to your management portal. See: ![packet token](_packet_token.jpg)
 
+## node.packet.net
 
-example
+packet.net is service which allows a physical node to be configured and further used in our ays framework
+
+- see: packet.net
+
+example blueprint
+
 ```
 
 packetnet_client__main:
@@ -22,3 +27,5 @@ node.packet.net__server1:
 
 
 ```
+
+- an ssh node will be automatically created
