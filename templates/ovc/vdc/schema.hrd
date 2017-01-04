@@ -1,0 +1,15 @@
+description = type:multiline
+vdcfarm = type:str parent:'vdcfarm' auto
+
+g8client = type:str consume:'g8client' auto
+account = type:str default:''
+location = type:str default:''
+uservdc = list type:str consume:'uservdc' auto
+allowedVMSizes = list type:int
+
+cloudspaceID = type:int default:0
+
+maxMemoryCapacity = type:int default:-1
+maxCPUCapacity = type:int default:-1
+maxDiskCapacity = type:int default:-1 descr:'GiB'
+maxNumPublicIP = type:int default:-1

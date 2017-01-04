@@ -1,0 +1,6 @@
+url = type:str
+login = type:str default:''
+password= type:str default:''
+jwt= type:str default:''
+account= type:str
+port= type:int default:443

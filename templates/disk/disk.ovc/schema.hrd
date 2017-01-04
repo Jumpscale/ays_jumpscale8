@@ -1,0 +1,6 @@
+size = type:int default:1 descr:'disk size in GB'
+type = type:str default:'D'
+description = type:str default:'disk'
+maxIOPS = type:int default:0
+devicename = type:str default:''
+ssdSize = type:int default:10

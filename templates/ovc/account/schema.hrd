@@ -1,0 +1,11 @@
+description = type:multiline
+
+g8client = type:str consume:'g8client' auto
+accountusers = list type:str consume:'uservdc' auto
+
+accountID = type:int default:0
+
+maxMemoryCapacity = type:int default:-1
+maxCPUCapacity = type:int default:-1
+maxNumPublicIP = type:int default:-1
+maxDiskCapacity = type:int default:-1

@@ -1,0 +1,3 @@
+blueowncloud = type:string consume:blueowncloud
+owncloud = type:string consume:owncloud
+result = type:string

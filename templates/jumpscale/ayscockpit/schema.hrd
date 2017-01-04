@@ -1,0 +1,15 @@
+os = type:str parent:'os'
+redis = type:str consume:redis:1:1
+fs = type:string consume:fs:0
+portal = type:string consume:portal:1:1
+
+domain = type:str
+
+oauth.client_id = type:str
+oauth.client_secret = type:str
+oauth.organization = type:str
+oauth.redirect_url = type:str
+oauth.jwt_key = type:str
+
+api.host = type:str default:'localhost'
+api.port = type:int default:5000
