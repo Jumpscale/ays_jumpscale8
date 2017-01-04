@@ -19,13 +19,14 @@ node.ovc__{random_node}:
 
 autosnapshotting__{random_snap}:
   vdc: {random_vdc}
-  snapshotInterval: '1m'
+  snapshotInterval: '2m'
   retention: '5m'
   cleanupInterval : '1m'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_auto_snapshoting__{random}:
    g8client: 'islam'
+   autosnapshotting: {random_snap}
    node: {random_node}
 
 actions:
