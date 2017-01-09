@@ -8,7 +8,7 @@ s3__name:
   vdc: 'vdc-name'
   disk:
     - 'disk1'
-  domain: 'hostname.com'
+  hostprefix: 'myapp'
 ```
 
 - `vdc`: reference the vdc that will have the scality machine
@@ -52,7 +52,7 @@ actions:
 ```
 > NOTE: If `key.access` is not set, a new access key/secret key pair will be generated
 
-> NOTE: Scality doesn't work well with `CyperDuck` the s3 client. To test scality, use `s3cmd`
+> NOTE: Scality doesn't work well with `CyberDuck` the s3 client. To test scality, use `s3cmd`
 
 ## `s3cmd` Config
 ```ini
@@ -60,9 +60,10 @@ actions:
 access_key = accessKey1
 secret_key = verySecretKey1
 
-host_base = mystorage.com
-host_bucket = mystorage.com
+host_base = FQDN
+host_bucket = FQDN
 
 signature_v2 = True
 use_https = False
 ```
+set the `host_base` and `host_bucket` to the value of `fqdn` which will be available after the installation.
