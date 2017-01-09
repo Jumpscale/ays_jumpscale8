@@ -55,10 +55,10 @@ def install(job):
     # make sure system.yaml exists at this step
     # change codedir path in system.yaml to be /optvar/code
     dir_paths = {
-        'CODEDIR': cuisine.core.args_replace('$VARDIR/code'),
+        'CODEDIR': cuisine.core.replace('$VARDIR/code'),
         'JSBASE': cuisine.core.dir_paths['base'],
         'CFGDIR': cuisine.core.dir_paths['cfgDir'],
-        'DATADIR': cuisine.core.args_replace('$VARDIR/data/'),
+        'DATADIR': cuisine.core.replace('$VARDIR/data/'),
         'TMPDIR': '/tmp',
         'VARDIR': cuisine.core.dir_paths['VARDIR']
         }
@@ -75,21 +75,21 @@ def install(job):
         'identity': {'EMAIL': '', 'FULLNAME': '', 'GITHUBUSER': ''},
         'system': {'AYSBRANCH': branch, 'DEBUG': False, 'JSBRANCH': branch, 'SANDBOX': True}
         }
-    cfg_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/system.yaml")
+    cfg_path = cuisine.core.replace("$JSCFGDIR/jumpscale/system.yaml")
     cuisine.core.dir_ensure('$VARDIR/code/')
     if cuisine.core.file_exists(cfg_path):
         config = j.data.serializer.yaml.loads(cuisine.core.file_read(cfg_path))
         if 'dirs' in config:
-            config['dirs']['CODEDIR'] = cuisine.core.args_replace('$VARDIR/code/')
+            config['dirs']['CODEDIR'] = cuisine.core.replace('$VARDIR/code/')
     cuisine.core.dir_ensure(j.sal.fs.getParent(cfg_path))
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
     # make sure logging.yaml exists
-    logging_path = cuisine.core.args_replace("$JSCFGDIR/jumpscale/logging.yaml")
+    logging_path = cuisine.core.replace("$JSCFGDIR/jumpscale/logging.yaml")
     if not cuisine.core.file_exists(logging_path):
         logging_config = {'mode': 'DEV', 'level': 'DEBUG', 'filter': ['j.sal.fs', 'j.data.hrd', 'j.application']}
         cuisine.core.file_write(logging_path, j.data.serializer.yaml.dumps(logging_config))
-    cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$JSAPPSDIR/portals/main')
+    cmd = cuisine.core.replace('jspython portal_start.py')
+    wd = cuisine.core.replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 
@@ -97,8 +97,8 @@ def install(job):
 def start(job):
     service = job.service
     cuisine = service.executor.cuisine
-    cmd = cuisine.core.args_replace('jspython portal_start.py')
-    wd = cuisine.core.args_replace('$JSAPPSDIR/portals/main')
+    cmd = cuisine.core.replace('jspython portal_start.py')
+    wd = cuisine.core.replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
     pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
 

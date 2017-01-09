@@ -78,7 +78,7 @@ def install(job):
 
     # start api
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPSDIR/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'))
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$VARDIR/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$VARDIR/cockpit_repos/cockpit')
@@ -99,7 +99,7 @@ def start(job):
     raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
     cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.args_replace('$JSAPPSDIR/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'))
 
 
 def stop(job):
