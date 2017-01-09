@@ -13,10 +13,9 @@ s3__name:
 
 - `vdc`: reference the vdc that will have the scality machine
 - `disk`: lists of data disks (must be already declared in the blueprint)
-- `domain`: a domain name that will be used to access the scality machine.
-
-> Note: The domain name will just be used for scality configuration and no DNS records will be created. It means that
-to access this machine u need either to modify the DNS yourself, or add the `domain` to your `/etc/hosts` file.
+-  hostprefix: the first part in your app url. (i.e hostprefix-machinedecimalip.gigapps.io )
+-  fqdn = calculated by ays itself (i.e hostprefix-machinedecimalip.gigapps.io)
+-  enablehttps = support for https. `default is False`
 
 ## Example Blueprint
 ```yaml
@@ -44,7 +43,7 @@ s3__demo:
     vdc: 'scality'
     disk:
       - 'disk1'
-    domain: 'mystorage.com'
+    hostprefix: 'myapp'
     key.access: '' # optional access key (if empty a new one will be generated)
     key.secret: ''
 
