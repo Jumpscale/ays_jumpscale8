@@ -17,9 +17,6 @@ It creates
 -  fqdn = calculated by ays itself (i.e hostprefix-machinedecimalip.gigapps.io)
 -  enablehttps = support for https. `default is False`
 
-> Note: The domain name will just be used for scality configuration and no DNS records will be created. It means that
-to access this machine u need either to modify the DNS yourself, or add the `domain` to your `/etc/hosts` file.
-
 
 ## Example blueprint
 
