@@ -22,24 +22,18 @@ def test(job):
         vm_exe.core.run('apt-get update')
         vm_exe.core.run('echo "Y" | apt-get install fio')
 
-        def fio_run(out_file, disk):
-            fio_cmd = "fio --ioengine=libaio --group_reporting --filename=/dev/{1} "\
-                      "--runtime=30 --readwrite=randrw --size=500M --name=test{0} "\
-                      "--output={0}".format(out_file, disk)
-            return fio_cmd
-
-        def check_iops(executor, out_file, iops_limit):
-            out = vm_exe.core.run("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % out_file)
-            list = out[1].split('\n')
-            int_list = [int(i) for i in list if int(i) > iops_limit]
-            return len(int_list)
-
         log.info('Run fio on vdb, iops should be less than maxIOPS')
         vm = service.producers['node'][0]
         disk = vm.producers['disk'][0]
         maxIOPS = disk.model.data.maxIOPS
-        vm_exe.core.run(fio_run('b1', 'vdb'))
-        iops = check_iops(vm_exe, 'b1', maxIOPS)
+        fio_cmd = "fio --ioengine=libaio --group_reporting --filename=/dev/{1} "\
+                  "--runtime=30 --readwrite=randrw --size=500M --name=test{0} "\
+                  "--output={0}".format('b1', 'vdb')
+        vm_exe.core.run(fio_cmd)
+        out = vm_exe.core.run("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % 'b1')
+        list = out[1].split('\n')
+        int_list = [int(i) for i in list if int(i) > maxIOPS]
+        iops = len(int_list)
         if iops != 0:
             service.model.data.result = 'FAILED : {} {}'.format('test_limit_iops', str(sys.exc_info()[:2]))
             service.save()
@@ -56,8 +50,14 @@ def test(job):
         machine.disk_limit_io(disk_id, 1000)
 
         log.info('Run fio on vdc, iops should be less than 1000')
-        vm_exe.core.run(fio_run('c1', 'vdc'))
-        iops = check_iops(vm_exe, 'c1', 1000)
+        fio_cmd = "fio --ioengine=libaio --group_reporting --filename=/dev/{1} "\
+                  "--runtime=30 --readwrite=randrw --size=500M --name=test{0} "\
+                  "--output={0}".format('c1', 'vdc')
+        vm_exe.core.run(fio_cmd)
+        out = vm_exe.core.run("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % 'c1')
+        list = out[1].split('\n')
+        int_list = [int(i) for i in list if int(i) > 1000]
+        iops = len(int_list)
         if iops != 0:
             service.model.data.result = 'FAILED : {} {}'.format('test_limit_iops', str(sys.exc_info()[:2]))
             service.save()
@@ -65,12 +65,19 @@ def test(job):
 
         log.info('Run fio on vdc, iops should be less than 500')
         machine.disk_limit_io(disk_id, 500)
-        vm_exe.core.run(fio_run('c2', 'vdc'))
-        iops = check_iops(vm_exe, 'c2', 500)
+        fio_cmd = "fio --ioengine=libaio --group_reporting --filename=/dev/{1} "\
+                  "--runtime=30 --readwrite=randrw --size=500M --name=test{0} "\
+                  "--output={0}".format('c2', 'vdc')
+        vm_exe.core.run(fio_cmd)
+        out = vm_exe.core.run("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % 'c2')
+        list = out[1].split('\n')
+        int_list = [int(i) for i in list if int(i) > 500]
+        iops = len(int_list)
         if iops != 0:
             service.model.data.result = 'FAILED : {} {}'.format('test_limit_iops', str(sys.exc_info()[:2]))
             service.save()
             return
+        service.model.data.result = 'OK : {} '.format('test_limit_iops')
     except:
         service.model.data.result = 'ERROR : {} {}'.format('test_limit_iops', str(sys.exc_info()[:2]))
     log.info('Test Ended')
