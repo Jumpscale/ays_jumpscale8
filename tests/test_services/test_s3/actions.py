@@ -10,6 +10,7 @@ def init_actions_(service, args):
 
 def test(job):
     import sys
+    import time
     try:
         log = j.logger.get('test')
         log.addHandler(j.logger._LoggerFactory__fileRotateHandler('tests'))
@@ -39,6 +40,17 @@ def test(job):
         s3vm_exe.core.run("cd /root; echo '{}' > .s3cfg".format(config))
 
         log.info('Creating bucket')
+        time.sleep(60)
+        t1 = time.time()
+        while(True):
+            now = time.time()
+            time.sleep(5)
+            try:
+                res = s3vm_exe.core.run("s3cmd ls")
+            except:
+                continue
+            if res[1] == '' or now > t1 + 300:
+                break
         bucket = s3vm_exe.core.run("s3cmd mb s3://test")
         if bucket[1] != "Bucket 's3://test/' created":
             service.model.data.result = 'FAILED : {} {}'.format('test_s3', str(sys.exc_info()[:2]))
