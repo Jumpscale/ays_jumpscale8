@@ -49,19 +49,18 @@ def test(job):
             service.save()
             return
 
-        def convert_string_to_dict(string, split):
-            str_list = string.split(split)
-            # remove empty strings found in a list
-            for i in str_list:
-                var = "".join(i.split())
-                str_list[str_list.index(i)] = var.split(':')
-            return dict(str_list)
-
         log.info('Compare js.dir to j.tools.cuisine.local.core.dir_paths, should be the same')
         output = cuisine.core.run('js "print(j.dirs)"')
         output2 = cuisine.core.run('js "print(j.tools.cuisine.local.core.dir_paths)"')
-        dict1 = convert_string_to_dict(output[1], '\n')
+
+        str_list = output[1].split('\n')
+        # remove empty strings found in a list
+        for i in str_list:
+            var = "".join(i.split())
+            str_list[str_list.index(i)] = var.split(':')
+        dict1 = dict(str_list)
         dict2 = literal_eval(output2[1])
+
         if dict1['homeDir'] != dict2['homeDir']:
             service.model.data.result = 'FAILED : {} {}'.format('test_js8_install', str(sys.exc_info()[:2]))
             service.save()
