@@ -41,6 +41,9 @@ def install(job):
 
     base = j.sal.fs.joinPaths('/var', 'dockers', service.name)
     cuisine.core.dir_ensure(base)
+    cuisine.package.mdupdate()
+    cuisine.package.ensure('python3-pip')
+    cuisine.development.pip.install('docker-compose')
     cuisine.core.file_write(
         j.sal.fs.joinPaths(base, 'docker-compose.yml'),
         j.data.serializer.yaml.dumps(compose)
