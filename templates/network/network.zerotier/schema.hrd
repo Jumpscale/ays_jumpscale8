@@ -1,0 +1,2 @@
+reinstall = type:bool
+networks = type:str list
