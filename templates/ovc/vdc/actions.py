@@ -27,7 +27,8 @@ def install(job):
 
     # Set limits
     # if space does not exist, it will create it
-
+    externalnetworkId = service.model.data.externalNetwork
+    externalnetworkId = None if externalnetworkId == -1 else externalnetworkId
     space = acc.space_get(name=service.model.dbobj.name,
                           location=service.model.data.location,
                           create=True,
@@ -35,6 +36,7 @@ def install(job):
                           maxVDiskCapacity=service.model.data.maxDiskCapacity,
                           maxCPUCapacity=service.model.data.maxCPUCapacity,
                           maxNumPublicIP=service.model.data.maxNumPublicIP,
+                          externalnetworkId=externalnetworkId
                           )
 
     # add space ID to data
