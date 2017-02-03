@@ -1,0 +1,11 @@
+description = type:multiline
+ports = type:str list descr:'list of port forward to create src:dst'
+
+ip.public = type:string
+
+ssh.login = type:string
+ssh.password = type:string
+sshkey = type:str consume:sshkey:0
+
+ssh.port = type:int
+ssh.addr = type:str

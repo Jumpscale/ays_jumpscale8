@@ -1,8 +1,0 @@
-dnsclient = list type:str consume:dnsclient
-
-ttl = type:int default:600
-domain = type:str
-a.records = list type:str
-cname.records = list type:str
-
-node = list type:str consume:node:0

@@ -1,3 +1,0 @@
-os = type:str parent:os
-
-vfs_config = list type:str consume:vfs_config

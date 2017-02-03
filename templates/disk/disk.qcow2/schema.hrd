@@ -1,3 +1,0 @@
-vmpool = type:str consume:vmpool
-backing_store = type:str consume:disk:0:1
-size = type:int

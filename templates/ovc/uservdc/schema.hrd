@@ -1,5 +1,0 @@
-password = type:str default:'rooter'
-email = type:str default:''
-provider = type:str default:''
-groups = type:str list
-g8client = type:str consume:'g8client'

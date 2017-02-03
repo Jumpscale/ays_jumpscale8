@@ -1,3 +1,0 @@
-os = type:string parent:os
-url = type:string
-overwrite = type:bool default:False

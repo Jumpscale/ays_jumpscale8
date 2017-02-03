@@ -1,7 +1,0 @@
-name = type:str default:''
-publicSubnetCIDR = type:str default:''
-gatewayIPAddress = type:str default:''
-startIPAddress = type:str default:''
-endIPAddress = type:str default:''
-vLANID = type:int
-vdc = type:str consume:'vdc' auto

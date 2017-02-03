@@ -1,9 +1,0 @@
-description = type:multiline
-ports = type:str list
-ip.public = type:str
-ssh.login = type:str
-ssh.password = type:str
-
-sshkey                        = type:str consume:sshkey:1  auto
-ssh.addr                       = type:str
-ssh.port                       = type:int

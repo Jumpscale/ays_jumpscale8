@@ -1,2 +1,0 @@
-os = type:string parent:os
-fs = type:string consume:fs:0
