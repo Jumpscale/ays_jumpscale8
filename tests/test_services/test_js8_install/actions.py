@@ -24,7 +24,7 @@ def test(job):
         cuisine.core.run('curl -k https://raw.githubusercontent.com/Jumpscale/'
                          'jumpscale_core8/{}/install/install.sh > install.sh'.format(branch))
         if branch != "master":
-            cuisine.core.run('export JSBRANCH = "{}"'.format(branch))
+            cuisine.core.run('export JSBRANCH="{}"'.format(branch))
         cuisine.core.run('bash install.sh')
         time.sleep(50)
 
