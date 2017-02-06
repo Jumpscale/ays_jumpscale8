@@ -91,7 +91,7 @@ def install(job):
     cmd = cuisine.core.args_replace('jspython portal_start.py')
     wd = cuisine.core.args_replace('$appDir/portals/main')
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
+    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd, autostart=True)
 
 
 def start(job):
@@ -100,7 +100,7 @@ def start(job):
     cmd = cuisine.core.args_replace('jspython portal_start.py')
     wd = cuisine.core.args_replace('$appDir/portals/main')
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
+    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd, autostart=True)
 
 
 def stop(job):

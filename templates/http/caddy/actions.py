@@ -49,7 +49,7 @@ def install(job):
     if service.model.data.stagging is True:
         # enable stating environment, remove for prodction
         cmd += ' -ca https://acme-staging.api.letsencrypt.org/directory'
-    cuisine.processmanager.ensure("caddy_%s" % service.name, cmd=cmd, path='$cfgDir/caddy/%s' % name)
+    cuisine.processmanager.ensure("caddy_%s" % service.name, cmd=cmd, path='$cfgDir/caddy/%s' % name, autostart=True)
 
 
 def start(job):
