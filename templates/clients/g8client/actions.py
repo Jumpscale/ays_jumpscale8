@@ -13,3 +13,13 @@ def input(job):
         raise j.exceptions.Input("Either username/password or jwt should be entered for %s" % job.service)
 
     return args
+
+
+def processChange(job):
+    service = job.service
+    args = job.model.args
+    category = args.pop('changeCategory')
+    if category == 'dataschema':
+        for key, value in args.items():
+            setattr(service.model.data, key, value)
+    service.save()
