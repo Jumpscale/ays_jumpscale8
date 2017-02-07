@@ -1,21 +1,3 @@
-def install(job):
-    """Configure recurring actions"""
-
-    service = job.service
-
-    snapshot_action = service.model.actions['snapshot']
-    snapshot_action.period = j.data.types.duration.convertToSeconds(service.model.data.snapshotInterval)
-    snapshot_action.log = True
-    snapshot_action.lastRun = 0
-
-    snapshot_action = service.model.actions['cleanup']
-    snapshot_action.period = j.data.types.duration.convertToSeconds(service.model.data.cleanupInterval)
-    snapshot_action.log = True
-    snapshot_action.lastRun = 0
-
-    service.saveAll()
-
-
 def snapshot(job):
     """Taking snapshot of all machines in the given space if it meets the conditions specified in the schema"""
     from dateutil import parser
