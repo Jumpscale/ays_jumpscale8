@@ -1,0 +1,3 @@
+osmgmt = type:str parent:os
+osmaster = type:str parent:os
+g8client = type:str
