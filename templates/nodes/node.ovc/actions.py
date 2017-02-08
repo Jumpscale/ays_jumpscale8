@@ -100,10 +100,20 @@ def install(job):
     #  GET THE available devices on the system and bind them to services if available instead of creating disks
     rc, out, err = cuisine.core.run("lsblk -J", die=False)
     if rc != 0:
-        raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
-    jsonout = j.data.serializer.json.loads(out)
-    available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x] # should be only 1
-
+        # raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
+        available_devices = []
+        rc, out, err = cuisine.core.run("lsblk -P", die=False)
+        out = out.split("\n")
+        disks_dict = {idx: x for idx, x in enumerate(out) if "disk" in x and 'MOUNTPOINT=""'}
+        for key, value in disks_dict.items():
+            if key != (len(out) - 1):
+                if '"TYPE="disk"' in out[key+1]:
+                    available_devices.append(out[key].split('NAME="')[1].split('"')[0])
+            else:
+                available_devices.append(out[key].split('NAME="')[1].split('"')[0])
+    else:
+        jsonout = j.data.serializer.json.loads(out)
+        available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x] # should be only 1
     datadisks = service.producers.get('disk', [])
     takendevices = [x.model.data.devicename for x in datadisks if x.model.data.devicename != '']
     # Add disks to machine if they arent there else logically bind to any of them.
