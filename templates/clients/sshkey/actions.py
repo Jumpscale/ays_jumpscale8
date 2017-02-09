@@ -1,52 +1,20 @@
-from JumpScale import j
+def install(job):
+    service = job.service
+    data = job.service.model.data
+    data.keyPath = j.sal.fs.joinPaths(service.path, 'id_rsa')
+    j.sal.fs.createDir(service.path)
 
-
-def input(job):
-    """
-    create key, if it doesn't exist
-    """
-
-    # THIS ONE IS FIXED
-    args = job.model.args
-
-    if 'key.path' in job.model.args and job.model.args['key.path'] is not None and job.model.args['key.path'] != '':
-        path = job.model.args['key.path']
-        if not j.sal.fs.exists(path, followlinks=True):
-            raise j.exceptions.Input(message="Cannot find ssh key:%s for service:%s" %
-                                     (path, job.service), level=1, source="", tags="", msgpub="")
-
-        args['key.path'] = j.sal.fs.joinPaths(job.service.path, "id_rsa")
-        j.sal.fs.createDir(job.service.path)
-        j.sal.fs.copyFile(path, args['key.path'])
-        j.sal.fs.copyFile(path + '.pub', args['key.path'] + '.pub')
-        args["key.priv"] = j.sal.fs.fileGetContents(path)
-        args["key.pub"] = j.sal.fs.fileGetContents(path + '.pub')
-
-    if 'key.name' in job.model.args and bool(job.model.args.get('key.name')):
-        path = j.do.getSSHKeyPathFromAgent(job.model.args['key.name'])
-        if not path or not j.sal.fs.exists(path, followlinks=True):
-            raise j.exceptions.Input(message="Cannot find ssh key:%s for service:%s" %
-                                     (path, job.service), level=1, source="", tags="", msgpub="")
-
-        args["key.priv"] = j.sal.fs.fileGetContents(path)
-        args["key.pub"] = j.sal.fs.fileGetContents(path + '.pub')
-        args["key.name"] = job.model.args["key.name"]
-        args["key.path"] = j.sal.fs.joinPaths(job.service.path, job.model.args['key.name'])
-        j.sal.fs.createDir(job.service.path)
-        j.sal.fs.copyFile(path, j.sal.fs.joinPaths(job.service.path, args["key.path"]))
-        j.sal.fs.copyFile(path + '.pub', j.sal.fs.joinPaths(job.service.path, '%s.%s' % (args["key.path"], 'pub')))
-
-    if 'key.priv' not in args or args['key.priv'].strip() == "":
-        print("lets generate private key")
-        args['key.path'] = j.sal.fs.joinPaths(job.service.path, "id_rsa")
-        j.sal.fs.createDir(job.service.path)
-        j.sal.fs.remove(args['key.path'])
-        cmd = "ssh-keygen -q -t rsa -f %s -N ''" % (args['key.path'])
+    if data.keyPriv is None or data.keyPriv == '':
+        # generate key
+        cmd = "ssh-keygen -q -t rsa -f {} -N '{}'".format(data.keyPath, data.keyPassphrase)
         rc, out, err = j.do.execute(cmd, showout=False)
-        args["key.priv"] = j.sal.fs.fileGetContents(args['key.path'])
-        args["key.pub"] = j.sal.fs.fileGetContents(args['key.path'] + '.pub')
+        data.keyPriv = j.sal.fs.joinPaths(data.keyPath)
+        data.keyPub = j.sal.fs.joinPaths(data.keyPath + '.pub')
 
-    j.sal.fs.chmod(args['key.path'], 0o600)
-    j.sal.fs.chmod(args['key.path']+ '.pub', 0o600)
+    elif data.keyPriv is not None and data.keyPriv != '':
+        # write keys into service directory
+        j.sal.fs.writeFile(data.keyPath, data.keyPriv)
+        j.sal.fs.writeFile(data.keyPath + '.pub', data.keyPub)
 
-    return args
+    j.sal.fs.chmod(data.keyPath, 0o600)
+    j.sal.fs.chmod(data.keyPath + '.pub', 0o600)

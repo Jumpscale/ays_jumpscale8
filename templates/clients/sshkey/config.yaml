@@ -1,8 +1,6 @@
 doc:
   property:
   - keyPriv: ''
-  - keyName: ''
   - keyPath: ''
   - keyPub: ''
   - keyPassphrase: Specify passphrase (default is empty)
-recurring: []
