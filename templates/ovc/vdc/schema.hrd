@@ -5,7 +5,7 @@ g8client = type:str consume:'g8client' auto
 account = type:str default:''
 location = type:str default:''
 uservdc = list type:str consume:'uservdc' auto
-externalNetwork = type:int default:-1
+externalNetworkID = type:int default:-1
 
 cloudspaceID = type:int default:0
 
