@@ -9,7 +9,7 @@ machine.id = type:int
 ip.public = type:string
 ip.private = type:string
 
-ssh.login = type:string
+ssh.login = type:string default:'root'
 ssh.password = type:string
 
 vdc = type:str parent:'vdc' auto

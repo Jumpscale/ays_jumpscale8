@@ -1,10 +1,10 @@
-#template: disk.ovc
+# template: disk.ovc
 
-##Description:
+## Description:
 
 This actor template represents a disk in ovc to be used later on by other services.
 
-##Schema:
+## Schema:
  - size: disk size in GB.
  - type: type of disk boot or normal.
  - description: description of disk. 
@@ -12,7 +12,7 @@ This actor template represents a disk in ovc to be used later on by other servic
  - devicename: device name.
  - ssdSize: ssd size always available , will default to 10
 
-##Example:
+## Example:
 Replace \<with actual value \>
 
 ```yaml

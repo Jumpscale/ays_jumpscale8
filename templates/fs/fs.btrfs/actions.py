@@ -11,8 +11,9 @@ def init_actions_(service, args):
 
 def install(job):
     service = job.service
+    cuisine = service.executor.cuisine
     # List available devices
-    code, out, err = service.executor.cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
+    code, out, err = cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
     if code != 0:
         raise RuntimeError('failed to list bulk devices: %s' % err)
 
@@ -31,20 +32,20 @@ def install(job):
     if master['fstype'] != 'btrfs':
         # creating the filesystem on all of the devices.
         cmd = 'mkfs.btrfs -f %s' % ' '.join(map(lambda e: '/dev/%s' % e['name'], btrfs_devices))
-        code, out, err = service.executor.cuisine.core.run(cmd)
+        code, out, err = cuisine.core.run(cuisine.core.sudo_cmd(cmd))
         if code != 0:
             raise RuntimeError('failed to create filesystem: %s' % err)
 
     if master['mountpoint'] is None:
-        service.executor.cuisine.core.dir_ensure(service.model.data.mount)
+        cuisine.core.dir_ensure(service.model.data.mount)
         cmd = 'mount /dev/%s %s' % (master['name'], service.model.data.mount)
-        code, out, err = service.executor.cuisine.core.run(cmd)
+        code, out, err = cuisine.core.run(cuisine.core.sudo_cmd(cmd))
         if code != 0:
             raise RuntimeError('failed to mount device: %s' % err)
 
     # Last thing is to check that all devices are part of the filesystem
     # in case we support hot plugging of disks in the future.
-    code, out, err = service.executor.cuisine.core.run('btrfs filesystem show /dev/%s' % master['name'])
+    code, out, err = cuisine.core.run('btrfs filesystem show /dev/%s' % master['name'])
     if code != 0:
         raise RuntimeError('failed to inspect filesystem on device: %s' % err)
 
@@ -55,7 +56,7 @@ def install(job):
         if device['name'] not in fs_devices:
             # add device to filesystem
             cmd = 'btrfs device add -f /dev/%s %s' % (device['name'], service.model.data.mount)
-            code, _, err = service.executor.cuisine.core.run(cmd)
+            code, _, err = cuisine.core.run(cmd)
             if code != 0:
                 raise RuntimeError('failed to add device %s to fs: %s' % (
                     device['name'],

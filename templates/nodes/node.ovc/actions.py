@@ -48,8 +48,8 @@ def install(job):
     if not ip:
         raise j.exceptions.RuntimeError('The machine %s does not get an IP ' % service.name)
     service.model.data.ipPrivate = ip
-    service.model.data.sshLogin = vm_info['accounts'][0]['login']
-    service.model.data.sshPassword = vm_info['accounts'][0]['password']
+    # service.model.data.sshLogin = vm_info['accounts'][0]['login']
+    # service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
     ssh_present = any([ports for ports in service.model.data.ports if ports.startswith('22')])
     data = j.data.serializer.json.loads(service.model.dataJSON)
@@ -88,11 +88,11 @@ def install(job):
 
     sshkey = service.producers['sshkey'][0]
     key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
-    password = node.model.data.sshPassword if node.model.data.sshPassword != '' else None
+    password = vm_info['accounts'][0]['password'] if vm_info['accounts'][0]['password'] != '' else None
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
-                                            login=node.model.data.sshLogin, passwd=password,
+                                            login= vm_info['accounts'][0]['login'], passwd=password,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
                                             passphrase=None, key_filename=key_path)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)

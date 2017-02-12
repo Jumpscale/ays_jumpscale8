@@ -14,5 +14,5 @@ id = type:str descr:'id of the container'
 ip.public = type:string
 ip.private = type:string
 
-ssh.login = type:string
+ssh.login = type:string default:'root'
 ssh.password = type:string
