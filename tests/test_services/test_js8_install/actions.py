@@ -109,7 +109,7 @@ def test(job):
             service.model.data.result = 'FAILED : {} {}'.format('test_js8_install', str(sys.exc_info()[:2]))
             service.save()
             return
-        service.model.data.result = 'OK : {} '.format('test_owncloud_install')
+        service.model.data.result = 'OK : {} '.format('test_js8_install')
     except:
         service.model.data.result = 'ERROR : {} {}'.format('test_js8_install', str(sys.exc_info()[:2]))
     log.info('Test Ended')
