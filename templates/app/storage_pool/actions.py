@@ -1,4 +1,3 @@
-
 def init_actions_(service, args):
     # some default logic for simple actions
     return {
@@ -55,9 +54,10 @@ def replicate(job):
         tmp.pop()
         path_remote = "/".join(tmp)
         cuisine_remote.core.dir_ensure(path)
-        cmd = """eval `ssh-agent -s`
-ssh-add $HOMEDIR/.ssh/default.rsa
-rsync -avzhe ssh %s root@%s:%s""" % (path, address, path_remote)
+        cmd = """
+        eval `ssh-agent -s`
+        ssh-add $HOMEDIR/.ssh/default.rsa
+        rsync -avzhe ssh %s root@%s:%s""" % (path, address, path_remote)
         cuisine_base.core.execute_bash(cmd)
 
 
