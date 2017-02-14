@@ -37,7 +37,8 @@ def install(job):
         machine = space.machine_create(name=service.name,
                                        image=service.model.data.osImage,
                                        memsize=service.model.data.memory,
-                                       disksize=service.model.data.bootdiskSize)
+                                       disksize=service.model.data.bootdiskSize,
+                                       sizeId=service.model.data.sizeID)
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress'] or space.get_space_ip()
