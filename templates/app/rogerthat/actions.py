@@ -15,13 +15,6 @@ def init(job):
                 for n in node:
                     all_nodes.add(n)
 
-    # Build appscale configuration
-    appscale_cfg = {
-        'os': list(all_nodes),
-        'appscaletag': 'dev',
-    }
-
-    appscale = repo.actorGet('appscale').serviceCreate('appscale', appscale_cfg)
 
     # Build appscale_tools configuration
     appscale_tools_cfg = {
@@ -42,4 +35,13 @@ def init(job):
                 appscale_tools_cfg[attr].append(node_name)
 
     tools = repo.actorGet('appscale_tools').serviceCreate('tools', appscale_tools_cfg)
-    tools.consume(appscale)
+
+    # Build appscale configuration, run appscale services in parallel
+    for idx, node in enumerate(all_nodes):
+        appscale_cfg = {
+            'os': node,
+            'appscaletag': 'dev',
+        }
+        service_name = "appscale%s" % idx
+        appscale = repo.actorGet('appscale').serviceCreate(service_name, appscale_cfg)
+        tools.consume(appscale)
