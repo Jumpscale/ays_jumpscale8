@@ -10,13 +10,27 @@ def init_actions_(service, args):
     }
 
 def install(job):
+    import re
     service = job.service
     # List available devices
-    code, out, err = service.executor.cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
-    if code != 0:
-        raise RuntimeError('failed to list bulk devices: %s' % err)
+    os_svc = service.producers['os'][0]
+    nod = os_svc.producers['node'][0]
+    if nod.model.data.osImage == 'Ubuntu 14.04 x64':
+        rc, out, err = service.executor.cuisine.core.run('lsblk -d -P  -o NAME,FSTYPE,MOUNTPOINT')
+        out = out.split("\n")
+        disks = {
+            "blockdevices": [],
+        }
+        for val in out:
+            obj = {}
+            obj['name'], obj['fstype'], obj['mountpoint'] = [value.strip('"')for value in re.findall(r'"[a-z]*[0-9]*"', val)]
+            disks["blockdevices"].append(obj)
+    else:
+        code, out, err = service.executor.cuisine.core.run('lsblk -J  -o NAME,FSTYPE,MOUNTPOINT')
+        if code != 0:
+            raise RuntimeError('failed to list bulk devices: %s' % err)
 
-    disks = j.data.serializer.json.loads(out)
+        disks = j.data.serializer.json.loads(out)
     btrfs_devices = []
     for device in disks['blockdevices']:
         if not device['name'].startswith('vd') or device['name'] == 'vda':
@@ -34,8 +48,7 @@ def install(job):
         code, out, err = service.executor.cuisine.core.run(cmd)
         if code != 0:
             raise RuntimeError('failed to create filesystem: %s' % err)
-
-    if master['mountpoint'] is None:
+    if master['mountpoint'] is None or master['mountpoint'] == "":
         service.executor.cuisine.core.dir_ensure(service.model.data.mount)
         cmd = 'mount /dev/%s %s' % (master['name'], service.model.data.mount)
         code, out, err = service.executor.cuisine.core.run(cmd)
