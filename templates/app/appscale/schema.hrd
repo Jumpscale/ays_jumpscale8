@@ -1,2 +1,2 @@
-os = type:str list consume:os
+os = type:str parent:os
 appscaletag = type:str
