@@ -1,7 +1,7 @@
 description = type:multiline
 bootdisk.size = type:int descr:'boot disk size in GB' default:10
 memory = default:1 type:int descr:'memory in GB'
-sizeID = type:int default:0
+sizeID = type:int default:-1
 os.image =  descr:'image as used in ms1' default:'Ubuntu 15.10' type:str
 ports = type:str list descr:'list of port forward to create src:dst'
 

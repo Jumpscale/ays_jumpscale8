@@ -38,7 +38,7 @@ def install(job):
                                        image=service.model.data.osImage,
                                        memsize=service.model.data.memory,
                                        disksize=service.model.data.bootdiskSize,
-                                       sizeId=service.model.data.sizeID)
+                                       sizeId=service.model.data.sizeID if service.model.data.sizeID >= 0 else None)
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress'] or space.get_space_ip()
