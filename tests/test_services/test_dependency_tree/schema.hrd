@@ -1,0 +1,4 @@
+vdc = type:str parent:'vdc' auto
+g8clients = list type:str consume:'g8client':1:3
+description = type:multiline default:'description'
+result = type:str
