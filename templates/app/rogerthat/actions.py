@@ -1,22 +1,45 @@
 def init(job):
     service = job.service
     repo = service.aysrepo
-    # node_mgmt = service.aysrepo.servicesFind(actor='node.*', name=service.model.data.osmgmt)[0]
-    os_mgmt = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.osmgmt)[0]
 
-    # node_master = service.aysrepo.servicesFind(actor='node.*', name=service.model.data.osmaster)[0]
-    os_master = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.osmaster)[0]
+    data = service.model.data
+    master_node = service.aysrepo.servicesFind(actor='os.*', name=data.masterNode)[0].name
 
-    appscale_tools_cfg = {
-        'os': os_mgmt.name,
-        'appscaletag': 'dev',
-    }
+    all_nodes = set()
+    for key in data.to_dict().keys():
+        if key.endswith("Node") and key != "mgmtNode":
+            node = getattr(data, key)
+            if isinstance(node, str):
+                all_nodes.add(node)
+            else:
+                for n in node:
+                    all_nodes.add(n)
 
-    repo.actorGet('appscale_tools').serviceCreate('tools', appscale_tools_cfg)
-
+    # Build appscale configuration
     appscale_cfg = {
-        'os': os_master.name,
+        'os': list(all_nodes),
         'appscaletag': 'dev',
     }
 
-    repo.actorGet('appscale').serviceCreate('appscale', appscale_cfg)
+    appscale = repo.actorGet('appscale').serviceCreate('appscale', appscale_cfg)
+
+    # Build appscale_tools configuration
+    appscale_tools_cfg = {
+        'masterNode': master_node,
+        'appscaletag': 'dev',
+        'os': service.aysrepo.servicesFind(actor='os.*', name=data.mgmtNode)[0].name,
+        'searchNode': service.aysrepo.servicesFind(actor='os.*', name=data.searchNode)[0].name
+    }
+
+    # extracting names of those nodes and add them to appscale_tools_cfg
+    attrs = ("zookeeperNode", "databaseNode", "appengineNode")
+    for attr in attrs:
+        for node in getattr(data, attr):
+            node_name = service.aysrepo.servicesFind(actor='os.*', name=node)[0].name
+            if attr not in appscale_tools_cfg.keys():
+                appscale_tools_cfg[attr] = [node_name]
+            else:
+                appscale_tools_cfg[attr].append(node_name)
+
+    tools = repo.actorGet('appscale_tools').serviceCreate('tools', appscale_tools_cfg)
+    tools.consume(appscale)

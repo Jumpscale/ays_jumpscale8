@@ -1,3 +1,7 @@
-osmgmt = type:str parent:os
-osmaster = type:str parent:os
+mgmtNode = type:str consume:os
+masterNode = type:str consume:os
+databaseNode = type:str list consume:os
+zookeeperNode = type:str list consume:os
+appengineNode = type:str list consume:os
+searchNode = type:str consume:os
 g8client = type:str
