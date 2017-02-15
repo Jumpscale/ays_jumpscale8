@@ -42,6 +42,13 @@ def init(job):
             'os': node,
             'appscaletag': 'dev',
         }
-        service_name = "appscale%s" % idx
-        appscale = repo.actorGet('appscale').serviceCreate(service_name, appscale_cfg)
+        appscale = repo.actorGet('appscale').serviceCreate("appscale%s" % idx, appscale_cfg)
+
+        btrfs = {
+            'os': node,
+            'mount': '/opt/appscale'
+        }
+        btrfs = repo.actorGet('fs.btrfs').serviceCreate("data%s" % idx, btrfs)
+
         tools.consume(appscale)
+        tools.consume(btrfs)
