@@ -16,6 +16,7 @@ def install(job):
     os_svc = service.producers['os'][0]
     nod = os_svc.producers['node'][0]
     if nod.model.data.osImage == 'Ubuntu 14.04 x64':
+        service.executor.cuisine.package.multiInstall(["btrfs-tools"])
         rc, out, err = service.executor.cuisine.core.run('lsblk -d -P  -o NAME,FSTYPE,MOUNTPOINT')
         out = out.split("\n")
         disks = {
