@@ -1,0 +1,3 @@
+os = type:str parent:os
+clientId = type:str
+clientSecret = type:str
