@@ -4,6 +4,6 @@ struct Schema {
 	vdc @0 :Text;
 	startDate @1 :Text;
 	endDate @2 :Text;
-	retention @5 :Text = "5d";
+	retention @3 :Text = "5d";
 
 }
