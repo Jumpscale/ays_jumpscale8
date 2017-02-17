@@ -99,7 +99,6 @@ def install(job):
     #  GET THE available devices on the system and bind them to services if available instead of creating disks
     rc, out, err = cuisine.core.run("lsblk -J", die=False)
     if rc != 0:
-        # raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
         available_devices = []
         rc, out, err = cuisine.core.run("lsblk -P", die=False)
         out = out.split("\n")
@@ -132,9 +131,21 @@ def install(job):
             machine.disk_limit_io(disk_id, disk_args.maxIOPS)
             rc, out, err = cuisine.core.run("lsblk -J", die=False)
             if rc != 0:
-                raise j.exceptions.RuntimeError("Couldn't load json from lsblk -J")
-            jsonout = j.data.serializer.json.loads(out)
-            available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x and x['name'] not in takendevices]
+                available_devices = []
+                rc, out, err = cuisine.core.run("lsblk -P", die=False)
+                out = out.split("\n")
+                disks_dict = {idx: x for idx, x in enumerate(out) if "disk" in x and 'MOUNTPOINT=""'}
+                for key, value in disks_dict.items():
+                    if key != (len(out) - 1):
+                        if '"TYPE="disk"' in out[key+1]:
+                            if out[key].split('NAME="')[1].split('"')[0] not in takendevices:
+                                available_devices.append(out[key].split('NAME="')[1].split('"')[0])
+                    else:
+                        if out[key].split('NAME="')[1].split('"')[0] not in takendevices:
+                            available_devices.append(out[key].split('NAME="')[1].split('"')[0])
+            else:
+                jsonout = j.data.serializer.json.loads(out)
+                available_devices = [x['name'] for x in jsonout['blockdevices'] if x['mountpoint'] is None and x['type'] == 'disk' and 'children' not in x and x['name'] not in takendevices]
             data_disk.model.data.devicename = available_devices.pop(0)
             takendevices.append(data_disk.model.data.devicename)
 
