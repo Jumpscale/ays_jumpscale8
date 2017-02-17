@@ -4,6 +4,7 @@ def init(job):
 
     data = service.model.data
     master_node = service.aysrepo.servicesFind(actor='os.*', name=data.masterNode)[0].name
+    mgmt_node = service.aysrepo.servicesFind(actor='os.*', name=data.mgmtNode)[0].name
 
     all_nodes = set()
     for key in data.to_dict().keys():
@@ -15,12 +16,11 @@ def init(job):
                 for n in node:
                     all_nodes.add(n)
 
-
     # Build appscale_tools configuration
     appscale_tools_cfg = {
         'masterNode': master_node,
         'appscaletag': 'dev',
-        'os': service.aysrepo.servicesFind(actor='os.*', name=data.mgmtNode)[0].name,
+        'os': mgmt_node,
         'searchNode': service.aysrepo.servicesFind(actor='os.*', name=data.searchNode)[0].name
     }
 
@@ -52,3 +52,11 @@ def init(job):
 
         tools.consume(appscale)
         tools.consume(btrfs)
+
+    oca_cfg = {
+        'clientId': data.ocaClientId,
+        'clientSecret': data.ocaClientSecret,
+        'os': mgmt_node,
+    }
+    oca = repo.actorGet('oca').serviceCreate("oca", oca_cfg)
+    oca.consume(tools)

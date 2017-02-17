@@ -55,6 +55,6 @@ def install(job):
     set -ex
     eval `ssh-agent`
     ssh-add /root/.ssh/id_rsa
-    cd root && appscale up
+    cd /root && appscale up
     """
     cuisine.core.run(appscale_up_cmd, die=True)
