@@ -37,7 +37,7 @@ def test(job):
 
     try:
         j.atyourservice.reposDiscover()
-        repo = j.atyourservice.repoGet('/opt/code/github/ays_automatic_cockpit_based_testing/sample_repo4')
+        repo = j.atyourservice.repoGet(j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo4'))
         for bp_name, should_success in blueprints.items():
             bp = repo.blueprintGet(bp_name)
             try:

@@ -27,8 +27,8 @@ def test(job):
     model.data.result = RESULT_OK % job.service.name
     failures = []
     repos = []
-    repo1_path = '/opt/code/github/ays_automatic_cockpit_based_testing/sample_repo1'
-    repo2_path = '/opt/code/github/ays_automatic_cockpit_based_testing/sample_repo3'
+    repo1_path = j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo1')
+    repo2_path = j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo3')
     try:
         repo1_expected_steps = [
                                 ('datacenter.ovh_germany1.install', 'datacenter.ovh_germany2.install', 

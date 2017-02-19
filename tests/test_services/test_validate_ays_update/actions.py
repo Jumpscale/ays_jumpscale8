@@ -29,7 +29,7 @@ def test(job):
     failures = []
     repos = []
     cwd = os.getcwd()
-    repo_path = '/opt/code/github/ays_automatic_cockpit_based_testing/sample_repo2'
+    repo_path = j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo2')
     bp_path = j.sal.fs.joinPaths(repo_path, 'blueprints', 'bp_validate_update_propagation.yaml')
     replacement_str = 'REPLACED'
     original_str = 'REPLACEME'

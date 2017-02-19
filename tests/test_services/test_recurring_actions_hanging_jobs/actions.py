@@ -35,7 +35,7 @@ def test(job):
         expected_nr_of_jobs = 0
         curdir = os.getcwd()
         j.atyourservice.reposDiscover()
-        repo = j.atyourservice.repoGet('/opt/code/github/ays_automatic_cockpit_based_testing/sample_repo_recurring')
+        repo = j.atyourservice.repoGet(j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo_recurring'))
         repos.append(repo)
         bp_path = j.sal.fs.joinPaths(repo.path, 'blueprints', 'test_recurring_actions_hanging_jobs.yaml')
         repo.blueprintExecute(path=bp_path)
@@ -48,7 +48,7 @@ def test(job):
         thread.start()
         time.sleep((timeout * 60) + 60) # add one minute to the configured timeout
         end_time = time.time()
-        nr_of_jobs = len(j.core.jobcontroller.db.jobs.find(actor='test_recurring_actions_1', service='hanging', 
+        nr_of_jobs = len(j.core.jobcontroller.db.jobs.find(actor='test_recurring_actions_1', service='hanging',
                 action='execute_hanging_job', fromEpoch=start_time,
                 toEpoch=end_time))
         import ipdb;ipdb.set_trace()
@@ -65,4 +65,3 @@ def test(job):
         if repos:
             for repo in repos:
                 repo.destroy()
-    
