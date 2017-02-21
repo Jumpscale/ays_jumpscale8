@@ -60,3 +60,10 @@ def init(job):
     }
     oca = repo.actorGet('oca').serviceCreate("oca", oca_cfg)
     oca.consume(tools)
+
+    mobidick_cfg = {
+        'os': mgmt_node,
+    }
+    mobidick = repo.actorGet('mobidick').serviceCreate("mobidick", mobidick_cfg)
+    mobidick.consume(tools)
+    mobidick.consume(oca)
