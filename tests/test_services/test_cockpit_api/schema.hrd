@@ -1,2 +1,2 @@
 result = type:str
-uri = type:str default:"http://localhost:5000/"
+uri = type:str default:http://localhost:5000/
