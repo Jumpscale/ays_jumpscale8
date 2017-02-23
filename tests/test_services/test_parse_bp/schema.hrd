@@ -1,3 +1,2 @@
-vdc = type:str parent:'vdc' auto
 description = type:multiline default:'description'
 result = type:str
