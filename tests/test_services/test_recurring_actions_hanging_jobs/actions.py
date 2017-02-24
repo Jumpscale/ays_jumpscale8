@@ -51,7 +51,6 @@ def test(job):
         nr_of_jobs = len(j.core.jobcontroller.db.jobs.find(actor='test_recurring_actions_1', service='hanging',
                 action='execute_hanging_job', fromEpoch=start_time,
                 toEpoch=end_time))
-        import ipdb;ipdb.set_trace()
         if nr_of_jobs != expected_nr_of_jobs:
             failures.append('Wrong number of jobs found. Expected [%s] found [%s]' % (expected_nr_of_jobs, nr_of_jobs))
 
