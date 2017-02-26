@@ -151,7 +151,6 @@ def test(job):
     except:
         service.model.data.result = 'ERROR : {} {}'.format('test_network_configuration', str(sys.exc_info()[:2]))
     finally:
-        import ipdb;ipdb.set_trace()
         # removing all files in repo directory if they exist
         j.do.execute('rm -f noerror.txt')
         j.do.execute('rm -f final.txt')
