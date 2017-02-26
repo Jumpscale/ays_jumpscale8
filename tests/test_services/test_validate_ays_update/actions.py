@@ -35,7 +35,7 @@ def test(job):
     original_str = 'REPLACEME'
     replace_cmd = 'sed -i s/%s/%s/g %s' % (original_str, replacement_str, bp_path)
     expected_process_change_action_before_update = ['new']
-    expected_process_change_action_after_update = ['scheduled']
+    expected_process_change_action_after_update = ['scheduled', 'ok']
     service_name = 'instance'
     actors = ['repo2_template1', 'repo2_template2']
     ays_update_cmd = 'ays update'
