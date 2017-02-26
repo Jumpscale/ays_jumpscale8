@@ -11,18 +11,16 @@ def init_actions_(service, args):
 def init(job):
     service = job.service
     repo = service.aysrepo
-
     g8clients = repo.servicesFind(actor='g8client')
+
     if g8clients:
-        #import ipdb;ipdb.set_trace()
         g8client = g8clients[0]
         client = j.clients.openvcloud.getFromService(g8client)
-        #try:
-        #    client.api.system.gridmanager.getNodes(roles='cpunode')
-        #except:
-        #    pass
-    # this need to be changed later to get the stacks ids using g8client
-    cpunodes_ids = [1, 2]
+        cpunodes = client.api.cloudbroker.computenode.list()
+        cpunodes_ids = [cpunodes[i]['id'] for i in range(len(cpunodes))]
+    else:
+       raise j.exceptions.Input("can not get stacks ids as there is no g8client")
+
     # ovc node.
     vm = {
         'os.image': service.model.data.image,
