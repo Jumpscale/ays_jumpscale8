@@ -2,6 +2,7 @@
 def install(job):
     service = job.service
     cuisine = service.executor.cuisine
+    cuisine.core.run("js 'j'", profile=True)
 
     cfg = cuisine.core.file_read('$tmplsDir/cfg/portal/config.hrd')
     cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
