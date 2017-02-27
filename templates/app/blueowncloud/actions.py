@@ -32,13 +32,14 @@ def init(job):
     # filesystem
     # 1- fuse
     fuse_cfg = {
-        'mount.namespace': 'sandbox_ub1604',
-        'mount.mountpoint': '/mnt/fs',
-        'mount.flist':'https://stor.jumpscale.org/stor2/flist/sandbox_ub1604/opt.flist',
+        'mount.namespace': 'aysbuild',
+        'mount.mountpoint': '/opt',
+        'mount.flist':'https://stor.jumpscale.org/stor2/flist/aysbuild/test811_reem.flist',
         'mount.mode': 'ol',
-        'mount.trimbase': False,
+        'mount.trimbase': True,
+        'mount.trim': '/opt',
         'backend.path': '/mnt/fs_backend/opt',
-        'backend.namespace': 'sandbox_ub1604',
+        'backend.namespace': 'aysbuild',
         'backend.cleanup.cron': "@every 1h",
         'backend.cleanup.old': 24,
         'store.url': 'https://stor.jumpscale.org/stor2'
@@ -72,7 +73,7 @@ def init(job):
             '3306:3306'
         ],
         'volumes': [
-            '/mnt/fs/opt/:/opt/',
+            '/opt/:/opt/',
         ]
     }
 
@@ -90,7 +91,7 @@ def init(job):
             '8000:80'
         ],
         'volumes': [
-            '/mnt/fs/opt/:/opt/',
+            '/opt/:/opt/',
             '/data/:/data/',
         ]
     }
@@ -132,7 +133,7 @@ def init(job):
             '80:80'
         ],
         'volumes': [
-            '/mnt/fs/opt/:/opt/',
+            '/opt/:/opt/',
         ]
     }
 
