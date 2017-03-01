@@ -1,0 +1,4 @@
+vdc = type:string parent:vdc
+image = type:string default:'Ubuntu 16.04 x64'
+cpunodes = type:int list
+result = type:string
