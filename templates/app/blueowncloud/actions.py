@@ -34,7 +34,7 @@ def init(job):
     fuse_cfg = {
         'mount.namespace': 'aysbuild',
         'mount.mountpoint': '/opt',
-        'mount.flist':'https://stor.jumpscale.org/stor2/flist/aysbuild/test811_reem.flist',
+        'mount.flist':'https://stor.jumpscale.org/stor2/flist/aysbuild/jumpscale.flist',
         'mount.mode': 'ol',
         'mount.trimbase': True,
         'mount.trim': '/opt',
