@@ -7,7 +7,7 @@ g8client__main:
 vdc__{random_vdc}:
     g8client: 'main'
     description: 'desc'
-    location: '{environment}'
+    location: '{location}'
 
 disk.ovc__disk1:
     devicename: 'disk_b'

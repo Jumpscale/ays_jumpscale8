@@ -6,7 +6,7 @@ g8client__main:
 
 vdc__{random_vdc}:
     g8client: 'main'
-    location: '{environment}'
+    location: '{location}'
 
 disk.ovc__disk1:
   size: 1000
@@ -15,7 +15,7 @@ s3__s3vm:
     vdc: '{random_vdc}'
     disk:
       - 'disk1'
-    domain: 'mystorage.com'
+    hostprefix: 's3test'
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_s3__ts:
@@ -26,4 +26,3 @@ actions:
   - action: 'install'
   - action: 'test'
     actor: 'test_s3'
-

@@ -1,3 +1,28 @@
+def input(job):
+    service = job.service
+    repo = service.aysrepo
+    if job.model.args.get('vdc', '') == '':
+        g8clients = repo.servicesFind(actor='g8client')
+        if g8clients:
+            g8client = g8clients[0]
+            cl = j.clients.openvcloud.getFromService(g8client)
+            if cl.locations:
+                location = cl.locations[0]['name']
+            else:
+                raise j.exceptions.Input('this g8client has no locations associated to it')
+            vdc_info = {
+                'location': location,
+                'g8client': g8client.model.name,
+            }
+
+            vdc = repo.actorGet('vdc').serviceCreate(service.name, vdc_info)
+            args = job.model.args
+            args['vdc'] = service.name
+            return args
+        else:
+            raise j.exceptions.Input("can not create vdc for you, if there is no any g8clients" % service)
+
+
 def init(job):
     service = job.service
     repo = service.aysrepo

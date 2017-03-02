@@ -87,7 +87,7 @@ def install(job):
     pm = cuisine.processmanager.get('tmux')
     bin_location = cuisine.core.command_location('fs')
     cmd = '%s -config %s' % (bin_location, config_path)
-    pm.ensure("fs_%s" % service.name, cmd=cmd, env={}, path='$JSCFGDIR/fs', descr='G8OS FS')
+    pm.ensure("fs_%s" % service.name, cmd=cmd, env={}, path='$JSCFGDIR/fs', descr='G8OS FS', autostart=True, wait="3m")
 
     # wait until all targets are actually mounted
     # We wait max 1 min per target
@@ -116,6 +116,3 @@ def stop(job):
 
     pm = cuisine.processmanager.get('tmux')
     pm.stop('fs_%s' % service.name)
-
-
-

@@ -11,5 +11,5 @@ def install(job):
     # dbpassword = service.model.data.dbpass
 
     cuisine.apps.tidb.start()
-    C = "apt-get update && apt-get install mysql-client-core-5.7 -y"
-    cuisine.core.execute_bash(C)
+    cuisine.package.mdupdate()
+    cuisine.package.install('mysql-client-core-5.7')

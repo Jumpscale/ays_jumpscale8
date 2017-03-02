@@ -1,0 +1,2 @@
+packager = type:str consume:'packager'
+result = type:string

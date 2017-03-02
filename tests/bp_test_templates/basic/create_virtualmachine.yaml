@@ -12,23 +12,17 @@ vdc__{random_vdc}:
         - '{username}'
 
 node.ovc__{random_node}:
+    description: '{random}'
     os.image: 'Ubuntu 16.04 x64'
     bootdisk.size: 10
     sizeID: 2
     vdc: {random_vdc}
 
-autosnapshotting__{random_snap}:
-  vdc: {random_vdc}
-  snapshotInterval: '1m'
-  retention: '5m'
-  cleanupInterval : '1m'
-
-# 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
-test_auto_snapshoting__{random}:
-   g8client: 'islam'
+test_create_virtualmachine__{random}:
    node: {random_node}
+   g8client: 'islam'
 
 actions:
    - action: 'install'
-   - action: 'test_auto_snapshoting'
-     actor: test_auto_snapshoting
+   - action: 'test'
+     actor: test_create_virtualmachine
