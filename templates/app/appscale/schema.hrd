@@ -1,2 +1,0 @@
-os = type:str parent:os
-appscaletag = type:str

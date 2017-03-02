@@ -1,9 +1,0 @@
-mgmtNode = type:str consume:os
-masterNode = type:str consume:os
-databaseNode = type:str list consume:os
-zookeeperNode = type:str list consume:os
-appengineNode = type:str list consume:os
-searchNode = type:str consume:os
-ocaClientId = type:str
-ocaClientSecret = type:str
-g8client = type:str

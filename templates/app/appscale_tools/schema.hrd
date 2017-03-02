@@ -1,7 +1,0 @@
-os = type:str parent:os
-appscaletag = type:str
-masterNode = type:str consume:node:1:1
-searchNode = type:str consume:node:1:1
-appengineNode = type:str list consume:node:1:1
-databaseNode = type:str list consume:node:1:1
-zookeeperNode = type:str list consume:node:1:1
