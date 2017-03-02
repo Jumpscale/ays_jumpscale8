@@ -14,6 +14,12 @@ def input(job):
     repo = service.aysrepo
     g8clients = repo.servicesFind(actor='g8client')
 
+    action = job.model.args.get('action')
+    if action == 'live_migration' or action == 'node_maintenance':
+        pass
+    else:
+        raise j.exceptions.Input("action should be only live_migration or node_maintenance")
+
     if g8clients:
         g8client = g8clients[0]
         client = j.clients.openvcloud.getFromService(g8client)
@@ -97,7 +103,7 @@ def test(job):
         log.info('Test started')
         log.info('check if sshpass is installed')
         if 'sshpass\n' != j.do.execute('dpkg -l sshpass | grep -o -F sshpass')[1]:
-            service.model.data.result = 'FAILED : {} {}'.format('test_vm_live_migration', 'sshpass need to be installed')
+            service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'sshpass need to be installed')
             service.save()
             return
 
@@ -108,12 +114,15 @@ def test(job):
         cpunodes_ids = [cpunodes[i]['id'] for i in range(len(cpunodes))]
         if len(cpunodes_ids) < 2:
             log.info('Not Enough cpu nodes for that test')
-            service.model.data.result = 'FAILED : {} {}'.format('test_vm_live_migration', 'Not Enough cpu nodes for that test')
+            service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'Not Enough cpu nodes for that test')
             service.save()
             return
 
+        action = service.model.data.action
         acc = client.account_get(vdc.model.data.account)
         space = acc.space_get(vdc.model.dbobj.name, vdc.model.data.location)
+        cloudspace = client.api.cloudapi.cloudspaces.get(cloudspaceId=space.id)
+        gid = cloudspace['gid']
         cloudspace_ip = space.get_space_ip()
         vm_publicport = 2200
         vms = space.machines
@@ -148,8 +157,12 @@ def test(job):
                 cmd = "python machine_script.py {}".format(testname)
                 t = threading.Thread(target=vm_os.execute, args=(cmd,))
             else:
-                d = dict(machineId=machine.id, reason='Testing', targetStackId=cpunodes_ids[1], force=False)
-                t = threading.Thread(target=client.api.cloudbroker.machine.moveToDifferentComputeNode, kwargs=d)
+                if action == 'live_migration':
+                    d = dict(machineId=machine.id, reason='Testing', targetStackId=cpunodes_ids[1], force=False)
+                    t = threading.Thread(target=client.api.cloudbroker.machine.moveToDifferentComputeNode, kwargs=d)
+                else:
+                    d = dict(id=cpunodes_ids[0], gid=gid, vmaction='move', message='testing')
+                    t = threading.Thread(target=client.api.cloudbroker.computenode.maintenance, kwargs=d)
             threads.append(t)
 
         for l in range(len(threads)):
@@ -158,24 +171,29 @@ def test(job):
                 threads[l].start()
                 time.sleep(15)
             if l == 1:
-                log.info('Machine will be moved to the node with stackId:{}'.format(cpunodes_ids[1]))
+                log.info('Machine will be moved to another cpunode')
                 threads[l].start()
                 time.sleep(10)
-                # https://github.com/0-complexity/openvcloud/issues/768
-                #machine_db = client.api.cloudapi.machines.get(machineId=machine.id)
-                #curr_cpunode = machine_db['interfaces'][0]['referenceId']
-                curr_cpunode = '5'
-                if curr_cpunode != cpunodes[1]['referenceId']:
-                    log.info('The VM didn\'t move to the other cpunode with stackId:{}'.format(cpunodes[1]))
-                    service.model.data.result = 'FAILED : {} {}'.format('test_vm_live_migration', 'VM didn\'t move to the other cpunode')
-                    service.save()
-                    return
+                machine_db = client.api.cloudbroker.machine.get(machineId=machine.id)
+                curr_stackId = machine_db['stackId']
+                if action == 'live_migration':
+                    if curr_stackId != cpunodes_ids[1]:
+                        log.info('The VM didn\'t move to the other cpunode with stackId:{}'.format(cpunodes[1]))
+                        service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'VM didn\'t move to the other cpunode')
+                        service.save()
+                        return
+                else:
+                    if curr_stackId == cpunodes_ids[0]:
+                        log.info('The VM didn\'t move to another cpunode ')
+                        service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'VM didn\'t move to another cpunode')
+                        service.save()
+                        return
 
                 if machine_db['status'] == 'RUNNING':
-                    log.info('The VM have been successfully installed on other node with approximately no downtime during live migration')
+                    log.info('The VM have been successfully installed on another node with approximately no downtime during live migration')
                 else:
                     log.info('A high downtime (more than 10 secs) have been noticed')
-                    service.model.data.result = 'FAILED : {} {}'.format('test_vm_live_migration', 'A high downtime (more than 8 secs) have been noticed')
+                    service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'A high downtime (more than 8 secs) have been noticed')
                     service.save()
                     return
 
@@ -189,14 +207,19 @@ def test(job):
         test_result = vm_os.execute('python check_script.py test1.0.0 test2.0.0')
         match = re.search(r'Two files are identical', test_result[1])
         if match:
-            service.model.data.result = 'OK : {}'.format('test_vm_live_migration')
+            service.model.data.result = 'OK : {}'.format('test_move_vms')
         else:
-            service.model.data.result = 'FAILED : {} {}'.format('test_vm_live_migration', 'files are not identical')
+            service.model.data.result = 'FAILED : {} {}'.format('test_move_vms', 'files are not identical')
 
     except:
-        service.model.data.result = 'ERROR : {} {}'.format('test_vm_live_migration', str(sys.exc_info()[:2]))
+        service.model.data.result = 'ERROR : {} {}'.format('test_move_vms', str(sys.exc_info()[:2]))
     finally:
         j.do.execute('rm -f check_script.py')
         j.do.execute('rm -f machine_script.py')
-        log.info('Test Ended')
         service.save()
+        if action == 'node_maintenance':
+            cpunodes = client.api.cloudbroker.computenode.list(gid=gid)
+            for cn in cpunodes:
+                if cn['id'] == cpunodes_ids[0] and cn['status'] != 'ENABLED':
+                    client.api.cloudbroker.computenode.enable(id=cpunodes_ids[0], gid=gid, message='enable')
+        log.info('Test Ended')
