@@ -1,0 +1,4 @@
+node=type:str consume:node
+g8client=type:str consume:g8client
+uservdc=type:str consume:uservdc
+result=type:str
