@@ -10,7 +10,7 @@ def init_actions_(service, args):
     # some default logic for simple actions
     return {
 
-        'test_all': ['test_get_repo', 'test_create_repo', 'test_list_repos', 'install']
+        'test_all': ['test_delete_repo', 'test_get_repo', 'test_create_repo', 'test_list_repos', 'install']
     }
 
 def test_all(job):
@@ -59,6 +59,7 @@ def test_create_repo(job):
     import sys
     import os
     import requests
+    import time
     RESULT_OK = 'OK : %s'
     RESULT_FAILED = 'FAILED : %s'
     RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
@@ -68,12 +69,21 @@ def test_create_repo(job):
     repos = []
     server_uri = model.data.uri
     server_uri = server_uri.strip('/')
+    repo_name = 'testrepo_%s' %  time.time()
+    fake_repo_url = 'https://githum.com/ahussin/%s.git' % repo_name
     try:
         service_uri = '/ays/repository'
         full_uri = '%s%s' % (server_uri, service_uri)
+        # non-valid requests...no data sent
         res = requests.post(full_uri)
         if res.status_code != 400:
             failures.append('Wrong status code while creating new repository with invlid data. Expected [%s] found [%s]' % (400, res.status_code))
+        # valid request
+        data = {'name': repo_name, 'git_url': fake_repo_url}
+        res = requests.post(full_uri, json=data)
+        if res.status_code != 201:
+            failures.append('Wrong status code while creating new repository. Expected [201] found [%s]' %  res.status_code)
+        
         if failures:
             model.data.result = RESULT_FAILED % '\n'.join(failures)
     except:
@@ -83,6 +93,9 @@ def test_create_repo(job):
         if repos:
             for repo in repos:
                 repo.destroy()
+        # delete the created repo
+        full_uri = '%s/%s' % (full_uri, repo_name)
+        requests.delete(full_uri)
 
 
 def test_get_repo(job):
@@ -125,7 +138,56 @@ def test_get_repo(job):
                 res = requests.get(full_uri)
                 if  res.status_code != 404:
                     failures.append('Wrong status code while getting non-existing repository [%s] using uri [%s]' % (repo_info['name'], full_uri))
-        import ipdb; ipdb.set_trace()
+        
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+
+
+def test_delete_repo(job):
+    """
+    Tests delete repository api
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_name = 'testrepo_%s' %  time.time()
+    fake_repo_url = 'https://githum.com/ahussin/%s.git' % repo_name
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        # list repos
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            ays_repos = res.json()
+            ays_repos = dict(zip([item['name'] for item in ays_repos], ays_repos))
+            while repo_name in ays_repos:
+                repo_name = 'testrepo_%s' %  time.time()
+            # now create a repo with the non-existing name
+            res = requests.post(full_uri, json={'name': repo_name, 'git_url': fake_repo_url})
+            if res.status_code == 201:
+                full_uri = '%s/%s' % (full_uri, repo_name)
+                res = requests.delete(full_uri)
+                if res.status_code != 204:
+                    failures.append('Failed to delete repository. Error [%s]' % res.text)
+            else:
+                failures.append('Cannot test delete repository API. Cannot create test repo. Error [%s]' % res.text)
         if failures:
             model.data.result = RESULT_FAILED % '\n'.join(failures)
     except:
