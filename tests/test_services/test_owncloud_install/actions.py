@@ -29,32 +29,9 @@ def test(job):
             service.save()
             return
 
-        # Check that nginx is running
-        ocos = repo.servicesFind(actor="os.ssh.ubuntu", name="owncloud")[0]
-        ngx_ms = 'nginx: master process /opt/jumpscale8/apps/nginx/bin/nginx -c /optvar/cfg/nginx/etc/nginx.conf'
-        out = ocos.executor.cuisine.core.run("ps aux | grep -o -F -m 1 '{}' ".format(ngx_ms))
-        if out[1] != "{}".format(ngx_ms):
-            service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
-            service.save()
-            return
-
-        log.info('Check that the owncloud site in enabled in nginx')
-        out = ocos.executor.cuisine.core.run("ls /optvar/cfg/nginx/etc/sites-enabled")
-        if out[1] != fqdn:
-            service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
-            service.save()
-            return
-
-        log.info('Check that the pid for the nginx don\'t change')
-        out = ocos.executor.cuisine.core.run("sv status nginx | awk '{print$4}'")
-        time.sleep(1)
-        out2 = ocos.executor.cuisine.core.run("sv status nginx | awk '{print$4}'")
-        if out[1] != out2[1]:
-            service.model.data.result = 'FAILED : {} {}'.format('test_owncloud_install', str(sys.exc_info()[:2]))
-            service.save()
-            return
 
         log.info('Check if the owncloud site can respond back')
+        ocos = repo.servicesFind(actor="os.ssh.ubuntu", name="owncloud")[0]
         ocos.executor.cuisine.core.run('echo "127.0.0.1 %s" >> /etc/hosts' % fqdn)
         out = ocos.executor.cuisine.core.run("curl %s -L | grep -o -F -m 1 'GreenITGlobe'" % fqdn)
         if out[1] != 'GreenITGlobe':
