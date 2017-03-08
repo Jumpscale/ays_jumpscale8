@@ -341,7 +341,7 @@ def test_update_bp(job):
                         res = requests.put(full_uri, json={'name': blueprint_name, 'content': content})
                         if res.status_code != 200:
                             failures.append('Failed to update blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
-        import ipdb; ipdb.set_trace()
+                            
         if failures:
             model.data.result = RESULT_FAILED % '\n'.join(failures)
     except:
