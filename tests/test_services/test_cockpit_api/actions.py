@@ -10,7 +10,8 @@ def init_actions_(service, args):
     # some default logic for simple actions
     return {
 
-        'test_all': ['test_update_bp',
+        'test_all': ['test_list_services', 'test_delete_bp', 'test_execute_bp',
+                     'test_get_bp', 'test_restore_bp', 'test_archive_bp', 'test_update_bp',
                      'test_create_bp', 'test_list_bps', 'test_delete_repo', 'test_get_repo',
                      'test_create_repo', 'test_list_repos', 'install']
     }
@@ -53,6 +54,7 @@ def test_list_repos(job):
         if repos:
             for repo in repos:
                 repo.destroy()
+
 
 def test_create_repo(job):
     """
@@ -297,7 +299,6 @@ def test_create_bp(job):
             requests.delete(full_uri)
 
 
-
 def test_update_bp(job):
     """
     Tests update blueprint API
@@ -341,6 +342,239 @@ def test_update_bp(job):
                         res = requests.put(full_uri, json={'name': blueprint_name, 'content': content})
                         if res.status_code != 200:
                             failures.append('Failed to update blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
+
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+        # delete the test blueprint
+        if repo_info and blueprint_name:
+            full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+            requests.delete(full_uri)
+
+
+def test_archive_bp(job):
+    """
+    Tests archive blueprint API
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_info = None
+    blueprint_name = None
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/blueprint' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                ays_bps = dict(zip([bp_info['name'] for bp_info in res.json()], res.json()))
+                if res.status_code == 200:
+                    blueprint_name = 'testbp_%s' % time.time()
+                    while blueprint_name in ays_bps:
+                        blueprint_name = 'testbp_%s' % time.time()
+                    content = "test_recurring_actions__instance:\n\nactions:\n  - action: 'test'"
+                    res = requests.post(full_uri, json={'name': blueprint_name, 'content': content})
+                    if res.status_code == 201:
+                        full_uri = '%s/ays/repository/%s/blueprint/%s/archive' % (server_uri, repo_info['name'], blueprint_name)
+                        res = requests.put(full_uri)
+                        if res.status_code != 200:
+                            failures.append('Failed to archive blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+        # delete the test blueprint
+        if repo_info and blueprint_name:
+            full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+            requests.delete(full_uri)
+
+
+def test_restore_bp(job):
+    """
+    Tests restore blueprint API
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_info = None
+    blueprint_name = None
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/blueprint' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                ays_bps = dict(zip([bp_info['name'] for bp_info in res.json()], res.json()))
+                if res.status_code == 200:
+                    blueprint_name = 'testbp_%s' % time.time()
+                    while blueprint_name in ays_bps:
+                        blueprint_name = 'testbp_%s' % time.time()
+                    content = "test_recurring_actions__instance:\n\nactions:\n  - action: 'test'"
+                    res = requests.post(full_uri, json={'name': blueprint_name, 'content': content})
+                    if res.status_code == 201:
+                        full_uri = '%s/ays/repository/%s/blueprint/%s/archive' % (server_uri, repo_info['name'], blueprint_name)
+                        res = requests.put(full_uri)
+                        if res.status_code == 200:
+                            full_uri = '%s/ays/repository/%s/blueprint/%s/restore' % (server_uri, repo_info['name'], blueprint_name)
+                            res = requests.put(full_uri)
+                            if res.status_code != 200:
+                                failures.append('Failed to restore blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+        # delete the test blueprint
+        if repo_info and blueprint_name:
+            full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+            requests.delete(full_uri)
+
+
+def test_get_bp(job):
+    """
+    Tests get blueprint API
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_info = None
+    blueprint_name = None
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/blueprint' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                ays_bps = dict(zip([bp_info['name'] for bp_info in res.json()], res.json()))
+                if res.status_code == 200:
+                    blueprint_name = 'testbp_%s' % time.time()
+                    while blueprint_name in ays_bps:
+                        blueprint_name = 'testbp_%s' % time.time()
+                    content = "test_recurring_actions__instance:\n\nactions:\n  - action: 'test'"
+                    res = requests.post(full_uri, json={'name': blueprint_name, 'content': content})
+                    if res.status_code == 201:
+                        full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+                        res = requests.get(full_uri)
+                        if res.status_code != 200:
+                            failures.append('Failed to get blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
+
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+        # delete the test blueprint
+        if repo_info and blueprint_name:
+            full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+            requests.delete(full_uri)
+
+
+def test_execute_bp(job):
+    """
+    Tests execute blueprint API
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_info = None
+    blueprint_name = None
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/blueprint' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                ays_bps = dict(zip([bp_info['name'] for bp_info in res.json()], res.json()))
+                if res.status_code == 200:
+                    blueprint_name = 'testbp_%s' % time.time()
+                    while blueprint_name in ays_bps:
+                        blueprint_name = 'testbp_%s' % time.time()
+                    content = "test_recurring_actions__instance:\n\nactions:\n  - action: 'test'"
+                    res = requests.post(full_uri, json={'name': blueprint_name, 'content': content})
+                    if res.status_code == 201:
+                        full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+                        res = requests.post(full_uri)
+                        if res.status_code != 200:
+                            failures.append('Failed to execute blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
                             
         if failures:
             model.data.result = RESULT_FAILED % '\n'.join(failures)
@@ -355,3 +589,102 @@ def test_update_bp(job):
         if repo_info and blueprint_name:
             full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
             requests.delete(full_uri)
+
+
+def test_delete_bp(job):
+    """
+    Tests delete blueprint API
+    """
+    import sys
+    import os
+    import requests
+    import time
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    repo_info = None
+    blueprint_name = None
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/blueprint' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                ays_bps = dict(zip([bp_info['name'] for bp_info in res.json()], res.json()))
+                if res.status_code == 200:
+                    blueprint_name = 'testbp_%s' % time.time()
+                    while blueprint_name in ays_bps:
+                        blueprint_name = 'testbp_%s' % time.time()
+                    content = "test_recurring_actions__instance:\n\nactions:\n  - action: 'test'"
+                    res = requests.post(full_uri, json={'name': blueprint_name, 'content': content})
+                    if res.status_code == 201:
+                        full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+                        res = requests.delete(full_uri)
+                        if res.status_code != 204:
+                            failures.append('Failed to delete blueprint using uri [%s]. Error[%s]' % (full_uri, res.text))
+
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
+        # delete the test blueprint
+        if repo_info and blueprint_name:
+            full_uri = '%s/ays/repository/%s/blueprint/%s' % (server_uri, repo_info['name'], blueprint_name)
+            requests.delete(full_uri)
+
+
+def test_list_services(job):
+    """
+    Test list services API
+    """
+    import sys
+    import os
+    import requests
+    RESULT_OK = 'OK : %s'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
+    model = job.service.model
+    model.data.result = RESULT_OK % job.service.name
+    failures = []
+    repos = []
+    server_uri = model.data.uri
+    server_uri = server_uri.strip('/')
+    try:
+        service_uri = '/ays/repository'
+        full_uri = '%s%s' % (server_uri, service_uri)
+        res = requests.get(full_uri)
+        if res.status_code == 200:
+            repo_info = res.json()
+            if repo_info:
+                repo_info = repo_info[0]                
+                service_uri = '/ays/repository/%s/service' % repo_info['name']
+                full_uri = '%s%s' % (server_uri, service_uri)
+                res = requests.get(full_uri)
+                if res.status_code != 200:
+                    failures.append('Failed to list services using url [%s]. Error [%s]' % (full_uri, res.text))
+                    
+        if failures:
+            model.data.result = RESULT_FAILED % '\n'.join(failures)
+    except:
+        model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
+    finally:
+        job.service.save()
+        if repos:
+            for repo in repos:
+                repo.destroy()
