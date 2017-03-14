@@ -37,27 +37,17 @@ node.physical__ovh4:
   ssh.addr: 'localhost'
   ssh.port: 22
 
-
-os.ssh.ubuntu__ovh4:
-  ssh.addr: 'localhost'
-  ssh.port: 22
-  sshLogin: 'root'
-  sshPassword: '<root password>'
-  sshkey: 'ovh_install'
-  node: 'ovh4'
-  aysfs: False
-  agent: False
+app_docker__appdocker:
+  os: ovh4
 
 node.docker__ubuntutest:
   sshkey: 'ovh_install'
   image: 'ubuntu'
   ports:
-    - "80"
+    - "80:80"
   os: 'ovh4'
+  docker: appdocker
 
-os.ssh.ubuntu__docker_ovh4:
-  sshkey: 'ovh_install'
-  node: 'ubuntutest'
 
 actions:
     - action: 'install'
