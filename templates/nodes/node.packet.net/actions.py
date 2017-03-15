@@ -24,6 +24,10 @@ def init(job):
 
 def install(job):
     import time
+    # install packet client.
+    lc = j.tools.cuisine.local
+    lc.development.pip.install("packet-python")
+
     import packet
 
     service = job.service
