@@ -1,3 +1,0 @@
-os = type:str parent:os
-fs = type:str consume:fs:1 auto 
-spaces = type:str list consume:ftp_space:1:50 auto

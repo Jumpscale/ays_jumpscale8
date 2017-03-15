@@ -1,4 +1,0 @@
-g8client=type:str consume:g8client
-vdc=type:str consume:vdc
-node=type:str consume:node
-result=type:str

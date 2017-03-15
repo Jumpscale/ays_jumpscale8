@@ -1,2 +1,0 @@
-os = type:str parent:os
-networks = type:str  list consume:network.zerotier:1:50 auto

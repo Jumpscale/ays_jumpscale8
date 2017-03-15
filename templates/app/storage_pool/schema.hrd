@@ -1,7 +1,0 @@
-path = type:str
-fs = type:str consume:fs.btrfs:1 auto
-pools = type:str list consume:storage_pool:0:50 auto
-os = type:str  parent:os
-replicate = type:bool default:True
-snapshot = type:bool default:True
-monitor = type:bool default:True
