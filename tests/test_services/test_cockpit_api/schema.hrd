@@ -1,0 +1,2 @@
+result = type:str
+uri = type:str default:http://localhost:5000/
