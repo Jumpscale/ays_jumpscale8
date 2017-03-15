@@ -1,6 +1,0 @@
-vdc = type:str parent:vdc
-startDate = type:str default:''
-endDate = type:str default:''
-snapshotInterval = type:str default:'2h'
-cleanupInterval = type:str default:'1d'
-retention = type:str default:'5d'

@@ -1,4 +1,0 @@
-vdcfarm = type:str parent:'vdcfarm' auto
-str_attr = type:str
-list_attr = list type:str
-result = type:str

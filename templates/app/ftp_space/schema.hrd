@@ -1,3 +1,0 @@
-path = type:str default = '/mnt/storage'
-authorized_users = type:str list 
-permission = type:str

@@ -1,2 +1,0 @@
-sshkeys = list type:str consume:sshkey:2 auto
-result = type:str

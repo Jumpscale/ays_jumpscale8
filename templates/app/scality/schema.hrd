@@ -1,6 +1,0 @@
-os = type:str parent:os
-domain = type:str
-storage.data = type:str
-storage.meta = type:str
-key.access = type:str default:''
-key.secret = type:str default:''

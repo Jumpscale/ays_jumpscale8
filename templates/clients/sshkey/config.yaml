@@ -1,0 +1,6 @@
+doc:
+  property:
+  - keyPriv: ''
+  - keyPath: ''
+  - keyPub: ''
+  - keyPassphrase: Specify passphrase (default is empty)

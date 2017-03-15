@@ -1,8 +1,0 @@
-os = type:str parent:os
-fs = type:string consume:fs:0
-
-host = type:str
-port = type:int
-unixsocket = type:str default:''
-maxram = type:int default:200
-appendonly = type:bool default:True

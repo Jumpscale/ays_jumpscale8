@@ -1,5 +1,0 @@
-node                           = type:str parent:node
-
-sshkey                        = type:str consume:sshkey:1  auto
-ssh.addr                       = type:str
-ssh.port                       = type:int

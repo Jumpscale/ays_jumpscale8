@@ -1,4 +1,0 @@
-os = type:str parent:os
-
-name = type:str
-path = type:str default:''
