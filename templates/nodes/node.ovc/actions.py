@@ -33,13 +33,12 @@ def install(job):
         image_names = [i['name'] for i in space.images]
         if service.model.data.osImage not in image_names:
             raise j.exceptions.NotFound('Image %s not available for vdc %s' % (service.model.data.osImage, vdc.name))
-
-        if service.model.data.sizeID and vdc.model.data.allowedVMSizes and service.model.data.sizeID not in vdc.model.data.allowedVMSizes:
-            raise RuntimeError("sizeID provided (%s) is not in the allowedVMSizes (%s)" % (service.model.data.sizeID, vdc.model.data.allowedVMSizes))
         machine = space.machine_create(name=service.name,
                                        image=service.model.data.osImage,
                                        memsize=service.model.data.memory,
-                                       disksize=service.model.data.bootdiskSize)
+                                       disksize=service.model.data.bootdiskSize,
+                                       sizeId=service.model.data.sizeID if service.model.data.sizeID >= 0 else None,
+                                       stackId=service.model.data.stackID if service.model.data.stackID >= 0 else None)
 
     service.model.data.machineId = machine.id
     service.model.data.ipPublic = machine.space.model['publicipaddress'] or space.get_space_ip()
@@ -48,8 +47,8 @@ def install(job):
     if not ip:
         raise j.exceptions.RuntimeError('The machine %s does not get an IP ' % service.name)
     service.model.data.ipPrivate = ip
-    service.model.data.sshLogin = vm_info['accounts'][0]['login']
-    service.model.data.sshPassword = vm_info['accounts'][0]['password']
+    # service.model.data.sshLogin = vm_info['accounts'][0]['login']
+    # service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
     ssh_present = any([ports for ports in service.model.data.ports if ports.startswith('22')])
     data = j.data.serializer.json.loads(service.model.dataJSON)
@@ -88,11 +87,11 @@ def install(job):
 
     sshkey = service.producers['sshkey'][0]
     key_path = j.sal.fs.joinPaths(sshkey.path, 'id_rsa')
-    password = node.model.data.sshPassword if node.model.data.sshPassword != '' else None
+    password = vm_info['accounts'][0]['password'] if vm_info['accounts'][0]['password'] != '' else None
 
     # used the login/password information from the node to first connect to the node and then authorize the sshkey for root
     executor = j.tools.executor.getSSHBased(addr=node.model.data.ipPublic, port=service.model.data.sshPort,
-                                            login=node.model.data.sshLogin, passwd=password,
+                                            login= vm_info['accounts'][0]['login'], passwd=password,
                                             allow_agent=True, look_for_keys=True, timeout=5, usecache=False,
                                             passphrase=None, key_filename=key_path)
     executor.cuisine.ssh.authorize("root", sshkey.model.data.keyPub)

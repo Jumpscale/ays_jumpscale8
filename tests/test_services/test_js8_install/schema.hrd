@@ -1,2 +1,3 @@
 os = type:string  parent:os
 branch = type:string default:'master'
+result = type:string

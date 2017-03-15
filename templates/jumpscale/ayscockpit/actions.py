@@ -74,15 +74,23 @@ def install(job):
     # start daemon
     cmd = 'ays start'
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
-
+    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, autostart=True)
     # start api
     cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'))
+    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'), autostart=True)
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$VARDIR/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$VARDIR/cockpit_repos/cockpit')
     cuisine.core.run('cd $VARDIR/cockpit_repos/cockpit; ays restore', profile=True)
+
+    # write the init script that will be used in case of machine shutdown
+    rc_local = cuisine.core.file_read('/etc/rc.local').split('\n')
+    for idx, line in enumerate(rc_local):
+        if line == 'exit 0':
+            rc_local.insert(idx, 'bash /etc/startup.sh')
+            rc_local.insert(idx, 'export HOME=/root')
+            break
+    cuisine.core.file_write('/etc/rc.local', '\n'.join(rc_local))
 
 
 def start(job):

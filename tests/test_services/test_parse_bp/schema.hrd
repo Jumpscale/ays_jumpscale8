@@ -1,0 +1,2 @@
+description = type:multiline default:'description'
+result = type:str

@@ -13,9 +13,9 @@ It creates
 - vdc: cloudspace to create the virtual machine on.
 - **optional** ssh: sshkey used to manage the vm.
 - datadisks: lists of disk sizes that will be attached to that vm.
-- domain: domain name to access the owncloud installation.
-> Note: The domain name will just be used for scality configuration and no DNS records will be created. It means that
-to access this machine u need either to modify the DNS yourself, or add the `domain` to your `/etc/hosts` file.
+-  hostprefix: the first part in your app url. (i.e hostprefix-machinedecimalip.gigapps.io )
+-  fqdn = calculated by ays itself (i.e hostprefix-machinedecimalip.gigapps.io)
+-  enablehttps = support for https. `default is False`
 
 
 ## Example blueprint
@@ -33,7 +33,7 @@ vdc__myspaceb15:
     location: 'be-conv-2'
 
 blueowncloud__oc1:
-    domain: 'mycloud.com'
+    hostprefix: 'myapp'
     vdc: myspaceb15
     datadisks:
         - 1000

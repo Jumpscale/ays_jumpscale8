@@ -1,2 +1,3 @@
 s3 = type:string consume:s3
 scality = type:string consume:scality
+result = type:string

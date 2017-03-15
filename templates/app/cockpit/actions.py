@@ -153,6 +153,19 @@ def init(job):
 
     ayscockpit = repo.actorGet('ayscockpit').serviceCreate('main', ayscockpit_cfg)
     service.consume(ayscockpit)
+    # # write the init script that will be used in case of machine shutdown
+    #
+    # os = service.aysrepo.servicesFind(actor='os.*', name=service.model.data.hostNode)[0]
+    # vm_cuisine = os.executor.cuisine
+    # rc_local = vm_cuisine.core.file_read('/etc/rc.local').split('\n')
+    # for idx, line in enumerate(rc_local):
+    #     if line == 'exit 0':
+    #         rc_local.insert(idx, 'bash /etc/startup.sh')
+    #         rc_local.insert(idx, 'export HOME=/root')
+    #         break
+    # vm_cuisine.core.file_write('/etc/rc.local', '\n'.join(rc_local))
+
+
 
     # client_id = service.model.data.oauthClientId
     # if not service.model.data.oauthClientId:

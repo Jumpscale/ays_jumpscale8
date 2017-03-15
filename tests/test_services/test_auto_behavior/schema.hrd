@@ -1,0 +1,7 @@
+vdcfarm = type:str parent:'vdcfarm' auto
+
+sshkeys = list type:str consume:sshkey:0 auto
+
+sshkeys2 = list type:str consume:sshkey:2 auto
+
+result = type:str

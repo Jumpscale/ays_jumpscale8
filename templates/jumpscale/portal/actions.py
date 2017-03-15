@@ -2,6 +2,7 @@
 def install(job):
     service = job.service
     cuisine = service.executor.cuisine
+    cuisine.core.run("js 'j'", profile=True)
 
     cfg = cuisine.core.file_read('$TEMPLATEDIR/cfg/portal/config.hrd')
     cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
@@ -91,7 +92,7 @@ def install(job):
     cmd = cuisine.core.replace('jspython portal_start.py')
     wd = cuisine.core.replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
+    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd, autostart=True)
 
 
 def start(job):
@@ -100,7 +101,7 @@ def start(job):
     cmd = cuisine.core.replace('jspython portal_start.py')
     wd = cuisine.core.replace('$JSAPPSDIR/portals/main')
     pm = cuisine.processmanager.get('tmux')
-    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd)
+    pm.ensure('portal_%s' % service.name, cmd=cmd, path=wd, autostart=True)
 
 
 def stop(job):

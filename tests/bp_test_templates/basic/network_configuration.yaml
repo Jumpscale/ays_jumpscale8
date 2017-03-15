@@ -1,0 +1,25 @@
+g8client__main:
+    url: '{environment}'
+    login: '{username}'
+    password: '{password}'
+    account: 'network_conf3'
+
+vdc__networkcs3:
+   g8client: 'main'
+   location: '{location}'
+   account: 'network_conf3'
+
+node.ovc__{random_node}:
+    os.image: 'Ubuntu 16.04 x64'
+    vdc: 'networkcd3'
+    stackID: 1
+
+test_network_configuration__ts1:
+    vdc: 'networkcs3'
+    os: '{random_node}'
+
+actions:
+   - action: install
+   - action: test
+     actor: test_network_configuration
+
