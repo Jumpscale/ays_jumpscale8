@@ -2,7 +2,7 @@
 
 ##Description:
 
-This actor template installs an ays cockpit on a parent os.
+This actor template installs a cockpit on a parent os.
 
 ##Schema:
  - os: Parent os service name defined in blueprint. *Required*
