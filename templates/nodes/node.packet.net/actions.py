@@ -82,8 +82,8 @@ def install(job):
                                      job.service.model.data.location, level=1, source="", tags="", msgpub="")
         try:
             device = client.create_device(project_id=project_id, hostname=hostname, plan=plan_id,
-                                          facility=facility_id, operating_system=operating_system,
-                                          ipxe_script_url=service.model.data.ipxeScriptUrl)
+                                          facility=facility_id, operating_system=operating_system)
+                                          # ipxe_script_url=service.model.data.ipxeScriptUrl) not implemented in client yet 
         except Exception as e:
             if "Service Unavailable" in str(e):
                 raise j.exceptions.Input(message="could not create packet.net machine, type of machine not available.%s" %

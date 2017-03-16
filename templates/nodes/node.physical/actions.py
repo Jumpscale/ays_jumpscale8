@@ -11,4 +11,4 @@ def input(job):
 def init(job):
     service = job.service
     os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
-    j.tools.async.wrappers.sync(os_actor.serviceCreate(service.name, args={'node': service.name, 'sshkey': service.model.data.sshkey}))
+    os_actor.serviceCreate(service.name, args={'node': service.name, 'sshkey': service.model.data.sshkey})

@@ -21,6 +21,7 @@ doc:
   - sshkey: ''
   - vdc: ''
   - machineId: ''
+  - stackID: ''
 links:
   consume:
   - argname: disk
@@ -37,4 +38,5 @@ links:
     auto: true
     optional: false
     role: vdc
+    argname: 'vdc'
 recurring: []

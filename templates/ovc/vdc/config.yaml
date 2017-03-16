@@ -11,6 +11,7 @@ doc:
   - maxMemoryCapacity: ''
   - cloudspaceID: ''
   - location: ''
+  - externalNetworkID: ''
   - maxDiskCapacity: GiB
 links:
   consume:
@@ -28,4 +29,5 @@ links:
     auto: true
     optional: false
     role: vdcfarm
+    argname: vdcfarm
 recurring: []

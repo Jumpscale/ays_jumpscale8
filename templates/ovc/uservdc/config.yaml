@@ -12,4 +12,5 @@ links:
     max: 100
     min: 0
     role: g8client
+    argname: 'g8client'
 recurring: []
