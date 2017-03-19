@@ -1,0 +1,4 @@
+uservdc=type:str consume:uservdc
+account=type:str consume:account
+g8client=type:str consume:g8client
+result=type:str
