@@ -13,5 +13,6 @@ struct Schema {
 	maxCPUCapacity @9 :Int64 = -1;
 	maxDiskCapacity @10 :Int64 = -1;
 	maxNumPublicIP @11 :Int64 = -1;
+	externalNetworkID @12 :Int64 = -1;
 
 }

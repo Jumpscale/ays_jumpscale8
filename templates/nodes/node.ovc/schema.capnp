@@ -4,7 +4,7 @@ struct Schema {
 	description @0 :Text;
 	bootdiskSize @1 :Int64 = 10;
 	memory @2 :Int64 = 1;
-	sizeID @3 :Int64 = 0;
+	sizeID @3 :Int64 = -1;
 	osImage @4 :Text = "Ubuntu 15.10";
 	ports @5 :List(Text);
 	machineId @6 :Int64 = 0;
@@ -22,5 +22,6 @@ struct Schema {
 	ovfPassword @18 :Text;
 	ovfPath @19 :Text;
 	ovfCallbackUrl @20 :Text;
+	stackID @21 :Int64 = -1;
 
 }

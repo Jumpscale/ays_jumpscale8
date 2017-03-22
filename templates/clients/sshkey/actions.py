@@ -1,4 +1,4 @@
-def install(job):
+def input(job):
     service = job.service
     data = job.service.model.data
     data.keyPath = j.sal.fs.joinPaths(service.path, 'id_rsa')
@@ -8,8 +8,8 @@ def install(job):
         # generate key
         cmd = "ssh-keygen -q -t rsa -f {} -N '{}'".format(data.keyPath, data.keyPassphrase)
         rc, out, err = j.do.execute(cmd, showout=False)
-        data.keyPriv = j.sal.fs.joinPaths(data.keyPath)
-        data.keyPub = j.sal.fs.joinPaths(data.keyPath + '.pub')
+        data.keyPriv = j.sal.fs.fileGetContents(data.keyPath)
+        data.keyPub = j.sal.fs.fileGetContents(data.keyPath + '.pub')
 
     elif data.keyPriv is not None and data.keyPriv != '':
         # write keys into service directory
