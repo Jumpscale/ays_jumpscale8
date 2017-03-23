@@ -1,6 +1,6 @@
-#template: node.docker
+# template: node.docker
 
-##Description:
+## Description:
 
 This actor template represents a docker container , it is created through the install action. 
 The container is deleted through the uninstall action. 
@@ -9,7 +9,7 @@ The container is stopped through the stop action.
 
 
 
-##Schema:
+## Schema:
  - os: Parent os service name defined in blueprint. *Required*
  - fs: files systems to use on container.
  - docker: docker service to use.
@@ -25,7 +25,7 @@ The container is stopped through the stop action.
  - ssh.login: username to login with.
  - ssh.password: password to login with.
 
-##Example:
+## Example:
 Replace \<with actual value \>
 ```yaml
 sshkey__ovh_install:
@@ -37,27 +37,17 @@ node.physical__ovh4:
   ssh.addr: 'localhost'
   ssh.port: 22
 
-
-os.ssh.ubuntu__ovh4:
-  ssh.addr: 'localhost'
-  ssh.port: 22
-  sshLogin: 'root'
-  sshPassword: '<root password>'
-  sshkey: 'ovh_install'
-  node: 'ovh4'
-  aysfs: False
-  agent: False
+app_docker__appdocker:
+  os: ovh4
 
 node.docker__ubuntutest:
   sshkey: 'ovh_install'
   image: 'ubuntu'
   ports:
-    - "80"
+    - "80:80"
   os: 'ovh4'
+  docker: appdocker
 
-os.ssh.ubuntu__docker_ovh4:
-  sshkey: 'ovh_install'
-  node: 'ubuntutest'
 
 actions:
     - action: 'install'
