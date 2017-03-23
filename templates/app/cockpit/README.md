@@ -1,17 +1,17 @@
-#template: ayscockpit
+# template: ayscockpit
 
-##Description:
+## Description:
 
 This actor template installs a cockpit on a parent os.
 
-##Schema:
+## Schema:
  - os: Parent os service name defined in blueprint. *Required*
  - oauth.client_id: Client id obtained from itsyouonline.com
  - oauth.client_secret: Client secret obtained from itsyouonline.com
  - oauth.organization: Organization name for authentication obtained from itsyouonline.com 
 
 
-##Example:
+## Example:
 Replace \<with actual value \>
 
 ```yaml
