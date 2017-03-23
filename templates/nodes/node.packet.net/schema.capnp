@@ -13,4 +13,5 @@ struct Schema {
 	ports @9 :List(Text);
 	sshLogin @10 :Text;
 	sshPassword @11 :Text;
+        ipxeScriptUrl @12: Text;
 }
