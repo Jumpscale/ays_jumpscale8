@@ -69,14 +69,12 @@ def install(job):
     space.model['maxCPUCapacity'] = service.model.data.maxCPUCapacity
     space.save()
 
-
 def processChange(job):
     service = job.service
-
     args = job.model.args
     category = args.pop('changeCategory')
-    if category == "dataschema" and service.model.actionsState['install'] == 'ok':
-
+    # FIXME: actionState install should be ok (scheduled is added as a workaround.)
+    if category == "dataschema" and service.model.actionsState['install'] in ['ok', 'scheduled']:
         for key, value in args.items():
             if key == 'uservdc':
                 # value is a list of (uservdc)
@@ -87,7 +85,7 @@ def processChange(job):
                         service.model.producerRemove(s)
                 for v in value:
                     userservice = service.aysrepo.serviceGet('uservdc', v)
-                    if userservice not in service.producers.get('uservdc', []):
+                    if v not in [x.name for x in service.producers.get('uservdc', [])]:
                         service.consume(userservice)
             elif key == 'location' and service.model.data.location != value:
                 raise RuntimeError("Can not change attribute location")
