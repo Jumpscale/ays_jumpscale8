@@ -1,5 +1,5 @@
 
-@0x948837c6862de1f9;
+@0x948837c6862de1f0;
 struct Schema {
 	sshkey @0 :Text;
 	client @1 :Text;
@@ -13,5 +13,4 @@ struct Schema {
 	ports @9 :List(Text);
 	sshLogin @10 :Text;
 	sshPassword @11 :Text;
-
 }

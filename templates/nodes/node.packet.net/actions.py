@@ -18,8 +18,9 @@ def input(job):
 
 def init(job):
     service = job.service
-    os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
-    os_actor.serviceCreate(service.model.name, args={'node': service.model.name, 'sshkey': service.model.data.sshkey})
+    if service.model.data.deviceOs != 'custom_ipxe':
+        os_actor = service.aysrepo.actorGet('os.ssh.ubuntu')
+        os_actor.serviceCreate(service.model.name, args={'node': service.model.name, 'sshkey': service.model.data.sshkey})
 
 
 def install(job):
@@ -62,11 +63,14 @@ def install(job):
         plan_id = plan_ids[0]
 
         operating_system_name = service.model.data.deviceOs
-        operating_systems = [operating_system.slug for operating_system in client.list_operating_systems(
-        ) if operating_system.name == operating_system_name]
-        if not operating_systems:
-            raise RuntimeError('No operating_systems found with name %s' % operating_system_name)
-        operating_system = operating_systems[0]
+        if operating_system_name != 'custom_ipxe':
+            operating_systems = [operating_system.slug for operating_system in client.list_operating_systems(
+            ) if operating_system.name == operating_system_name]
+            if not operating_systems:
+                raise RuntimeError('No operating_systems found with name %s' % operating_system_name)
+            operating_system = operating_systems[0]
+        else:
+            operating_system = 'custom_ipxe'
 
         facility_id = None
         for facility in client.list_facilities():
@@ -78,7 +82,8 @@ def install(job):
                                      job.service.model.data.location, level=1, source="", tags="", msgpub="")
         try:
             device = client.create_device(project_id=project_id, hostname=hostname, plan=plan_id,
-                                          facility=facility_id, operating_system=operating_system)
+                                          facility=facility_id, operating_system=operating_system,
+                                          ipxe_script_url=service.model.data.ipxeScriptUrl)
         except Exception as e:
             if "Service Unavailable" in str(e):
                 raise j.exceptions.Input(message="could not create packet.net machine, type of machine not available.%s" %
