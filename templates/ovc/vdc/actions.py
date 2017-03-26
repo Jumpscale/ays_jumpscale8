@@ -74,6 +74,10 @@ def processChange(job):
     args = job.model.args
     category = args.pop('changeCategory')
     # FIXME: actionState install should be ok (scheduled is added as a workaround.)
+
+    if 'g8client' not in service.producers:
+        raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+
     if category == "dataschema" and service.model.actionsState['install'] in ['ok', 'scheduled']:
         for key, value in args.items():
             if key == 'uservdc':
@@ -91,42 +95,40 @@ def processChange(job):
                 raise RuntimeError("Can not change attribute location")
             setattr(service.model.data, key, value)
 
-        if 'g8client' not in service.producers:
-            raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
+        if service.model.actionsState['install'] == 'ok':
+            g8client = service.producers["g8client"][0]
+            cl = j.clients.openvcloud.getFromService(g8client)
+            acc = cl.account_get(service.model.data.account)
+            # Get given space, raise error if not found
+            space = acc.space_get(name=service.model.dbobj.name,
+                                  location=service.model.data.location,
+                                  create=False)
 
-        g8client = service.producers["g8client"][0]
-        cl = j.clients.openvcloud.getFromService(g8client)
-        acc = cl.account_get(service.model.data.account)
-        # Get given space, raise error if not found
-        space = acc.space_get(name=service.model.dbobj.name,
-                              location=service.model.data.location,
-                              create=False)
+            authorized_users = space.authorized_users
+            userslist = service.producers.get('uservdc', [])
+            users = []
+            for u in userslist:
+                if u.model.data.provider != '':
+                    users.append(u.model.dbobj.name + "@" + u.model.data.provider)
+                else:
+                    users.append(u.model.dbobj.name)
 
-        authorized_users = space.authorized_users
-        userslist = service.producers.get('uservdc', [])
-        users = []
-        for u in userslist:
-            if u.model.data.provider != '':
-                users.append(u.model.dbobj.name + "@" + u.model.data.provider)
-            else:
-                users.append(u.model.dbobj.name)
+            # Authorize users
+            for user in users:
+                if user not in authorized_users:
+                    space.authorize_user(username=user)
 
-        # Authorize users
-        for user in users:
-            if user not in authorized_users:
-                space.authorize_user(username=user)
+            # Unauthorize users not in the schema
+            for user in authorized_users:
+                if user not in users:
+                    space.unauthorize_user(username=user)
 
-        # Unauthorize users not in the schema
-        for user in authorized_users:
-            if user not in users:
-                space.unauthorize_user(username=user)
-
-        # update capacity incase cloudspace already existed update it
-        space.model['maxMemoryCapacity'] = service.model.data.maxMemoryCapacity
-        space.model['maxVDiskCapacity'] = service.model.data.maxDiskCapacity
-        space.model['maxNumPublicIP'] = service.model.data.maxNumPublicIP
-        space.model['maxCPUCapacity'] = service.model.data.maxCPUCapacity
-        space.save()
+            # update capacity incase cloudspace already existed update it
+            space.model['maxMemoryCapacity'] = service.model.data.maxMemoryCapacity
+            space.model['maxVDiskCapacity'] = service.model.data.maxDiskCapacity
+            space.model['maxNumPublicIP'] = service.model.data.maxNumPublicIP
+            space.model['maxCPUCapacity'] = service.model.data.maxCPUCapacity
+            space.save()
 
         service.save()
 
