@@ -47,8 +47,8 @@ def install(job):
     if not ip:
         raise j.exceptions.RuntimeError('The machine %s does not get an IP ' % service.name)
     service.model.data.ipPrivate = ip
-    # service.model.data.sshLogin = vm_info['accounts'][0]['login']
-    # service.model.data.sshPassword = vm_info['accounts'][0]['password']
+    service.model.data.sshLogin = vm_info['accounts'][0]['login']
+    service.model.data.sshPassword = vm_info['accounts'][0]['password']
 
     ssh_present = any([ports for ports in service.model.data.ports if ports.startswith('22')])
     data = j.data.serializer.json.loads(service.model.dataJSON)
