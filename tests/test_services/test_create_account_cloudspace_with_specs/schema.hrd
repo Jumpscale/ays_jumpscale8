@@ -1,5 +1,5 @@
 uservdc=type:str consume:uservdc
-vdc=type:str consume:vdc
+vdc=type:str list consume:vdc
 account=type:str consume:account
 g8client=type:str consume:g8client
 result=type:str
