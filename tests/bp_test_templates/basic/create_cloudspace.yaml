@@ -14,7 +14,7 @@ vdc__{random_vdc}:
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
 test_create_cloudspace__{random}:
-   vdc: {random_vdc}
+   vdc: '{random_vdc}'
    g8client: 'islam'
 
 actions:
