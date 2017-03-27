@@ -13,9 +13,15 @@ def init_actions_(service, args):
 
 
 def test_auto_snapshoting(job):
+    RESULT_OK = 'OK'
+    RESULT_FAILED = 'FAILED : %s'
+    RESULT_ERROR = 'ERROR : %s %%s'
+    failures = []
     import requests, sys, time
     service = job.service
     snapshots_total_number = 5
+
+
     try:
         g8client = service.producers['g8client'][0]
         url = 'https://' + g8client.model.data.url
@@ -47,46 +53,45 @@ def test_auto_snapshoting(job):
 
         if response.status_code == 200:
             snapshots = response.json()
-            if len(snapshots) >= snapshots_total_number:
-                service.model.data.result = 'OK : %s ' % 'test_auto_snapshoting'
-            else:
+            if len(snapshots) < snapshots_total_number:
                 response_data = {'status_code': response.status_code,
                                  'content': response.content,
                                  'url': response.url,
                                  'machineId': machineId}
-                service.model.data.result = 'FAILED : %s %s' % ('test_auto_snapshoting', str(response_data))
+                failures.append('FAILED : %s %s' % ('test_auto_snapshoting', str(response_data)))
 
         else:
             response_data = {'status_code': response.status_code,
                              'content': response.content,
                              'url': response.url,
                              'machineId': machineId}
-            service.model.data.result = 'FAILED : %s %s' % ('test_auto_snapshoting', str(response_data))
+            failures.append('FAILED : %s %s' % ('test_auto_snapshoting', str(response_data)))
 
         time.sleep(cleanupInterval)
         response = session.post(url=API_URL, data=API_BODY)
 
         if response.status_code == 200:
             snapshots = response.json()
-            if len(snapshots) <= 1:
-                service.model.data.result = 'OK : %s ' % 'test_auto_snapshoting'
-            else:
+            if len(snapshots) > 1:
                 response_data = {'status_code': response.status_code,
                                  'content': response.content,
                                  'url': response.url,
                                  'machineId': machineId}
-                service.model.data.result = 'FAILED : %s %s' % ('test_auto_snapshoting', str(response_data))
+                failures.append('FAILED : %s %s' % ('test_auto_snapshoting', str(response_data)))
 
         else:
             response_data = {'status_code': response.status_code,
                              'content': response.content,
                              'url': response.url,
                              'machineId': machineId}
-            service.model.data.result = 'FAILED : %s %s' % ('test_auto_snapshoting', str(response_data))
+            failures.append('FAILED : %s %s' % ('test_auto_snapshoting', str(response_data)))
 
-
+        if failures:
+            service.model.data.result = RESULT_FAILED % str(failures)
+        else:
+            service.model.data.result = RESULT_OK
 
     except:
-        service.model.data.result = 'ERROR : %s %s' % ('test_auto_snapshoting', str(sys.exc_info()[:2]))
+        service.model.data.result = RESULT_ERROR % ('test_auto_snapshoting', str(sys.exc_info()[:2]))
 
     service.save()
