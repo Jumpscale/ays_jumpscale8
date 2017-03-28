@@ -26,7 +26,7 @@ def test(job):
     model = job.service.model
     model.data.result = RESULT_OK % job.service.name
     test_repo_path = j.sal.fs.joinPaths(j.dirs.varDir, 'tmp', 'test_validate_model')
-    sample_bp_path = j.sal.fs.joinPaths('/opt/code/github/jumpscale/jumpscale_core8/tests/bp_test_templates/basic/test_validate_delete_model_sample.yaml')
+    sample_bp_path = j.sal.fs.joinPaths('/opt/code/github/jumpscale/jumpscale_core8/tests/samples/bp_test_templates/basic/test_validate_delete_model_sample.yaml')
     try:
         if j.sal.fs.exists(test_repo_path):
             j.sal.fs.removeDirTree(test_repo_path)
