@@ -17,6 +17,8 @@ node.ovc__{random_node}:
     bootdisk.size: 10
     sizeID: 2
     vdc: {random_vdc}
+    ports:
+        - '20:20'
 
 test_create_virtualmachine__{random}:
    node: {random_node}
