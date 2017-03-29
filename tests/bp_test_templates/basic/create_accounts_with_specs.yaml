@@ -9,10 +9,10 @@ account__{random_account_1}:
     g8client: 'islam'
     accountusers:
         - '{username}'
-    maxMemoryCapacity: {randint=-1,100}
-    maxCPUCapacity:  {randint=-1,100}
-    maxDiskCapacity: {randint=-1,100}
-    maxNumPublicIP: {randint=-1,100}
+    maxMemoryCapacity: {randint=1,100}
+    maxCPUCapacity:  {randint=1,100}
+    maxDiskCapacity: {randint=10,100}
+    maxNumPublicIP: {randint=1,100}
 
 
 account__{random_account_2}:
@@ -20,21 +20,21 @@ account__{random_account_2}:
     g8client: 'islam'
     accountusers:
         - '{username}'
-    maxMemoryCapacity: {randint=-1,100}
-    maxCPUCapacity:  {randint=-1,100}
-    maxDiskCapacity: {randint=-1,100}
-    maxNumPublicIP: {randint=-1,100}
+    maxMemoryCapacity: {randint=1,100}
+    maxCPUCapacity:  {randint=1,100}
+    maxDiskCapacity: {randint=10,100}
+    maxNumPublicIP: {randint=1,100}
 
 account__{random_account_3}:
     description: '{random}'
     g8client: 'islam'
     accountusers:
         - '{username}'
-    maxMemoryCapacity: {randint=-1,100}
-    maxCPUCapacity:  {randint=-1,100}
-    maxDiskCapacity: {randint=-1,100}
-    maxNumPublicIP: {randint=-1,100}
-
+    maxMemoryCapacity: {randint=1,100}
+    maxCPUCapacity:  {randint=1,100}
+    maxDiskCapacity: {randint=10,100}
+    maxNumPublicIP: {randint=1,100}
+    
 test_create_accounts_with_specs__{random}:
   account:
         - '{random_account_1}'
