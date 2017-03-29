@@ -41,7 +41,7 @@ def test(job):
             actual_account_specs = [specs['CU_M'],specs['CU_D'], specs['CU_I'], specs['CU_C']]
             if (response.status_code != 200) or (actual_account_specs != account_specs) :
                 response_data = {'status_code': response.status_code, 'content': response.content}
-                service.model.data.result = 'FAILED : %s %s' % ('test_create_accounts_with_specs',response_data)
+                service.model.data.result = 'FAILED : %s %s' % ('test_create_accounts_with_specs',str(response_data))
                 break
         else:
             service.model.data.result = 'OK : %s ' % 'test_create_accounts_with_specs'
