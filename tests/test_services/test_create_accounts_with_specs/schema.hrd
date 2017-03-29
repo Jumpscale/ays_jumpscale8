@@ -1,0 +1,3 @@
+account=type:str list consume:account
+g8client=type:str consume:g8client
+result=type:str
