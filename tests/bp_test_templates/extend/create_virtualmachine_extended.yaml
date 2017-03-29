@@ -13,14 +13,13 @@ vdc__{random_vdc}:
 
 node.ovc__{random_node}:
     description: '{random}'
-    vdc: {random_vdc}
+    vdc: '{random_vdc}'
     os.image: '{randitem[Ubuntu 14.04 x64,Ubuntu 16.04 x64,Windows 2012r2 Standard]}'
     bootdisk.size: {randitem[50,100,250,500,1000]}
     sizeID: {randint=1,6}
     ports:
-      - 20:100
-      - 50:200
-
+      - '20:100'
+      - '50:200'
 
 test_create_virtualmachine_extended__{random}:
    vdc: {random_vdc}
