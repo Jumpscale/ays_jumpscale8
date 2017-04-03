@@ -24,7 +24,7 @@ g8client__example:
 uservdc__ex:
     password: '<password>'
     email: '<email>'
-    provider: 'itsyou.online'
+    provider: 'itsyouonline'
     groups: '<list of groups>'
     g8client: 'example'
 ```
