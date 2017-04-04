@@ -1,6 +1,6 @@
 
 def install(job):
-    j.do.pip("packet-python")
+    j.do.pip("git+https://github.com/gigforks/packet-python.git --upgrade")
 
 def monitor(job):
     import packet
