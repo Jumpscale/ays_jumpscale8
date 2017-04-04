@@ -12,8 +12,20 @@ def init(job):
     if 'g8client' not in service.producers:
         raise j.exceptions.AYSNotFound("no producer g8client found. cannot continue init of %s" % service)
     g8client = service.producers["g8client"][0]
+
+    accountservice = None
     if service.model.data.account == "":
         service.model.data.account = g8client.model.data.account
+    acc = service.model.data.account
+    # get the service if it exists or create it
+    # search for that acc.
+    accountservice = service.aysrepo.serviceGet("account", acc)
+    if not accountservice:
+        accargs = {'g8client': g8client.dbobj.name}
+        accountactor = service.aysrepo.actorGet("account")
+        accountservice = accountactor.serviceCreate('account', accargs)
+    service.consume(accountservice)
+
     service.saveAll()
 
 
