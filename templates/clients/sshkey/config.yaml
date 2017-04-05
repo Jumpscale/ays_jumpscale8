@@ -3,4 +3,5 @@ doc:
   - keyPriv: ''
   - keyPath: ''
   - keyPub: ''
-  - keyPassphrase: Specify passphrase (default is empty)
+  - keyName: ''
+  - keyPassphrase: ''
