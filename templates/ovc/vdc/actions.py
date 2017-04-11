@@ -19,11 +19,14 @@ def init(job):
     acc = service.model.data.account
     # get the service if it exists or create it
     # search for that acc.
-    accountservice = service.aysrepo.serviceGet("account", acc)
-    if not accountservice:
-        accargs = {'g8client': g8client.dbobj.name}
+    try:
+        accountservice = service.aysrepo.serviceGet("account", acc)
+    except:
+        accargs = {'g8client': g8client.name}
         accountactor = service.aysrepo.actorGet("account")
-        accountservice = accountactor.serviceCreate('account', accargs)
+        accountservice = accountactor.serviceCreate("account_" + g8client.model.data.account, accargs)
+        #accountservice.consume(g8client)
+        accountservice.saveAll()
     service.consume(accountservice)
 
     service.saveAll()
