@@ -11,13 +11,17 @@ vdc__{random_vdc}:
     location: '{location}'
     uservdc:
         - '{username}'
+    maxMemoryCapacity: {randint=2,64}
+    maxCPUCapacity: {randint=2,16}
+    maxDiskCapacity: {randint_x=20,30}
+    maxNumPublicIP: {randint=100,200}
 
 # 'QA SERVICE' (THE TEMPLATE SHOULD HAS THIS LINE)
-test_create_cloudspace__{random}:
+test_create_cloudspace_with_specs__{random}:
    vdc: '{random_vdc}'
    g8client: 'islam'
 
 actions:
    - action: 'install'
-   - action: 'test_create_cloudspace'
-     actor: test_create_cloudspace
+   - action: 'test_create_cloudspace_with_specs'
+     actor: test_create_cloudspace_with_specs
