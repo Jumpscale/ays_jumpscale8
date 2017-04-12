@@ -21,6 +21,7 @@ node.ovc__{random_ovc}:
     vdc: '{random_vdc}'
     ports:
         - '22:22'
+        - '2200:2200'
 
 app_docker__{random_dockerapp}:
     os: '{random_ovc}'
@@ -30,6 +31,8 @@ node.docker__{random_docker}:
   sshkey: '{random_ssh}'
   image: 'ubuntu'
   os: '{random_ovc}'
+  ports:
+    - '2200:22'
 
 actions:
     - action: 'install'
