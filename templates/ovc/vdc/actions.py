@@ -24,8 +24,7 @@ def init(job):
     except:
         accargs = {'g8client': g8client.name}
         accountactor = service.aysrepo.actorGet("account")
-        accountservice = accountactor.serviceCreate("account_" + g8client.model.data.account, accargs)
-        #accountservice.consume(g8client)
+        accountservice = accountactor.serviceCreate(g8client.model.data.account, accargs)
         accountservice.saveAll()
     service.consume(accountservice)
 
