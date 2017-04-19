@@ -34,11 +34,15 @@ def test(job):
     try:
         expected_nr_of_jobs = 0
         curdir = os.getcwd()
-        j.atyourservice.reposDiscover()
-        repo = j.atyourservice.repoGet(j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo_recurring'))
-        repos.append(repo)
-        bp_path = j.sal.fs.joinPaths(repo.path, 'blueprints', 'test_recurring_actions_hanging_jobs.yaml')
-        repo.blueprintExecute(path=bp_path)
+        ays_client = j.clients.atyourservice.get()
+        # j.atyourservice.reposDiscover()
+        # repo = j.atyourservice.repoGet(j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo_recurring'))
+        repo_name = 'sample_repo_recurring'
+        repos.append(repo_name)
+        # bp_path = j.sal.fs.joinPaths(repo.path, 'blueprints', 'test_recurring_actions_hanging_jobs.yaml')
+        bp_name = 'test_recurring_actions_hanging_jobs.yaml'
+        # repo.blueprintExecute(path=bp_path)
+        execute_bp_res = ays_client.api.ays.executeBlueprint(data={}, blueprint=bp_name, repository=repo_name)
         # find the service and retrieve the timeout value
         srv = repo.serviceGet('test_recurring_actions_1', 'hanging')
         timeout = srv.model.data.timeout
