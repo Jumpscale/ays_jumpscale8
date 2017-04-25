@@ -9,12 +9,12 @@ links:
   - argname: sshkeys2
     auto: true
     max: 100
-    min: '2'
+    min: 2
     role: sshkey
   - argname: sshkeys
     auto: true
     max: 100
-    min: '0'
+    min: 0
     role: sshkey
   parent:
     auto: true
