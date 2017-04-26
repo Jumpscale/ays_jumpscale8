@@ -1,15 +1,15 @@
-#template: node.docker
+# template: node.docker
 
-##Description:
+## Description:
 
-This actor template represents a docker container , it is created through the install action. 
-The container is deleted through the uninstall action. 
-The container is started through the start action. 
-The container is stopped through the stop action. 
+This actor template represents a docker container , it is created through the install action.
+The container is deleted through the uninstall action.
+The container is started through the start action.
+The container is stopped through the stop action.
 
 
 
-##Schema:
+## Schema:
  - os: Parent os service name defined in blueprint. *Required*
  - fs: files systems to use on container.
  - docker: docker service to use.
@@ -20,22 +20,22 @@ The container is stopped through the stop action.
  - cmd: init command to run on container start.
  - sshkey: add ssh key to container.
  - id: id of the container.
- - ip.public: automatically set public ip.
- - ip.private: automatically set private ip.
- - ssh.login: username to login with.
- - ssh.password: password to login with.
+ - ipPublic: automatically set public ip.
+ - ipPrivate: automatically set private ip.
+ - sshLogin: username to login with.
+ - sshPassword: password to login with.
 
-##Example:
+## Example:
 Replace \<with actual value \>
 ```yaml
 sshkey__ovh_install:
 
 node.physical__ovh4:
-  ip.public: '172.17.0.2'
-  ssh.login: 'root'
-  ssh.password: '<root password>'
-  ssh.addr: 'localhost'
-  ssh.port: 22
+  ipPublic: '172.17.0.2'
+  sshLogin: 'root'
+  sshPassword: '<root password>'
+  sshAddr: 'localhost'
+  sshPort: 22
 
 
 os.ssh.ubuntu__ovh4:
