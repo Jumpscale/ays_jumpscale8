@@ -21,9 +21,9 @@ links:
     min: 0
     role: uservdc
   - argname: account
-    auto: true
+    auto: false
     max: 1
-    min: 1
+    min: 0
     role: account
   - argname: g8client
     auto: true
