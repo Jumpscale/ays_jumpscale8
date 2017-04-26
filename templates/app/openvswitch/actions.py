@@ -3,7 +3,7 @@ def install(job):
     # install openvswitch, used for kvm networking
     cuisine.systemservices.openvswitch.install()
     # start openvswitch switch
-    job.service.executeActionJob('start', inprocess=True)
+    job.service.executeActionJob('start')
 
     job.service.model.actions['uninstall'].state = 'new'
     job.service.saveAll()
