@@ -41,7 +41,6 @@ def test(job):
     expected_process_change_action_after_update = ['scheduled', 'ok']
     service_name = 'instance'
     actors = ['repo2_template1', 'repo2_template2']
-    ays_update_cmd = 'ays update'
     try:
         ays_client = j.clients.atyourservice.get()
         repos.append(repo_name)
