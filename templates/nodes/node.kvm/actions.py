@@ -6,9 +6,7 @@ def install(job):
     image = job.service.producers['image_os'][0]
     image_name = image.model.data.url.split('/')[-1]
 
-    nics = []
-    for network in job.service.producers['network']:
-        nics.append(network.model.data.name)
+    nics = data.nics
 
     vm = cuisine.systemservices.kvm.machines.create(
         name=name,
