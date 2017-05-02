@@ -13,7 +13,7 @@ def init_actions_(service, args):
         'test': ['install']
 
     }
-    
+
 
 def test(job):
     """
@@ -33,13 +33,6 @@ def test(job):
         if job.service.name == "0min":
             if 'sshkeys' in job.service.producers:
                 model.data.result = RESULT_FAILED % ("Producer created while min value is zero")
-        if job.service.name == "2min":
-            if 'sshkeys2' not in job.service.producers:
-                model.data.result = RESULT_FAILED % ("Producers not created while min value is 2")
-            elif len(job.service.producers['sshkeys2']) != 2:
-                model.data.result = RESULT_FAILED % ("Wrong number of producers is created")
     except:
         model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
     job.service.save()
-
-    

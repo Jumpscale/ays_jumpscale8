@@ -17,10 +17,11 @@ def init_actions_(service, args):
 
 def test(job):
     """
-    Test ays update 
+    Test ays update
     """
     import sys
     import os
+    import json
     RESULT_OK = 'OK : %s'
     RESULT_FAILED = 'FAILED : %s'
     RESULT_ERROR = 'ERROR : %s %%s' % job.service.name
@@ -29,8 +30,10 @@ def test(job):
     failures = []
     repos = []
     cwd = os.getcwd()
-    repo_path = j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo2')
-    bp_path = j.sal.fs.joinPaths(repo_path, 'blueprints', 'bp_validate_update_propagation.yaml')
+    repo_name = 'sample_repo2'
+    bp_name = 'bp_validate_update_propagation.yaml'
+    repo_path = j.sal.fs.joinPaths(j.dirs.CODEDIR, 'github/jumpscale/jumpscale_core8/tests/%s' % repo_name)
+    bp_path = j.sal.fs.joinPaths(repo_path, 'blueprints', bp_name)
     replacement_str = 'REPLACED'
     original_str = 'REPLACEME'
     replace_cmd = 'sed -i s/%s/%s/g %s' % (original_str, replacement_str, bp_path)
@@ -38,46 +41,54 @@ def test(job):
     expected_process_change_action_after_update = ['scheduled', 'ok']
     service_name = 'instance'
     actors = ['repo2_template1', 'repo2_template2']
-    ays_update_cmd = 'ays update'
     try:
-        j.atyourservice.reposDiscover()
-        repo = j.atyourservice.repoGet(repo_path)
-        repos.append(repo)
-        repo.blueprintExecute(path=bp_path)
-        for actor in actors:
-        	srv = repo.servicesFind(name=service_name, actor=actor)
-        	if not srv:
-        		failures.append('Missing service [%s!%s] from repo [%s]' % (actor, service_name, repo))
-        	else:
-        		srv = srv[0]
-        		action_state = str(srv.model.actions['processChange'].state)
-        		if action_state not in expected_process_change_action_before_update:
-        			failures.append("Unexpected state [%s] of action [processChange] for service[%s!%s]. Expected [%s]" % (action_state, 
-        				actor, service_name, expected_process_change_action_before_update))
+        ays_client = j.clients.atyourservice.get()
+        repos.append(repo_name)
+        execute_bp_res = ays_client.api.ays.executeBlueprint(data={}, blueprint=bp_name, repository=repo_name)
+        if execute_bp_res.status_code == 200:
+            for actor in actors:
+                find_service_res = ays_client.api.ays.getServiceByName(name=service_name, role=actor, repository=repo_name)
+                if find_service_res.status_code == 200:
+                    service = json.loads(find_service_res.text)
+                    for action in service['actions']:
+                        if action['name'] == 'processChange':
+                            if action['state'] not in expected_process_change_action_before_update:
+                                failures.append("Unexpected state [%s] of action [processChange] for service[%s!%s]. Expected [%s]" % (action['state'],
+                    				actor, service_name, expected_process_change_action_before_update))
+                            break
+                else:
+                    failures.append('Missing service [%s!%s] from repo [%s]' % (actor, service_name, repo_name))
 
-        job.service.executor.cuisine.core.run(replace_cmd)
-        j.sal.fs.changeDir(repo_path)
-        job.service.executor.cuisine.core.run(ays_update_cmd)
+            j.tools.cuisine.local.core.run(replace_cmd)
+            execute_bp_res = ays_client.api.ays.executeBlueprint(data={}, blueprint=bp_name, repository=repo_name)
+            if execute_bp_res.status_code == 200:
+                for actor in actors:
+                    find_service_res = ays_client.api.ays.getServiceByName(name=service_name, role=actor, repository=repo_name)
+                    if find_service_res.status_code == 200:
+                        service = json.loads(find_service_res.text)
+                        for action in service['actions']:
+                            if action['name'] == 'processChange':
+                                if action['state'] not in expected_process_change_action_after_update:
+                                    failures.append("Unexpected state [%s] of action [processChange] for service[%s!%s]. Expected [%s]" % (action['state'],
+                        				actor, service_name, expected_process_change_action_after_update))
+                                break
+                    else:
+                        failures.append('Missing service [%s!%s] from repo [%s]' % (actor, service_name, repo_name))
+            else:
+                failures.append('Failed to execute blueprint [%s] after update' % bp_name)
+        else:
+            failures.append('Failed to execute blueprint [%s]' % bp_name)
 
-        for actor in actors:
-        	srv = repo.servicesFind(name=service_name, actor=actor)
-        	if not srv:
-        		failures = 'Missing service [%s!%s] from repo [%s]' % (actor, service_name, repo)
-        	else:
-        		srv = srv[0]
-        		action_state = str(srv.model.actions['processChange'].state)
-        		if action_state not in expected_process_change_action_after_update:
-        			failures.append("Unexpected state [%s] of action [processChange] for service[%s!%s]. Expected [%s]" % (action_state, 
-        				actor, service_name, expected_process_change_action_after_update))
+
         if failures:
             model.data.result = RESULT_FAILED % '\n'.join(failures)
     except:
         model.data.result = RESULT_ERROR % str(sys.exc_info()[:2])
-        
+
     finally:
         job.service.save()
         j.sal.fs.changeDir(cwd)
         replace_cmd = 'sed -i s/%s/%s/g %s' % (replacement_str, original_str, bp_path)
-        job.service.executor.cuisine.core.run(replace_cmd)
+        j.tools.cuisine.local.core.run(replace_cmd)
         for repo in repos:
-            repo.destroy()
+            ays_client.api.ays.destroyRepository(data={}, repository=repo)
