@@ -31,7 +31,10 @@ def install(job):
 
     # create a new packet
     # make sure our sshkey gets there
-    sshkey = service.producers.get('sshkey')[0]
+    if 'sshkey' in service.producers and len(service.producers['sshkey']) >= 1:
+        sshkey = service.producers['sshkey'][0]
+    else:
+        sshkey = None
     packetclient = service.producers.get('packetnet_client')[0]
     client = packet.Manager(packetclient.model.data.token)
 
@@ -47,12 +50,13 @@ def install(job):
         raise RuntimeError('No projects found with name %s' % project_name)
     project_id = project_ids[0]
 
-    key_pub = sshkey.model.data.keyPub.strip()
-    key_label = sshkey.model.name
-    key_labels = [key.label for key in client.list_ssh_keys()]
-    key_keys = [key.key for key in client.list_ssh_keys()]
-    if key_pub not in key_keys and key_label not in key_labels:
-        client.create_ssh_key(key_label, key_pub)
+    if sshkey:
+        key_pub = sshkey.model.data.keyPub.strip()
+        key_label = sshkey.model.name
+        key_labels = [key.label for key in client.list_ssh_keys()]
+        key_keys = [key.key for key in client.list_ssh_keys()]
+        if key_pub not in key_keys and key_label not in key_labels:
+            client.create_ssh_key(key_label, key_pub)
 
     project_devices = {device.hostname: device for device in client.list_devices(project_id)}
     if hostname not in project_devices:
