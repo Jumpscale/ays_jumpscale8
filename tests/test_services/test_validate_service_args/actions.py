@@ -36,13 +36,12 @@ def test(job):
     repo = None
 
     try:
-        j.atyourservice.reposDiscover()
-        repo = j.atyourservice.repoGet(j.sal.fs.joinPaths(j.dirs.codeDir, 'github/jumpscale/jumpscale_core8/tests/sample_repo4'))
+        repo = 'sample_repo4'
+        cl = j.clients.atyourservice.get().api.ays
         for bp_name, should_success in blueprints.items():
-            bp = repo.blueprintGet(bp_name)
             try:
-                repo.blueprintExecute(content=bp.content)
-                if not should_success:
+                bp_resp = cl.executeBlueprint(data=None, repository=repo, blueprint=bp_name)
+                if not should_success and bp_resp.status_code == 200:
                     failures.append("blueprint %s should have failed" % bp_name)
             except Exception as e:
                 if should_success:
@@ -56,4 +55,4 @@ def test(job):
     finally:
         job.service.save()
         if repo:
-            repo.destroy()
+            cl.destroyRepository(data=None, repository=repo)
