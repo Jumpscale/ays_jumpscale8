@@ -1,3 +1,47 @@
+def init_actions_(service, args):
+    """
+    this needs to returns an array of actions representing the depencies between actions.
+    Looks at ACTION_DEPS in this module for an example of what is expected
+    """
+
+    # some default logic for simple actions
+
+    action_required = args.get('action_required')
+
+    if action_required in ['stop', 'uninstall']:
+        for action_name, action_model in service.model.actions.items():
+            if action_name in ['stop', 'uninstall']:
+                continue
+            if action_model.state == 'scheduled':
+                action_model.state = 'new'
+
+    if action_required in ['install']:
+        for action_name, action_model in service.model.actions.items():
+            if action_name in ['uninstall', 'stop'] and action_model.state == 'scheduled':
+                action_model.state = 'new'
+
+
+    if action_required == 'stop':
+        if service.model.actionsState['start'] == 'sheduled':
+            service.model.actionsState['start'] = 'new'
+
+    if action_required == 'start':
+        if service.model.actionsState['stop'] == 'sheduled':
+            service.model.actionsState['stop'] = 'new'
+
+    service.save()
+
+    return {
+        'init': [],
+        'install': ['init'],
+        'start': ['install'],
+        'monitor': ['start'],
+        'stop': [],
+        'uninstall': [],
+        'delete': ['uninstall'],
+    }
+
+
 def input(job):
     r = job.service.aysrepo
 
