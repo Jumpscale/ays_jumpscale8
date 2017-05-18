@@ -8,7 +8,7 @@ This actor template is responsible to create a periodic snapshots on all machine
 - vdc: vdc that the service will work in.
 - startDate: Start date at which the autosnapshotting will start.
 - endDate: End date at which the autosnapshotting will end taking those periodic snapshots.
-- cleanupInterval: The duration interval at which the service periodically scan and remove any snapshots that're expired.
+- cleanupInterval: The duration interval at which the service periodically scan and remove any snapshots that're expired. Interval can be defined per number of seconds(50s), minutes (50m), hours (50h), days (50d) or weeks (50w)
 
 
 ## How to use
