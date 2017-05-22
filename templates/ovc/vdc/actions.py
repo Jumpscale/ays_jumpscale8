@@ -99,7 +99,7 @@ def processChange(job):
                 # value is a list of (uservdc)
                 if not isinstance(value, list):
                     raise j.exceptions.Input(message="Value is not a list.")
-                for s in service.producers['uservdc']:
+                for s in service.producers.get('uservdc', []):
                     if s.name not in value:
                         service.model.producerRemove(s)
                 for v in value:
