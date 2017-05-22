@@ -1,0 +1,12 @@
+doc:
+  property:
+  - company: ''
+  - username: ''
+  - password: ''
+  - os: ''
+links:
+  parent:
+    optional: false
+    auto: false
+    role: os
+recurring: []
