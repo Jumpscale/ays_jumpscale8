@@ -5,8 +5,8 @@ struct Schema {
 	fs @1 :Text;
 	redis @2 :Text;
 	listenAddr @3 :Text = "127.0.0.1";
-	listenPort @4 :Int64 = 82;
-	spaceDefault @5 :Text = "AYS81";
+	listenPort @4 :Int64 = 8200;
+	spaceDefault @5 :Text = "system";
 	oauthEnabled @6 :Bool = false;
 	oauthClientId @7 :Text;
 	oauthScope @8 :Text;
