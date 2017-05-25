@@ -2,7 +2,7 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    cuisine.apps.redis.install()
+    cuisine.apps.redis.install(reset=True)
     cuisine.apps.redis.start(
         name=service.name,
         ip=service.model.data.host if service.model.data.host != '' else None,

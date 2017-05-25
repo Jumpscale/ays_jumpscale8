@@ -3,14 +3,11 @@ def install(job):
     service = job.service
     cuisine = service.executor.cuisine
     cuisine.core.run("js 'j'", profile=True)
-
-    cfg = cuisine.core.file_read('$TEMPLATEDIR/cfg/portal/config.hrd')
-    cfg = j.data.hrd.get(content=cfg, prefixWithName=False)
-
-    # configure portal basics
-    cfg.set('param.cfg.ipaddr', service.model.data.listenAddr)
-    cfg.set('param.cfg.port', service.model.data.listenPort)
-    cfg.set('param.cfg.defaultspace', service.model.data.spaceDefault)
+    cfg = cuisine.core.file_read('$TEMPLATEDIR/cfg/portal/config.yaml')
+    cfg = j.data.serializer.yaml.loads(cfg)
+    cfg['ipaddr'] = service.model.data.listenAddr
+    cfg['port'] = service.model.data.listenPort
+    cfg['defaultspace'] = service.model.data.spaceDefault
 
 
     # configure portal for oauth
@@ -27,14 +24,14 @@ def install(job):
             else:
                 raise j.exceptions.Input("Arguments are missing to enable oauth. (%s)" % ','.join(missing))
 
-        cfg.set('param.cfg.client_id', service.model.data.oauthClientId)
-        cfg.set('param.cfg.client_scope', service.model.data.oauthScope)
-        cfg.set('param.cfg.client_secret', service.model.data.oauthSecret)
-        cfg.set('param.cfg.client_url', service.model.data.oauthClientUrl)
-        cfg.set('param.cfg.client_user_info_url', service.model.data.oauthClientUserInfoUrl)
-        cfg.set('param.cfg.force_oauth_instance', service.model.data.oauthProvider)
-        cfg.set('param.cfg.oauth.default_groups', [i for i in service.model.data.oauthDefaultGroups])
-        cfg.set('param.cfg.organization', service.model.data.oauthOrganization)
+        cfg['oauth.client_id'] = service.model.data.oauthClientId
+        cfg['oauth.client_scope'] = service.model.data.oauthScope
+        cfg['oauth.client_secret'] = service.model.data.oauthSecret
+        cfg['oauth.client_url'] = service.model.data.oauthClientUrl
+        cfg['oauth.client_user_info_url'] = service.model.data.oauthClientUserInfoUrl
+        cfg['oauth.force_oauth_instance'] service.model.data.oauthProvider
+        cfg['oauth.default_groups'] = [i for i in service.model.data.oauthDefaultGroups]
+        cfg['oauth.organization'] = service.model.data.oauthOrganization
 
         if service.model.data.oauthRedirectUrl.split('/')[2] == '':  # if no domain is set use ip instead
             node = service.aysrepo.servicesFind(actor='node.*')[0]
@@ -44,11 +41,10 @@ def install(job):
             redirect_url[0] = 'http:'
             service.model.data.oauthRedirectUrl = '/'.join(redirect_url)
 
-        cfg.set('param.cfg.redirect_url', service.model.data.oauthRedirectUrl)
-        cfg.set('param.cfg.token_url', service.model.data.oauthTokenUrl)
+        cfg['oauth.redirect_url'] = service.model.data.oauthRedirectUrl
+        cfg['oauth.token_url'] = service.model.data.oauthTokenUrl
 
-
-    cuisine.core.file_write('$JSCFGDIR/portals/main/config.hrd', str(cfg))
+    cuisine.core.file_write('$JSCFGDIR/portals/main/config.yaml', str(cfg))
 
     cuisine.core.dir_ensure('$JSCFGDIR/portals')
     if not cuisine.core.file_exists('$JSAPPSDIR/portals/main/base/AYS81'):
@@ -57,15 +53,15 @@ def install(job):
     # change codedir path in system.yaml to be /optvar/code
     dir_paths = {
         'CODEDIR': cuisine.core.replace('$VARDIR/code'),
-        'JSBASE': cuisine.core.dir_paths['base'],
-        'CFGDIR': cuisine.core.dir_paths['cfgDir'],
+        'JSBASE': cuisine.core.dir_paths['BASEDIR'],
+        'CFGDIR': cuisine.core.dir_paths['CFGDIR'],
         'DATADIR': cuisine.core.replace('$VARDIR/data/'),
-        'TMPDIR': '/tmp',
+        'TMPDIR': cuisine.core.replace('$TMPDIR'),
         'VARDIR': cuisine.core.dir_paths['VARDIR']
         }
 
     branch = 'master'
-    build_path = cuisine.core.replace("$OPTDIR/build.yaml")
+    build_path = cuisine.core.replace("$BASEDIR/build.yaml")
     if cuisine.core.file_exists(build_path):
         versions = j.data.serializer.yaml.loads(cuisine.core.file_read(build_path))
         if 'jumpscale' in versions:

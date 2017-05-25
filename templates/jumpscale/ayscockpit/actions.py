@@ -28,14 +28,14 @@ def install(job):
     cuisine.core.file_write(cfg_path, j.data.serializer.yaml.dumps(config))
 
     # configure REST API
-    raml = cuisine.core.file_read('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml')
+    raml = cuisine.core.file_read('$JSAPPSDIR/atyourservice/apidocs/api.raml')
     if service.model.data.domain == '':  # if no domain is set use ip instead
         node = service.aysrepo.servicesFind(actor='node.*')[0]
         service.model.data.domain = node.model.data.ipPublic
-        raml = raml.replace('$(baseuri)', "http://%s/api" % service.model.data.domain)
+        raml = raml.replace('localhost:', "%s:" % service.model.data.domain)
     else:
-        raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
+        raml = raml.replace('localhost:', "%s:" % service.model.data.domain)
+    cuisine.core.file_write('$JSAPPSDIR/atyourservice/apidocs/api.raml', raml)
     content = cuisine.core.file_read('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki')
     if 'REST API:/api' not in content:
         cuisine.core.file_write('$JSAPPSDIR/portals/main/base/AYS81/.space/nav.wiki',
@@ -72,16 +72,10 @@ def install(job):
     cuisine.package.install('git')
 
     # start daemon
-    cmd = 'ays start'
-    pm = cuisine.processmanager.get('tmux')
-    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name, autostart=True)
-    # start api
-    cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'), autostart=True)
+    cuisine.core.run('ays start -b 0.0.0.0', profile=True)
     # upload the aysrepo used in installing to the cockpit
     cuisine.core.dir_ensure('$VARDIR/cockpit_repos')
     cuisine.core.upload(service.aysrepo.path, '$VARDIR/cockpit_repos/cockpit')
-    cuisine.core.run('cd $VARDIR/cockpit_repos/cockpit; ays restore', profile=True)
 
     # write the init script that will be used in case of machine shutdown
     rc_local = cuisine.core.file_read('/etc/rc.local').split('\n')
@@ -97,22 +91,15 @@ def start(job):
     service = job.service
     cuisine = service.executor.cuisine
 
-    pm = cuisine.processmanager.get('tmux')
-
-    cmd = 'ays start'
-    pm.ensure(cmd=cmd, name='cockpit_daemon_%s' % service.name)
 
     # in case we update the sandbox, need to reconfigure the raml with correct url
-    raml = cuisine.core.file_read('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml')
-    raml = raml.replace('$(baseuri)', "https://%s/api" % service.model.data.domain)
-    cuisine.core.file_write('$JSAPPSDIR/ays_api/ays_api/apidocs/api.raml', raml)
-    cmd = 'jspython api_server'
-    pm.ensure(cmd=cmd, name='cockpit_api_%s' % service.name, path=cuisine.core.replace('$JSAPPSDIR/ays_api'))
-
+    raml = cuisine.core.file_read('$JSAPPSDIR/atyourservice/apidocs/api.raml')
+    raml = raml.replace('localhost:', "%s:" % service.model.data.domain)
+    cuisine.core.file_write('$JSAPPSDIR/atyourservice/apidocs/api.raml', raml)
+    cuisine.core.run('ays start -b 0.0.0.0', profile=True)
 
 def stop(job):
     service = job.service
     cuisine = service.executor.cuisine
     pm = cuisine.processmanager.get('tmux')
-    pm.stop(name='cockpit_api_%s' % service.name)
-    pm.stop(name='cockpit_daemon_%s' % service.name)
+    pm.stop(name='ays')
