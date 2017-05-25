@@ -38,3 +38,10 @@ e.g: to expose port 22 of the VM to the port 9000 on the public port of the vdc 
  - Adding new port forward in blueprint will add a new portforwardomg.
  - Editing port foward in blueprint = removing the old portforward and creating new one.
  > port 22 is special case we keep it even if edited or deleted.
+
+
+### Changing Disks
+
+ - Removing disk from blueprint `disk` section will detach the disk from the machine and delete it.
+ - Adding new disk in the blueprint will add a create a new disk and attach it to the machine, then set its IO limit.
+ - Removing boot disks will be ignored.
