@@ -7,25 +7,12 @@ def init(job):
 
     # filesystem
     # 1- fuse
-    fuse_cfg = {
-        'mount.namespace': 'sandbox_ub1604',
-        'mount.mountpoint': '/opt',
-        'mount.flist': service.model.data.flist,
-        'mount.mode': 'ol',
-        'mount.trimbase': True,
-        'mount.trim': '/opt',
-        'backend.path': '/mnt/fs_backend/opt',
-        'backend.namespace': 'aysbuild',
-        'backend.cleanup.cron': "@every 1h",
-        'backend.cleanup.old': 24,
-        'store.url': 'https://stor.jumpscale.org/stor2'
-    }
-
-    vfs_config = repo.actorGet('vfs_config').serviceCreate('opt', fuse_cfg)
 
     fuse = {
         'os': os.name,
-        'vfs_config': [vfs_config.name]
+        'flist': service.model.data.flist,
+        'storageUrl': 'ardb://hub.gig.tech:16379',
+        'mountPoint': '/opt'
     }
 
     fs = repo.actorGet('fs.g8osfs').serviceCreate('fuse', fuse)

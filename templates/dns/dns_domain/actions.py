@@ -9,8 +9,9 @@ def install(job):
 
     for dns_client in service.producers['dnsclient']:
         dnscl = j.clients.dns.getFromService(dns_client)
-
-        domain = dnscl.ensure_domain(service.model.data.domain, ttl=service.model.data.ttl)
+        dm = j.clients.domainmanager
+        dm.get(dnscl)
+        domain = dm.ensure_domain(service.model.data.domain, ttl=service.model.data.ttl)
 
         for record in service.model.data.aRecords:
             sub_domain, ip = record.split(':')
