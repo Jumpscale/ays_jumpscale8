@@ -20,7 +20,6 @@ curl -X GET \
      | python -m json.tool
 ```
 
-
 ## Create new repository
 
 ```bash

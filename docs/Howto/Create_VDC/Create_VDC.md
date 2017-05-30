@@ -333,11 +333,18 @@ Next you will want to learn about one of the following :
 <a id="API"></a>
 ## Using the AYS API
 
+With the below command we make AYS listen on port 5000 on all interface:
+
+```
+ays start -b 0.0.0.0 -p 5000
+```
+
 The AYS command line tool discussed here above is actually a client of the AYS API. In this section we discuss how to create a VDC step by step by interacting directly with the AYS API using curl commands:
 
 - [Get an OAuth token with Client Credentials Flow](#get-token)
 - [Get a JWT to talk to the Cockpit](#get-JWT)
 - [Create a new repository](#create-repository)
+- [List all repositories](#list-repositories)
 - [Create blueprint for a g8client service instance](#g8client-blueprint)
 - [Execute the g8client blueprint](#g8client-execute)
 - [Create blueprint for a user](#user-blueprint)
@@ -367,15 +374,25 @@ JWT=$(curl -H "Authorization: token ${ACCESS_TOKEN}" https://itsyou.online/v1/oa
 echo $JWT
 ```
 
+<a id="list-repositories"></a>
+### List all repositories
+
+```bash
+BASE_URL="<IP-address>"
+AYS_PORT="5000"
+curl -X GET \
+     -H "Authorization: bearer $JWT" \
+     -H "Content-Type: application/json" \
+     https://$BASE_URL:$AYS_PORT/ays/repository
+```
+
 <a id="create-repository"></a>
 ### Create a new repository
 
 ```bash
 REPO_NAME="..."
-GIT_URL="https://github.com/user/reponame"
-BASE_URL="<IP-address>"
-AYS_PORT="5000"
-curl -X POST
+GIT_URL="http://somewhere"
+curl -X POST \
      -H "Authorization: bearer $JWT" \
      -H "Content-Type: application/json" \
      -d '{"name":"'$REPO_NAME'", "git_url":"'$GIT_URL'"}' \

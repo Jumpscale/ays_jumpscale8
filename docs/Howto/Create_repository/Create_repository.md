@@ -1,9 +1,10 @@
 # How to Create a New Repository
 
-You can create a repository in multiple ways:
+You can create an AYS repository in multiple ways:
 
-- [Using the AYS CLI client](#cli)
-- [Using the AYS/Cockpit API](#api)
+- [Using the AYS CLI tool](#cli)
+- [Using the AYS API](#api)
+- [Using JumpScale](#jumpscale)
 - [In the Cockpit Portal](#portal)
 
 
@@ -35,11 +36,11 @@ See [How to Execute Blueprints](../Execute_blueprint/Execute_blueprint.md) for m
 <a id="api"></a>
 ## Using the AYS API
 
-In order to use the Cockpit API you first need to obtain an JWT, as documented in the section about [how to get a JWT](../Get_JWT/Get_JWT.md).
+In order to use the AYS API you first need to obtain an JWT, as documented in the section about [how to get a JWT](../Get_JWT/Get_JWT.md).
 
 Once you got the JWT:
 
-```
+```bash
 JWT="..."
 REPO_NAME="..."
 GIT_URL="https://github.com/user/reponame"
@@ -58,7 +59,24 @@ In the **API Console**:
 For more information about the **API Console** go to the section about the [API Console](../../API_Console/API_Console.md).
 
 
+<a id="jumpscale"></a>
+## Using the JumpScale client
+
+```python
+cl = j.clients.atyourservice.get()
+cl.api.ays.listRepositories().json()
+cl.api.ays.createRepository()
+```
+
+
 <a id="portal"></a>
 ## Using the Cockpit Portal
 
-See the [Getting started with blueprints](../../Getting_started_with_blueprints/getting_started_with_blueprints.md) section.
+This requires a running instance of the Cockpit Portal.
+
+```python
+cuisine = j.tools.cuisine.local
+cuisine.solutions.cockpit.install(start=True, branch='8.2.0', reset=True, ip='192.168.196.177')
+```
+
+http://192.168.196.177:8200/
