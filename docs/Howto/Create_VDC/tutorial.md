@@ -5,6 +5,42 @@
   - Templates: https://github.com/Jumpscale/ays_jumpscale8/tree/8.2.0/templates
 
 
+## Variables
+
+```
+CLIENT_ID="..."
+CLIENT_SECRET="..."
+BASE_URL="192.168.196.177"
+AYS_PORT="5000"
+REPO_NAME="yvestest25"
+GIT_URL="http://somewhere"
+G8_URL="be-g8-4.demo.greenitglobe.com"
+LOGIN="api_test_user"
+PASSWORD="aysrocks"
+ACCOUNT="Demo"
+USERNAME="..."
+EMAIL="..."
+VDC_NAME="testvdc"
+LOCATION="be-g8-4"
+EXTERNAL_NETWORK="..."
+
+echo "CLIENT_ID: "$CLIENT_ID
+echo "CLIENT_SECRET: "$CLIENT_SECRET
+echo "BASE_URL: "$BASE_URL
+echo "AYS_PORT: "$AYS_PORT
+echo "REPO_NAME: "$REPO_NAME
+echo "GIT_URL: "$GIT_URL
+echo "G8_URL: "$G8_URL
+echo "LOGIN: "$LOGIN
+echo "PASSWORD: "$PASSWORD
+echo "ACCOUNT: "$ACCOUNT
+echo "USERNAME: "$USERNAME
+echo "EMAIL: "$EMAIL
+echo "VDC_NAME: "$VDC_NAME
+echo "LOCATION: "$LOCATION
+echo "EXTERNAL NETWORK: "$EXTERNAL_NETWORK
+```
+
 ## CLI
 
 

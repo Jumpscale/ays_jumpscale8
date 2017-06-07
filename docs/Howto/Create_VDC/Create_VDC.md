@@ -7,7 +7,7 @@ For creating a virtual datacenter (VDC) use the **vdc** actor template, availabl
 - [Values](#values)
 - [Example](#example)
 - [Using the AYS CLI tool](#cli)
-- [Using the AYS API](#api)
+- [Using the AYS REST API](#rest)
 
 <a id="minimal-blueprint"></a>
 ## Minimal Blueprint
@@ -330,8 +330,8 @@ Next you will want to learn about one of the following :
 - How to [Change VDC Resource Limits](../Change_VDC_Resource_Limits/Change_VDC_Resource_Limits.md)
 
 
-<a id="API"></a>
-## Using the AYS API
+<a id="rest"></a>
+## Using the AYS REST API
 
 With the below command we make AYS listen on port 5000 on all interface:
 
