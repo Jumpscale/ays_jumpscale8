@@ -28,16 +28,27 @@ def snapshot(job):
     start_date_valid = START_DATE == "" or START_DATE < datetime.datetime.now()
     end_date_valid = END_DATE == "" or END_DATE > datetime.datetime.now()
 
-    if start_date_valid and end_date_valid:
-        # Get spaces id from the parent (vdc)
-        vdc = service.producers["vdc"][0]
-        # Get given space resides in g8client
-        g8client = vdc.producers["g8client"][0]
-        cl = j.clients.openvcloud.getFromService(g8client)
-        cl = cl.account_get(vdc.model.data.account)
-        space = cl.space_get(vdc.name, vdc.model.data.location)
-        for name, machine in space.machines.items():
+    # Get spaces id from the parent (vdc)
+    vdc = service.producers["vdc"][0]
+    # Get given space resides in g8client
+    g8client = vdc.producers["g8client"][0]
+    cl = j.clients.openvcloud.getFromService(g8client)
+    cl = cl.account_get(vdc.model.data.account)
+    space = cl.space_get(vdc.name, vdc.model.data.location)
+    now = int(time.time())
+    period = j.data.types.duration.convertToSeconds(service.model.data.snapshotInterval)
+
+    if not (start_date_valid and end_date_valid):
+        return
+
+    for name, machine in space.machines.items():
+        for snapshot in machine.list_snapshots():
+            # Get the delta time in seconds
+            delta = now - snapshot['epoch']
+            if delta < period:
+                break
             machine.create_snapshot(name='auto_snapshot')
+
 
 
 def cleanup(job):
